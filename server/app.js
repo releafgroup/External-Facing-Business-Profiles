@@ -7,14 +7,14 @@ var bodyParser = require('body-parser');
 var config = require('./config.js');                                                                   
 var mongoose = require('mongoose');                                                                    
 var superSecret = config.superSecret;                                                                  
-var authfunc = require('./utils/authfunc.js');                                                         
+var authfunc = require('./utils/authfunc.js');
 mongoose.connect(config.database);   
 
 
 // import routes
 var routes = require('./routes/index');
 var users = require('./routes/users');
-var auth = require('./routes/authenticate.js');
+//var auth = require('./routes/authenticate.js');
 
 
 
@@ -23,7 +23,7 @@ var app = express();
 
 app.use('/', routes);                                                                                  
 app.use('/users', users);                                                                              
-app.use('/authenticate', auth);                                                                        
+//app.use('/authenticate', auth);                                                                        
 app.use(authfunc);
 
 
