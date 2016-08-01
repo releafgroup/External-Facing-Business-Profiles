@@ -1,3 +1,4 @@
 var database = 'mongodb://localhost/first_test_db';
 var superSecret = '';
-module.exports = {"database":database, "superSecret": superSecret};
+var mocha_database = 'mongodb://localhost/mocha_test_db';
+module.exports = {"database":database, "superSecret": superSecret, "mocha_database": mocha_database};

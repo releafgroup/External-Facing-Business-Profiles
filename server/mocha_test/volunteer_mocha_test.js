@@ -1,0 +1,123 @@
+var should = require('should'); 
+var assert = require('assert');
+var request = require('supertest');  
+var mongoose = require('mongoose');
+var config = require('../config.js');
+
+
+
+describe('Routing', function() {
+    var url = 'http://localhost:3000';
+    before(function(done) {
+        // Use mocha test db
+        mongoose.connect(config.mocha_database,function(){
+            /* Drop the DB */
+            mongoose.connection.db.dropDatabase();
+        });
+        done();
+    });
+
+    describe('Basic', function() {
+        it('tests if can access main page', function(done) {
+            request(url)
+                .get('/')
+                .end(function(err, res) {
+                    res.body.title.should.equal('Welcome to the ikeora API');
+                    done();
+                });
+        });
+    });
+
+    describe('Volunteer Sign Up', function() {
+        it('tests basic creation of Volunteer (email, first_name, last_name, pwd)', function(done) {
+            var user = {
+                "first_name" : "test_first",
+                "last_name" : "test_last",
+                "password" : "aydude",
+                "email" : "test1.gmail.com"
+            }
+
+            request(url)
+                .post('/users')
+                .send(user)
+                .expect(200) //Status code
+                .end(function(err, res) {
+                    console.log(res.body);
+                    res.body.message.should.equal('User created');
+                    done();
+                });
+
+        });
+        
+        it('tests basic creation of Volunteer w/o password', function(done) {
+            var user = {
+                "first_name" : "test_first",
+                "last_name" : "test_last",
+                "email" : "test_2.gmail.com"
+            }
+
+            request(url)
+                .post('/users')
+                .send(user)
+                .expect(200)
+                .end(function(err, res) {
+                    res.body.message.should.equal('User created');
+                    done();
+                });
+
+
+        });
+
+        
+        it('tests that required information is needed', function(done) {
+            var user = {
+                "password" : "test_3",
+            }
+            request(url)
+                .post('/users')
+                .send(user)
+                .end(function(err, res) {
+                    res.body.message.should.not.equal('User created');
+                    done();
+                });
+        });
+        
+        it('tests that duplicate emails cannot be created', function(done) {
+            var user = {
+                "email" : "test_2.gmail.com",
+                "first_name" : "test_firsts",
+                "last_name" : "test_lasts",
+            }
+
+            request(url)
+                .post('/users')
+                .send(user)
+                .end(function(err, res) {
+                    console.log(res.body);
+                    res.body.message.should.not.equal('User created');
+                    done();
+                });
+
+        });
+    });
+
+
+
+    describe('Volunteer Update', function() {
+        it('tests adding password and all other extra information after initial account creation', function(done) {
+
+
+        });
+
+        it('tests updating password and all other information besides username', function(done) {
+
+        });
+
+        it('tests that volunteer cannot change username', function(done) {
+
+
+        });
+
+    });
+
+});
