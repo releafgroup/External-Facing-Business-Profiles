@@ -42,8 +42,7 @@ describe('Routing', function() {
                 .send(user)
                 .expect(200) //Status code
                 .end(function(err, res) {
-                    console.log(res.body);
-                    res.body.message.should.equal('User created');
+                    res.body.success.should.equal(true);
                     done();
                 });
 
@@ -61,7 +60,7 @@ describe('Routing', function() {
                 .send(user)
                 .expect(200)
                 .end(function(err, res) {
-                    res.body.message.should.equal('User created');
+                    res.body.success.should.equal(true);
                     done();
                 });
 
@@ -77,7 +76,7 @@ describe('Routing', function() {
                 .post('/users')
                 .send(user)
                 .end(function(err, res) {
-                    res.body.message.should.not.equal('User created');
+                    res.body.success.should.not.equal(true);
                     done();
                 });
         });
@@ -93,8 +92,7 @@ describe('Routing', function() {
                 .post('/users')
                 .send(user)
                 .end(function(err, res) {
-                    console.log(res.body);
-                    res.body.message.should.not.equal('User created');
+                    res.body.success.should.not.equal(true);
                     done();
                 });
 
@@ -106,14 +104,87 @@ describe('Routing', function() {
     describe('Volunteer Update', function() {
         it('tests adding password and all other extra information after initial account creation', function(done) {
 
+            var user = {
+                "first_name" : "test_first_change",
+                "last_name" : "test_last_change",
+                "password" : "aydudedddd",
+                "email" : "test1.gmail.com",
+                "primary_institution": "stanny",
+                "secondary_institution": "odododdo",
+                "skill_1": "s",
+                "skill_2": "f",
+                "skill_3": "o",
+                "skill_1_rating": 1,
+                "skill_2_rating": 2,
+                "skill_3_rating": 3,
+                "gender": "Female",
+                "dob": "2016-06-07"
+            }
+            
+            request(url)
+                .get('/users/id')
+                .send(user)
+                .end(function(err, res) {
+                    if (res.body.success == true) {
+                        request(url)
+                            .put('/users/' + res.body.id)
+                            .send(user)
+                            .end(function(err2, res2) {
+                                console.log(res2.body.message);
+                                res2.body.success.should.equal(true);
+                                done();
+                            });
+                    }
+                });
 
         });
 
-        it('tests updating password and all other information besides username', function(done) {
+        it('tests that volunteer cannot change id', function(done) {
+             var user = {
+                "email" : "test1.gmail.com",
+                "id": "eeeeeeeeee"
+            }
+            
+            request(url)
+                .get('/users/id')
+                .send(user)
+                .end(function(err, res) {
+                    if (res.body.success == true) {
+                        request(url)
+                            .put('/users/' + res.body.id)
+                            .send(user)
+                            .end(function(err2, res2) {
+                                console.log(res2.body.message);
+                                res2.body.success.should.not.equal(true);
+                                done();
+                            });
+                    }
+                });
+
 
         });
 
-        it('tests that volunteer cannot change username', function(done) {
+        it('tests that volunteer cannot change email', function(done) {
+            var user = {
+                "email" : "test1.gmail.com",
+            }
+            
+            request(url)
+                .get('/users/id')
+                .send(user)
+                .end(function(err, res) {
+                    if (res.body.success == true) {
+                        user.email = "change@gmail.com";
+                        request(url)
+                            .put('/users/' + res.body.id)
+                            .send(user)
+                            .end(function(err2, res2) {
+                                console.log(res2.body.message);
+                                res2.body.success.should.not.equal(true);
+                                done();
+                            });
+                    }
+                });
 
 
         });

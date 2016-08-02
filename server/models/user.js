@@ -7,7 +7,7 @@ var UserSchema = new Schema({
     password : {type : String, select : false},
     first_name : {type : String, required : true},
     last_name : {type : String, required : true},
-    email : { type  : String, required : true, unique: true}, // TODO: figure out why this does not work
+    email : { type  : String, required : true},
     primary_institution : { type : String},
     secondary_institution : { type : String},
     skill_1 : { type : String},
@@ -19,6 +19,8 @@ var UserSchema = new Schema({
     gender: {type: String, enum: ['Male', 'Female']},
     dob: {type: Date}
 }); 
+
+UserSchema.index({email: 1}, {unique: true}); // TODO: figure out why this doesn't work
 
 UserSchema.methods.comparePassword = function(password){ 
     var user = this;

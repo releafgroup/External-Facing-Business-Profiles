@@ -18,16 +18,17 @@ router.route('/')
     console.log(user);
     user.save(function(err, user){
         if(err){
-            // TODO: figure out how we want to structure error messages and success
-           //console.log(err);
-           // if(err.code == 11000){
-           //     return res.json({ success : false, message : 'A user with that id already exists'}); 
-           // }
-           console.log("Siushsuhsiushuisiuhs");
-            return res.send(err); 
+            // Check if email already exists
+            if (err.code == 11000) {
+                err.message = "A user with that email already exists";
+            } else
+            // Check if required information is missing
+            if (err.name == 'ValidationError') {
+                err.message = "Required information missing"; // May not be completely true
+            }
+            return res.json({success: false, message: err.message});
         }   
-            console.log("success");
-            return res.json({ message  :'User created'}); 
+            return res.json({id: user.id, success  : true}); // Returns user id
     }); 
 
 });
@@ -36,11 +37,22 @@ router.route('/')
 
 router.get('/', function( req, res){
     User.find(function(err, users){
-        if(err) res.send(err); 
+        if(err) return res.json({success: false, message: err.message}); 
         res.json(users); 
     }); 
 
 })
+
+// Use to get id for an email
+router.get('/id', function(req, res) {
+    User.findOne({
+        'email':req.body.email
+    }, function(err, user) {
+        if(!user) return res.json({ success : false , message : 'User not found'});
+        if(err) return res.json({success: false, message: err.message});
+        res.json({success: true, id: user.id});
+    });
+});
 
 
 router.route('/:id')
@@ -50,42 +62,42 @@ router.route('/:id')
     User.findOne({
          '_id':req.params.id
     }, function(err, user){
-        // TODO: figure out error handling
-        if(err) return res.send(err); 
         if(!user) return res.json({ success : false , message : 'User not found'}); 
-        else {
-            res.send(user);   
-        }          
+        if(err) return res.json({success: false, message: err.message});
+        res.json(user);   
     }); 
 
 })
 .put(function(req,res){
- if(req.decoded.id != req.params.id) return res.status(400).send({ success : false, message : "you are not authorised to change this user"}); 
+    //if(req.decoded.id != req.params.id) return res.status(400).send({ success : false, message : "you are not authorised to change this user"}); 
     User.findOne({
         '_id':req.params.id
     }, function(err, user){
-
-        if(err) return res.send(err); 
+        console.log(req.params.id);
         if(!user) return res.json({ success : false , message : 'User not found'});
+        if(err) return res.json({success: false, message: err.message});
+        console.log("PUT");
         for( a in req.body){
-            if(a!= "id"){
+            if(a!= "id" && a != 'email'){
                 user[a]  = req.body[a];   
                 if(a == "password"){
                     user.password = bcrypt.hashSync(req.body.password, 10);                 
                 }
-            }
-            else{
-                return res.json({ success: false, message : "You cannot modify the id"});
+            } else if (a == 'email') {
+                if (req.body[a] != user[a]) return res.json({ success: false, message : "You cannot modify the email"});
+            } else {
+                return res.json({ success: false, message : "You cannot modify the id"}); // TODO: check
             }
         }
+        console.log("ddddd");
         user.save(function(err){                                                                           
             if(err){                                                                                       
                 if(err.code == 11000){                                                                     
-                    return res.json({ success : false, message : 'A user with that id already exists'}); 
+                    return res.json({ success : false, message : 'A user with that email already exists'}); 
                 }                                                                                          
-                return res.send(err);                                                                      
+                return res.json({success: false, message: err.message});                                                                      
             }                                                                                              
-            return res.json({ message  :'User Modified'});                                                  
+            return res.json({success: true});                                                  
         });         
     }); 
 })
@@ -95,8 +107,8 @@ router.route('/:id')
     User.remove({
         '_id':req.params.id
     }, function(err, delRes){
-        if(err) return res.send(err); 
-        res.json({ success : true, message : 'Successfuly Deleted'});
+        if(err) return res.json({success: false, message: err.message}); 
+        res.json({ success : true});
     }); 
 }); 
 
