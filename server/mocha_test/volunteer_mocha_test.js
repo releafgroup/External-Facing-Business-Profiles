@@ -103,7 +103,7 @@ describe('Routing', function() {
 
     describe('Volunteer Update', function() {
         it('tests adding password and all other extra information after initial account creation', function(done) {
-
+            // Have to figure out ID first from email
             var user = {
                 "first_name" : "test_first_change",
                 "last_name" : "test_last_change",
@@ -114,8 +114,8 @@ describe('Routing', function() {
                 "skill_1": "s",
                 "skill_2": "f",
                 "skill_3": "o",
-                "skill_1_rating": 1,
-                "skill_2_rating": 2,
+                "skill_1_rating": 2,
+                "skill_2_rating": 4,
                 "skill_3_rating": 3,
                 "gender": "Female",
                 "dob": "2016-06-07"
@@ -130,7 +130,6 @@ describe('Routing', function() {
                             .put('/users/' + res.body.id)
                             .send(user)
                             .end(function(err2, res2) {
-                                console.log(res2.body.message);
                                 res2.body.success.should.equal(true);
                                 done();
                             });
@@ -140,6 +139,7 @@ describe('Routing', function() {
         });
 
         it('tests that volunteer cannot change id', function(done) {
+            // Have to figure out ID first from email
              var user = {
                 "email" : "test1.gmail.com",
                 "id": "eeeeeeeeee"
@@ -154,7 +154,6 @@ describe('Routing', function() {
                             .put('/users/' + res.body.id)
                             .send(user)
                             .end(function(err2, res2) {
-                                console.log(res2.body.message);
                                 res2.body.success.should.not.equal(true);
                                 done();
                             });
@@ -165,6 +164,7 @@ describe('Routing', function() {
         });
 
         it('tests that volunteer cannot change email', function(done) {
+            // Have to figure out ID first from email
             var user = {
                 "email" : "test1.gmail.com",
             }
@@ -179,7 +179,6 @@ describe('Routing', function() {
                             .put('/users/' + res.body.id)
                             .send(user)
                             .end(function(err2, res2) {
-                                console.log(res2.body.message);
                                 res2.body.success.should.not.equal(true);
                                 done();
                             });

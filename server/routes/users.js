@@ -3,6 +3,33 @@ var router = express.Router();
 var User = require('../models/user.js'); 
 var authFunc = require('../utils/authfunc.js'); 
 var bcrypt = require('bcrypt'); 
+
+
+// Function for user error handling in saving user info
+function handleUserSaveError(err) {
+    // Check if email already exists
+    if (err.code == 11000) {
+        err.message = "A user with that email already exists";
+    } else {
+        // If user validation, gets one of the errors to return
+        if (err.message == "User validation failed") {
+            var one_error;
+            console.log(err.errors);
+            for (first in err.errors) { // Get one of the errors
+                one_error = err.errors[first];
+                break;
+            }
+            // If it is one of the required ones i.e. Path 'XXXX' is required we change it to just XXXX is required
+            if (/ is required/.test(one_error.message)) {
+                one_error.message = one_error.message.replace(/^Path /gi, '');
+            }
+            err.message = one_error.message;
+        }
+    }
+    return err.message;
+}
+    
+
 router.route('/')
 .post(function(req, res){
     var user = new User();
@@ -18,15 +45,7 @@ router.route('/')
     console.log(user);
     user.save(function(err, user){
         if(err){
-            // Check if email already exists
-            if (err.code == 11000) {
-                err.message = "A user with that email already exists";
-            } else
-            // Check if required information is missing
-            if (err.name == 'ValidationError') {
-                err.message = "Required information missing"; // May not be completely true
-            }
-            return res.json({success: false, message: err.message});
+            return res.json({success: false, message: handleUserSaveError(err)});
         }   
             return res.json({id: user.id, success  : true}); // Returns user id
     }); 
@@ -92,10 +111,7 @@ router.route('/:id')
         console.log("ddddd");
         user.save(function(err){                                                                           
             if(err){                                                                                       
-                if(err.code == 11000){                                                                     
-                    return res.json({ success : false, message : 'A user with that email already exists'}); 
-                }                                                                                          
-                return res.json({success: false, message: err.message});                                                                      
+               return res.json({success: false, message: handleUserSaveError(err)});                                                                   
             }                                                                                              
             return res.json({success: true});                                                  
         });         

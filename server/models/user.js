@@ -2,6 +2,15 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     bcrypt = require('bcrypt'); 
 
+// Create custom validators
+rating_1_validation = {validator: function(r) { return r >= 1 && r <= 5; }, message: "Rating 1 is not between 1 and 5"};
+rating_2_validation = {validator: function(r) { return r >= 1 && r <= 5; }, message: "Rating 2 is not between 1 and 5"};
+rating_3_validation = {validator: function(r) { return r >= 1 && r <= 5; }, message: "Rating 3 is not between 1 and 5"};
+
+gender_validation = {validator: function(r) { return r == "Male" || r == "Female"; }, message: "Gender must be Male or Female" }; // TODO: make all lowercase or uppercase
+
+
+// Create Volunteer Schema
 // _id serves as username
 var UserSchema = new Schema({
     password : {type : String, select : false},
@@ -13,10 +22,10 @@ var UserSchema = new Schema({
     skill_1 : { type : String},
     skill_2 : { type : String},
     skill_3 : { type : String},
-    skill_1_rating : { type : Number, min: 1, max: 5},
-    skill_2_rating : { type : Number, min: 1, max: 5},
-    skill_3_rating : { type : Number, min: 1, max: 5},
-    gender: {type: String, enum: ['Male', 'Female']},
+    skill_1_rating : { type : Number, validate: rating_1_validation},
+    skill_2_rating : { type : Number, validate: rating_2_validation},
+    skill_3_rating : { type : Number, validate: rating_3_validation},
+    gender: {type: String, validate: gender_validation},
     dob: {type: Date}
 }); 
 
