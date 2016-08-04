@@ -9,6 +9,8 @@ rating_3_validation = {validator: function(r) { return r >= 1 && r <= 5; }, mess
 
 gender_validation = {validator: function(r) { return r == "Male" || r == "Female"; }, message: "Gender must be Male or Female" }; // TODO: make all lowercase or uppercase
 
+var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex outside for better performance
+email_validation = {validator: function(email) { return re.test(email); }, message: "Invalid email format"};
 
 // Create Volunteer Schema
 // _id serves as username
@@ -16,7 +18,7 @@ var UserSchema = new Schema({
     password : {type : String, select : false},
     first_name : {type : String, required : true},
     last_name : {type : String, required : true},
-    email : { type  : String, required : true},
+    email : { type  : String, required : true, validate: email_validation},
     primary_institution : { type : String},
     secondary_institution : { type : String},
     skill_1 : { type : String},

@@ -34,7 +34,7 @@ describe('Routing', function() {
                 "first_name" : "test_first",
                 "last_name" : "test_last",
                 "password" : "aydude",
-                "email" : "test1.gmail.com"
+                "email" : "test1@gmail.com"
             }
 
             request(url)
@@ -52,7 +52,7 @@ describe('Routing', function() {
             var user = {
                 "first_name" : "test_first",
                 "last_name" : "test_last",
-                "email" : "test_2.gmail.com"
+                "email" : "test_2@gmail.com"
             }
 
             request(url)
@@ -61,6 +61,26 @@ describe('Routing', function() {
                 .expect(200)
                 .end(function(err, res) {
                     res.body.success.should.equal(true);
+                    done();
+                });
+
+
+        });
+
+        it('tests that we check if an email has valid format', function(done) {
+            var user = {
+                "first_name" : "test_first",
+                "last_name" : "test_last",
+                "email" : "test_2.gmail.com"
+            }
+
+            request(url)
+                .post('/users')
+                .send(user)
+                .expect(200)
+                .end(function(err, res) {
+                    console.log(res.body.message);
+                    res.body.success.should.not.equal(true);
                     done();
                 });
 
@@ -83,7 +103,7 @@ describe('Routing', function() {
         
         it('tests that duplicate emails cannot be created', function(done) {
             var user = {
-                "email" : "test_2.gmail.com",
+                "email" : "test_2@gmail.com",
                 "first_name" : "test_firsts",
                 "last_name" : "test_lasts",
             }
@@ -108,7 +128,7 @@ describe('Routing', function() {
                 "first_name" : "test_first_change",
                 "last_name" : "test_last_change",
                 "password" : "aydudedddd",
-                "email" : "test1.gmail.com",
+                "email" : "test1@gmail.com",
                 "primary_institution": "stanny",
                 "secondary_institution": "odododdo",
                 "skill_1": "s",
@@ -141,7 +161,7 @@ describe('Routing', function() {
         it('tests that volunteer cannot change id', function(done) {
             // Have to figure out ID first from email
              var user = {
-                "email" : "test1.gmail.com",
+                "email" : "test1@gmail.com",
                 "id": "eeeeeeeeee"
             }
             
@@ -166,7 +186,7 @@ describe('Routing', function() {
         it('tests that volunteer cannot change email', function(done) {
             // Have to figure out ID first from email
             var user = {
-                "email" : "test1.gmail.com",
+                "email" : "test1@gmail.com",
             }
             
             request(url)

@@ -14,7 +14,6 @@ function handleUserSaveError(err) {
         // If user validation, gets one of the errors to return
         if (err.message == "User validation failed") {
             var one_error;
-            console.log(err.errors);
             for (first in err.errors) { // Get one of the errors
                 one_error = err.errors[first];
                 break;
@@ -35,14 +34,12 @@ router.route('/')
     var user = new User();
     // Populate Information
     for( a in req.body){
-        console.log(a);
         if(a!= "password"){
             user[a]  = req.body[a];   
         } else {
             user.password = bcrypt.hashSync(req.body.password, 10);                 
         }
     }
-    console.log(user);
     user.save(function(err, user){
         if(err){
             return res.json({success: false, message: handleUserSaveError(err)});
@@ -92,10 +89,8 @@ router.route('/:id')
     User.findOne({
         '_id':req.params.id
     }, function(err, user){
-        console.log(req.params.id);
         if(!user) return res.json({ success : false , message : 'User not found'});
         if(err) return res.json({success: false, message: err.message});
-        console.log("PUT");
         for( a in req.body){
             if(a!= "id" && a != 'email'){
                 user[a]  = req.body[a];   
@@ -108,7 +103,6 @@ router.route('/:id')
                 return res.json({ success: false, message : "You cannot modify the id"}); // TODO: check
             }
         }
-        console.log("ddddd");
         user.save(function(err){                                                                           
             if(err){                                                                                       
                return res.json({success: false, message: handleUserSaveError(err)});                                                                   
