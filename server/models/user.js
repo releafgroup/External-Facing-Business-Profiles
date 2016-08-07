@@ -16,12 +16,19 @@ var val_messages = {
     'skill_2': {'mocha_db': "Skill 2 must be different than skills 1 and 3", 'development': generic_error, 'production': generic_error},
     'skill_3': {'mocha_db': "Skill 3 must be different than skills 1 and 2", 'development': generic_error, 'production': generic_error},
     'dob': {'mocha_db': "Date must be in the past", 'development': generic_error, 'production': generic_error},
+    'primary_institution': {'mocha_db': "Primary institution must be different than secondary", 'development': generic_error, 'production': generic_error},
+    'secondary_institution': {'mocha_db': "Secondary institution must be different than primary", 'development': generic_error, 'production': generic_error},
+    
 }
 
 // Create custom validators
 var current_date = new Date();
 current_date.setDate(current_date.getDate() - 1);
 dob_validation = {validator: function(r) { return r < current_date; }, message: val_messages['dob'][app.get('env')]};
+
+primary_institution_validation = {validator: function(r) { return r != this.secondary_institution; }, message: val_messages['primary_institution'][app.get('env')]};
+secondary_institution_validation = {validator: function(r) { return r != this.primary_institution; }, message: val_messages['secondary_institution'][app.get('env')]};
+
 
 
 skill_1_validation = {validator: function(r) { return r != this.skill_2 && r != this.skill_3; }, message: val_messages['skill_1'][app.get('env')]};
@@ -44,8 +51,8 @@ var UserSchema = new Schema({
     first_name : {type : String, required : true},
     last_name : {type : String, required : true},
     email : { type  : String, required : true, validate: email_validation},
-    primary_institution : { type : String, required: true},
-    secondary_institution : { type : String, required: true},
+    primary_institution : { type : String, required: true, validate: primary_institution_validation},
+    secondary_institution : { type : String, required: true, validate: secondary_institution_validation},
     skill_1 : { type : String, validate: skill_1_validation, required: true},
     skill_2 : { type : String, validate: skill_2_validation, required: true},
     skill_3 : { type : String, validate: skill_3_validation, required: true},
