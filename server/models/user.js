@@ -29,6 +29,8 @@ var UserSchema = new Schema({
     skill_3_rating : { type : Number, validate: rating_3_validation},
     gender: {type: String, validate: gender_validation},
     dob: {type: Date}
+}, {
+    timestamps: true
 }); 
 
 UserSchema.index({email: 1}, {unique: true}); // TODO: figure out why this doesn't work

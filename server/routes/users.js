@@ -49,16 +49,6 @@ router.route('/')
 
 });
 
-//router.use(authFunc); 
-
-router.get('/', function( req, res){
-    User.find(function(err, users){
-        if(err) return res.json({success: false, message: err.message}); 
-        res.json(users); 
-    }); 
-
-})
-
 // Use to get id for an email
 router.get('/id', function(req, res) {
     User.findOne({
