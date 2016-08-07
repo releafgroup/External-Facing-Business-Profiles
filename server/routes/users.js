@@ -37,6 +37,9 @@ router.route('/')
         if(a!= "password"){
             user[a]  = req.body[a];   
         } else {
+            if (req.body.password.length < 8 || req.body.password.length > 64) {
+                return res.json({success: false, message: "Password not valid"}); // TODO: move to user.js
+            }
             user.password = bcrypt.hashSync(req.body.password, 10);                 
         }
     }
@@ -95,6 +98,9 @@ router.route('/:id')
             if(a!= "id" && a != 'email'){
                 user[a]  = req.body[a];   
                 if(a == "password"){
+                    if ((req.body.password.length < 8 || req.body.password.length > 64)) {
+                        return res.json({success: false, message: "Password not valid"}); // TODO: move to user.js
+                    }
                     user.password = bcrypt.hashSync(req.body.password, 10);                 
                 }
             } else if (a == 'email') {
