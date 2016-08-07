@@ -29,12 +29,22 @@ describe('Routing', function() {
     });
 
     describe('Volunteer Sign Up', function() {
-        it('tests basic creation of Volunteer (email, first_name, last_name, pwd)', function(done) {
+        it('tests basic creation of Volunteer', function(done) {
             var user = {
                 "first_name" : "test_first",
                 "last_name" : "test_last",
-                "password" : "aydude",
-                "email" : "test1@gmail.com"
+                "password" : "eightdigits",
+                "email" : "test1@gmail.com",
+                "primary_institution": "stanny",
+                "secondary_institution": "odododdo",
+                "skill_1": "s",
+                "skill_2": "f",
+                "skill_3": "o",
+                "skill_1_rating": 2,
+                "skill_2_rating": 4,
+                "skill_3_rating": 3,
+                "gender": "Female",
+                "dob": "2016-06-07"
             }
 
             request(url)
@@ -48,30 +58,22 @@ describe('Routing', function() {
 
         });
         
-        it('tests basic creation of Volunteer w/o password', function(done) {
-            var user = {
-                "first_name" : "test_first",
-                "last_name" : "test_last",
-                "email" : "test_2@gmail.com"
-            }
-
-            request(url)
-                .post('/users')
-                .send(user)
-                .expect(200)
-                .end(function(err, res) {
-                    res.body.success.should.equal(true);
-                    done();
-                });
-
-
-        });
-
         it('tests that we check if an email has valid format', function(done) {
             var user = {
                 "first_name" : "test_first",
                 "last_name" : "test_last",
-                "email" : "test_2.gmail.com"
+                "email" : "test_2.gmail.com",
+                "primary_institution": "stanny",
+                "secondary_institution": "odododdo",
+                "password": "noboybdddddd",
+                "skill_1": "s",
+                "skill_2": "f",
+                "skill_3": "o",
+                "skill_1_rating": 2,
+                "skill_2_rating": 4,
+                "skill_3_rating": 3,
+                "gender": "Female",
+                "dob": "2016-06-07"
             }
 
             request(url)
@@ -79,7 +81,6 @@ describe('Routing', function() {
                 .send(user)
                 .expect(200)
                 .end(function(err, res) {
-                    console.log(res.body.message);
                     res.body.success.should.not.equal(true);
                     done();
                 });
@@ -103,9 +104,20 @@ describe('Routing', function() {
         
         it('tests that duplicate emails cannot be created', function(done) {
             var user = {
-                "email" : "test_2@gmail.com",
-                "first_name" : "test_firsts",
-                "last_name" : "test_lasts",
+                "first_name" : "test_first",
+                "last_name" : "test_last",
+                "email" : "test1@gmail.com",
+                "primary_institution": "stanny",
+                "password": "nahdudedd",
+                "secondary_institution": "odododdo",
+                "skill_1": "s",
+                "skill_2": "f",
+                "skill_3": "o",
+                "skill_1_rating": 2,
+                "skill_2_rating": 4,
+                "skill_3_rating": 3,
+                "gender": "Female",
+                "dob": "2016-06-07"
             }
 
             request(url)
@@ -122,23 +134,23 @@ describe('Routing', function() {
 
 
     describe('Volunteer Update', function() {
-        it('tests adding password and all other extra information after initial account creation', function(done) {
+        it('tests updating password and all other extra information after initial account creation', function(done) {
             // Have to figure out ID first from email
             var user = {
-                "first_name" : "test_first_change",
-                "last_name" : "test_last_change",
-                "password" : "aydudedddd",
+                "first_name" : "ififififif",
+                "last_name" : "testee",
+                "password" : "eightdigitsboy",
                 "email" : "test1@gmail.com",
-                "primary_institution": "stanny",
-                "secondary_institution": "odododdo",
-                "skill_1": "s",
-                "skill_2": "f",
-                "skill_3": "o",
+                "primary_institution": "nahhhhh",
+                "secondary_institution": "okayyyyyyyy",
+                "skill_1": "c",
+                "skill_2": "l",
+                "skill_3": "t",
                 "skill_1_rating": 2,
-                "skill_2_rating": 4,
-                "skill_3_rating": 3,
-                "gender": "Female",
-                "dob": "2016-06-07"
+                "skill_2_rating": 2,
+                "skill_3_rating": 4,
+                "gender": "Male",
+                "dob": "2016-08-03"
             }
             
             request(url)
