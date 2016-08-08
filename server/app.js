@@ -15,6 +15,7 @@ var authfunc = require('./utils/authfunc.js');
 // import routes
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var companies = require('./routes/companies');
 
 
 
@@ -31,7 +32,8 @@ if (app.get('env') == 'mocha_db') { // TODO: abstract away better/clean up code 
 }
 
 app.use('/', routes);                                                                                  
-app.use('/users', users);                                                                              
+app.use('/users', users); 
+app.use('/companies', companies);                                                                              
 app.use(authfunc);
 
 
