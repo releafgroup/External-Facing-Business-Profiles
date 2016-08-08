@@ -80,7 +80,9 @@ var CompanySchema = new Schema({
     pressing_problems : {type : String, required: true, validate: pressing_problems_validation},
 
     best_medium : {type : String, required: true, validate: best_medium_validation},
-    internet_access : {type : String, required: true, validate: internet_access_validation}
+    internet_access : {type : String, required: true, validate: internet_access_validation},
+
+    projects : [{ type: mongoose.Schema.Types.ObjectId, ref: 'Porject'}]
 
 }, {
     timestamps: true

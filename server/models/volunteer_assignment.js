@@ -4,17 +4,17 @@ var mongoose = require('mongoose'),
 
 
 
-// Schema to handle assigning voluneers to companies
-// Stores references to ids of the volunteer and company
+// Schema to handle assigning voluneers to project
+// Stores references to ids of the volunteer and project
 var VolunteerAssignmentSchema = new Schema({
     volunteer : {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
-    company : {type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true}
+    project : {type: mongoose.Schema.Types.ObjectId, ref: 'Project', required: true}
 }, {
     timestamps: true
 });
 
 
-VolunteerAssignmentSchema.index({ volunteer: 1, company : 1 }, { unique: true }); // Make combo of volunteer,company unique TODO: make sure it works
+VolunteerAssignmentSchema.index({ volunteer: 1, project : 1 }, { unique: true }); // Make combo of volunteer,project unique TODO: make sure it works
 
 module.exports = mongoose.model('VolunteerAssignment', VolunteerAssignmentSchema);
 

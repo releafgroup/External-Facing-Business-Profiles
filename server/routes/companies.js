@@ -82,7 +82,7 @@ router.route('/:id')
         if(!company) return res.json({ success : false , message : 'Company not found'});
         if(err) return res.json({success: false, message: err.message});
         for( a in req.body){
-            if(a!= "id" && a != "business_name"){
+            if(a!= "id" && a != "business_name" && a != "_id"){
                 company[a]  = req.body[a];   
                 if(a == "password"){
                     company.password = bcrypt.hashSync(req.body.password, 10);                 

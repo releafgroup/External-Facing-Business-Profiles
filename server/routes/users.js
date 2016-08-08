@@ -85,7 +85,7 @@ router.route('/:id')
         if(!user) return res.json({ success : false , message : 'User not found'});
         if(err) return res.json({success: false, message: err.message});
         for( a in req.body){
-            if(a!= "id" && a != 'email'){
+            if(a!= "id" && a != 'email' && a != "_id"){
                 user[a]  = req.body[a];   
                 if(a == "password"){
                     if ((req.body.password.length < 8 || req.body.password.length > 64)) {
@@ -113,7 +113,10 @@ router.route('/:id')
     User.remove({
         '_id':req.params.id
     }, function(err, delRes){
-        if(err) return res.json({success: false, message: err.message}); 
+        if(err) return res.json({success: false, message: err.message});
+        // TODO: delete from Volunteer Assignment Schema and add unit test in mocha
+        // TODO: de-increment # staffed for associated projects
+
         res.json({ success : true});
     }); 
 }); 

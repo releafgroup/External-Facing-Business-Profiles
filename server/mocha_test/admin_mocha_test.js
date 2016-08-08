@@ -79,6 +79,25 @@ var company2 = {
     "internet_access" : "Work Hours"
 }
 
+var project1 = {
+    "project_description" : "test_first",
+    "core_skill_1" : "App Development",
+    "core_skill_2" : "Growth Strategy",
+    "core_skill_3" : "Business Plan",
+    "industry_focus": "Storage",
+    "completion_time": 10,
+    "number_staffed" : 5
+}
+
+var project2 = {
+    "project_description" : "test_second",
+    "core_skill_1" : "App Development",
+    "core_skill_2" : "Growth Strategy",
+    "core_skill_3" : "Business Plan",
+    "industry_focus": "Storage",
+    "completion_time": 10,
+    "number_staffed" : 5
+}
 
 
 
@@ -92,14 +111,20 @@ describe('Routing', function() {
         });
         done();
     });
+    var user1_id = -1;
+    var user2_id = -1;
+    var comp1_id = -1;
+    var proj1_id = -1;
+    var proj2_id = -1;
 
-    describe('Setup users and companies for admin test', function() {
+    describe('Setup users, projects companies for admin test', function() {
         it('creates user 1', function(done) {
             request(url)
                 .post('/users')
                 .send(user1)
                 .expect(200) //Status code
                 .end(function(err, res) {
+                    user1_id = res.body.id;
                     res.body.success.should.equal(true);
                     done();
                 });
@@ -111,6 +136,7 @@ describe('Routing', function() {
                 .send(user2)
                 .expect(200) //Status code
                 .end(function(err, res) {
+                    user2_id = res.body.id;
                     res.body.success.should.equal(true);
                     done();
                 });
@@ -122,18 +148,35 @@ describe('Routing', function() {
                 .send(company1)
                 .expect(200) //Status code
                 .end(function(err, res) {
+                    comp1_id = res.body.id;
                     res.body.success.should.equal(true);
                     done();
                 });
         });
 
 
-        it('creates company 2', function(done) {
+        it('creates project 1', function(done) {
+            project1['_company'] = comp1_id;            
             request(url)
-                .post('/companies')
-                .send(company2)
+                .post('/projects')
+                .send(project1)
                 .expect(200) //Status code
                 .end(function(err, res) {
+                    proj1_id = res.body.id;
+                    res.body.success.should.equal(true);
+                    done();
+                });
+        });
+
+
+        it('creates project 2', function(done) {
+            project2['_company'] = comp1_id;
+            request(url)
+                .post('/projects')
+                .send(project2)
+                .expect(200) //Status code
+                .end(function(err, res) {
+                    proj2_id = res.body.id;
                     res.body.success.should.equal(true);
                     done();
                 });
@@ -141,12 +184,13 @@ describe('Routing', function() {
 
     });
 
-    describe('User, Company Retrieval', function() {
+    describe('User, Company, Project Retrieval', function() {
         it('tests retrieval of all users', function(done) {
             request(url)
                 .get('/admin/volunteers')
                 .expect(200) //Status code
                 .end(function(err, res) {
+                    console.log(res.body);
                     if (!err) done();
                 });  
         
@@ -157,141 +201,50 @@ describe('Routing', function() {
                 .get('/admin/companies')
                 .expect(200) //Status code
                 .end(function(err, res) {
+                    console.log(res.body);
                     if (!err) done();
                 });  
+        
+        });
+
+
+        it('tests retrieval of all projects', function(done) {
+            request(url)
+                .get('/admin/projects')
+                .expect(200) //Status code
+                .end(function(err, res) {
+                    console.log(res.body);
+                    if (!err) done();
+                });
         
         });
 
     });
 
     describe('User-Company Assignment', function() {
+        
+
+        it('create user-project assignment', function(done) {
+            var assign = {"volunteer" : user1_id, "project" : proj1_id};
+            request(url)
+                .post('/admin/assign')
+                .send(assign)
+                .end(function(err, res) {
+                    res.body.success.should.equal(true);
+                    done();
+                });
+        });
+
         it('get all user-company assignments', function(done) {
             request(url)
                 .get('/admin/assign')
                 .expect(200) //Status code
                 .end(function(err, res) {
+                    console.log(res.body);
                     if (!err) done();
                 }); 
 
         });
-
-        it('create user-company assignment', function(done) {
-
-            request(url)
-                .get('/companies/id')
-                .send(company1)
-                .end(function(comp_err, comp_res) {
-                    if (comp_res.body.success == true) {
-                        request(url)
-                            .get('/users/id')
-                            .send(user1)
-                            .end(function(user_err, user_res) {
-                                if (user_res.body.success == true) {
-                                    var assign = {"volunteer" : user_res.body.id, "company" : comp_res.body.id};
-                                    request(url)
-                                        .post('/admin/assign')
-                                        .send(assign)
-                                        .end(function(err, res) {
-                                            res.body.success.should.equal(true);
-                                            done();
-                                        });
-                                }
-                            });
-                    }
-                });
-        });
-
-
-        it('create another user-company assignment, use same company, different users', function(done) {
-            request(url)
-                .get('/companies/id')
-                .send(company1)
-                .end(function(comp_err, comp_res) {
-                    if (comp_res.body.success == true) {
-                        request(url)
-                            .get('/users/id')
-                            .send(user2)
-                            .end(function(user_err, user_res) {
-                                if (user_res.body.success == true) {
-                                    var assign = {"volunteer" : user_res.body.id, "company" : comp_res.body.id};
-                                    request(url)
-                                        .post('/admin/assign')
-                                        .send(assign)
-                                        .end(function(err, res) {
-                                            res.body.success.should.equal(true);
-                                            done();
-                                        });
-                                }
-                            });
-                    }
-                });
-
-        });
-
-
-        it('create another user-company assignment', function(done) {
-            request(url)
-                .get('/companies/id')
-                .send(company2)
-                .end(function(comp_err, comp_res) {
-                    if (comp_res.body.success == true) {
-                        request(url)
-                            .get('/users/id')
-                            .send(user2)
-                            .end(function(user_err, user_res) {
-                                if (user_res.body.success == true) {
-                                    var assign = {"volunteer" : user_res.body.id, "company" : comp_res.body.id};
-                                    request(url)
-                                        .post('/admin/assign')
-                                        .send(assign)
-                                        .end(function(err, res) {
-                                            res.body.success.should.equal(true);
-                                            done();
-                                        });
-                                }
-                            });
-                    }
-                });
-
-        });
-
-
-        it('deletes a user-company assignment', function(done) {
-            request(url)
-                .get('/companies/id')
-                .send(company2)
-                .end(function(comp_err, comp_res) {
-                    if (comp_res.body.success == true) {
-                        request(url)
-                            .get('/users/id')
-                            .send(user2)
-                            .end(function(user_err, user_res) {
-                                if (user_res.body.success == true) {
-                                    var assign = {"volunteer" : user_res.body.id, "company" : comp_res.body.id};
-                                    request(url)
-                                        .delete('/admin/assign')
-                                        .send(assign)
-                                        .end(function(err, res) {
-                                            res.body.success.should.equal(true);
-                                            done();
-                                        });
-                                }
-                            });
-                    }
-                });
-
-        });
-
-        it('gets user-company assignment lists', function(done) {
-            request(url)
-                .get('/admin/assign')
-                .end(function(err, res) {
-                    res.body.length.should.equal(2);
-                    if (!err) done();
-                });
-
-        });
-
 
     });
 
