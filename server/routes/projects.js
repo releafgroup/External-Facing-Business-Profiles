@@ -31,6 +31,8 @@ router.route('/')
     for( a in req.body){
         project[a]  = req.body[a];
     }
+
+    if (project['is_verified'] == true) return res.json({success: false, message: "Cannot set verified to true"});
     
     // First make sure company is real and can be found
     Company.findOne({
@@ -76,14 +78,17 @@ router.route('/:id')
         if(err) return res.json({success: false, message: err.message});
         console.log(req.body);
         for( a in req.body){
-            if(a != "id" && a != "_company" && a != "_id"){
+            if(a != "id" && a != "_company" && a != "_id" && a != "is_verified"){
                 project[a]  = req.body[a];
             } else if (a == "_company") {
-                if (project[a] != req.body[a]) return res.json({ success: false, message : "You cannot modify the company"}); 
+                if (project[a] != req.body[a]) return res.json({ success: false, message : "You cannot modify the company"});
+            } else if (a == "is_verified") {
+                if (project[a] != req.body[a]) return res.json({ success: false, message : "You cannot modify is_verified"});
             } else {
-                return res.json({ success: false, message : "You cannot modify the id"});
+                if (project[a] != req.body[a]) return res.json({ success: false, message : "You cannot modify the id"});
             }
         }
+        
         project.save(function(err){
             if(err){                                                                                       
                return res.json({success: false, message: handleProjectSaveError(err)});                                                                   

@@ -5,7 +5,6 @@ var mongoose = require('mongoose');
 var config = require('../config.js');
 
 
-
 describe('Routing', function() {
     var url = 'http://localhost:3000';
     before(function(done) {

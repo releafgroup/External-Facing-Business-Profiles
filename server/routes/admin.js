@@ -1,7 +1,6 @@
 // Admin Routes
 // Does not have POST, PUT Routes -> Leaves this to the db itself
 // TODO: Eventually allow admin to DELETE and UPDATE users
-// TODO: eventually combine get requests from the other routers.
 
 var express = require('express');
 var router = express.Router();
@@ -26,6 +25,19 @@ router.route('/volunteers')
 
 });
 
+// Get single volunteer
+router.route('/volunteers/:id')
+.get(function(req, res){
+    User.findOne({
+         '_id':req.params.id
+    }, function(err, user){
+        if(!user) return res.json({ success : false , message : 'User not found'}); 
+        if(err) return res.json({success: false, message: err.message});
+        res.json(user);   
+    }); 
+
+})
+
 // Get all businesses
 // TODO: implement paging later
 router.route('/companies')
@@ -37,6 +49,19 @@ router.route('/companies')
     });
 });
 
+// Get single company
+router.route('/companies/:id')
+.get(function(req, res){
+    Company.findOne({
+         '_id':req.params.id
+    }, function(err, company){
+        if(!company) return res.json({ success : false , message : 'Company not found'}); 
+        if(err) return res.json({success: false, message: err.message});
+        res.json(company);   
+    }); 
+
+})
+
 // Get all projects
 // TODO: implement paging later
 router.route('/projects')
@@ -47,6 +72,41 @@ router.route('/projects')
         res.json(projects); 
     });
 });
+
+// Get single project
+router.route('/projects/:id')
+.get(function(req, res){ // TODO: add in extracting info from company
+    Project.findOne({
+         '_id':req.params.id
+    }, function(err, project){
+        if(!project) return res.json({ success : false , message : 'Project not found'}); 
+        if(err) return res.json({success: false, message: err.message});
+        res.json(project);   
+    }); 
+
+})
+///////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////// PROJECT VERIFICATION ///////////////////
+
+router.route('/projects/verify/:id') // Only looks at is_verified parameter
+.put(function(req, res) {
+     Project.findOne({
+        '_id':req.params.id
+    }, function(err, project){
+        if(!project) return res.json({ success : false , message : 'Project not found'});
+        if(err) return res.json({success: false, message: err.message});
+        if (typeof req.body['is_verified'] == 'undefined') return res.json({success: false, message: "Needed body parameter not passed in"});
+        project['is_verified'] = req.body['is_verified'] ;
+        project.save(function(err){
+            if(err){                                                                                       
+               return res.json({success: false, message: err.message});                                                                   
+            }                                                                                              
+            return res.json({success: true});                                                  
+        });
+    });
+});
+
 
 //////////////////////////////////////////////////// ASSIGNMENTS ///////////////////
 
@@ -66,8 +126,6 @@ router.route('/assign')
 })
 .post(function(req, res) { // Assumes body contains volunteer_id as 'volunteer' and project_id as 'project' as the names that contain needed information
     
-    // TODO: update number staffed on project schema
-
     var volunteer_assignment = new VolunteerAssignment();
 
     for( a in req.body) {
@@ -89,8 +147,6 @@ router.route('/assign')
         'project' : req.body.project
     }, function(err, delRes){
         
-        // TODO: update number staffed on project schema
-
         if(err) return res.json({success: false, message: err.message}); 
         res.json({ success : true});
     });

@@ -90,7 +90,7 @@ router.route('/:id')
             } else if (a == "business_name") {
                 if (req.body[a] != company[a]) return res.json({ success: false, message : "You cannot modify the business name"});                
             } else {
-                return res.json({ success: false, message : "You cannot modify the id"});
+                if (company[a] != req.body[a]) return res.json({ success: false, message : "You cannot modify the id"});
             }
         }
         company.save(function(err){
@@ -103,6 +103,7 @@ router.route('/:id')
 })
 
 .delete(function(req, res){
+    // TODO: delete associated projects
     Company.remove({
         '_id':req.params.id
     }, function(err, delRes){

@@ -6,6 +6,9 @@ var config = require('../config.js');
 
 // Unit Tests to make sure Admin works
 // Checks if users can be retrieved, companies retrieved, and if assignments can be made
+// SUPER IMPORTANT NOTE: throughout the test cases we may modify these variables. the modifications persist across all of the test cases after any modification
+
+
 
 var user1 = {
     "first_name" : "test_first",
@@ -86,7 +89,8 @@ var project1 = {
     "core_skill_3" : "Business Plan",
     "industry_focus": "Storage",
     "completion_time": 10,
-    "number_staffed" : 5
+    "number_staffed" : 5,
+    "is_verified" : false
 }
 
 var project2 = {
@@ -96,7 +100,8 @@ var project2 = {
     "core_skill_3" : "Business Plan",
     "industry_focus": "Storage",
     "completion_time": 10,
-    "number_staffed" : 5
+    "number_staffed" : 5,
+    "is_verified" : false
 }
 
 
@@ -219,6 +224,36 @@ describe('Routing', function() {
         
         });
 
+        it('tests retrieveal of single user', function(done) {
+            request(url)
+                .get('/admin/volunteers/' + user1_id)
+                .expect(200) //Status code
+                .end(function(err, res) {
+                    console.log(res.body);
+                    if (!err) done();
+                });
+        });
+
+        it('tests retrieveal of single company', function(done) {
+            request(url)
+                .get('/admin/companies/' + comp1_id)
+                .expect(200) //Status code
+                .end(function(err, res) {
+                    console.log(res.body);
+                    if (!err) done();
+                });
+        });
+
+        it('tests retrieveal of single project', function(done) {
+            request(url)
+                .get('/admin/projects/' + proj1_id)
+                .expect(200) //Status code
+                .end(function(err, res) {
+                    console.log(res.body);
+                    if (!err) done();
+                });
+        });
+
     });
 
     describe('User-Company Assignment', function() {
@@ -245,6 +280,61 @@ describe('Routing', function() {
                 }); 
 
         });
+
+    });
+
+    describe('Update project verification', function(done) {
+        it('turn is_verified false to true for project', function(done) {
+            project1['is_verified'] = true;
+            request(url)
+                .put('/admin/projects/verify/' + proj1_id)
+                .send(project1)
+                .end(function(err, res) {
+                    res.body.success.should.equal(true);
+                    done();
+                });
+        });
+
+        it('turn is_verified true to false for project', function(done) {
+            project1['is_verified'] = false;
+            request(url)
+                .put('/admin/projects/verify/' + proj1_id)
+                .send(project1)
+                .end(function(err, res) {
+                    res.body.success.should.equal(true);
+                    done();
+                });
+
+        });
+
+        it('checks if error thrown when wrong project id given', function(done) {
+            request(url)
+                .put('/admin/projects/verify/' + "dddddddd")
+                .send(project1)
+                .end(function(err, res) {
+                    console.log(res.body.message);
+                    res.body.success.should.not.equal(true);
+                    done();
+                });
+
+
+        });
+
+
+        it('checks if error thrown when is_verified not given', function(done) {
+            delete project1['is_verified'];
+            request(url)
+                .put('/admin/projects/verify/' + proj1_id)
+                .send(project1)
+                .end(function(err, res) {
+                    console.log(res.body.message);
+                    res.body.success.should.not.equal(true);
+                    done();
+                });
+
+
+        });
+
 
     });
 

@@ -32,6 +32,7 @@ industry_focus_validation = {validator: function(r) { return company_industry_op
 // Stores references to ids of the volunteer and project
 var ProjectSchema = new Schema({
     _company : {type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true},
+    is_verified : {type: Boolean, required: true},
     project_description : {type : String, required: true, validate : project_description_validation}, 
     core_skill_1 : {type : String, required : true, validate : core_skill_1_validation},
     core_skill_2 : {type : String, validate : core_skill_2_validation},

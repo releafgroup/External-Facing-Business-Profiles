@@ -6,6 +6,7 @@ var config = require('../config.js');
 
 // Unit Tests to make sure Admin works
 // Checks if users can be retrieved, companies retrieved, and if assignments can be made
+// SUPER IMPORTANT NOTE: throughout the test cases we may modify these variables. the modifications persist across all of the test cases after any modification
 
 var project1 = {
     "project_description" : "test_first",
@@ -14,7 +15,8 @@ var project1 = {
     "core_skill_3" : "Business Plan",
     "industry_focus": "Storage",
     "completion_time": 10,
-    "number_staffed" : 5
+    "number_staffed" : 5,
+    "is_verified" : false
 }
 
 var project2 = {
@@ -24,7 +26,19 @@ var project2 = {
     "core_skill_3" : "Business Plan",
     "industry_focus": "Storage",
     "completion_time": 10,
-    "number_staffed" : 5
+    "number_staffed" : 5,
+    "is_verified" : false
+}
+
+var project3  = { // Should produce error
+    "project_description" : "test_second",
+    "core_skill_1" : "App Development",
+    "core_skill_2" : "Growth Strategy",
+    "core_skill_3" : "Business Plan",
+    "industry_focus": "Storage",
+    "completion_time": 10,
+    "number_staffed" : 5,
+    "is_verified" : true
 }
 
 
@@ -133,7 +147,17 @@ describe('Routing', function() {
     });
 
     describe('Project creation errors', function() {
-
+        it('tests cannot create project with verified set to true', function(done) {
+            project3['_company'] = comp_id;
+            request(url)
+                .post('/projects')
+                .send(project3)
+                .end(function(err, res) {
+                    console.log(res.body.message);
+                    res.body.success.should.not.equal(true);
+                    done();
+                });
+        });
 
     });
 
@@ -165,6 +189,18 @@ describe('Routing', function() {
                     done();
                 });
 
+        });
+
+        it('tests company cannot change project verified to true', function(done) {
+            project2['is_verified'] = true;
+            request(url)
+                .put('/projects/' + proj2_id)
+                .send(project2)
+                .end(function(err, res) {
+                    console.log(res.body.message);
+                    res.body.success.should.not.equal(true);
+                    done();
+                });
         });
 
     });
