@@ -66,8 +66,6 @@ router.get('/id', function(req, res) {
 
 router.route('/:id')
 .get(function(req, res){
-    //console.log(req.decoded.id, req.params.id); 
-    //if(req.decoded.id != req.params.id) return res.status(400).send({ success : false, message : "you are not authorised to change this user"});
     User.findOne({
          '_id':req.params.id
     }, function(err, user){
@@ -78,14 +76,13 @@ router.route('/:id')
 
 })
 .put(function(req,res){
-    //if(req.decoded.id != req.params.id) return res.status(400).send({ success : false, message : "you are not authorised to change this user"}); 
     User.findOne({
         '_id':req.params.id
     }, function(err, user){
         if(!user) return res.json({ success : false , message : 'User not found'});
         if(err) return res.json({success: false, message: err.message});
         for( a in req.body){
-            if(a!= "id" && a != 'email'){
+            if(a!= "id" && a != 'email' && a != "_id"){
                 user[a]  = req.body[a];   
                 if(a == "password"){
                     if ((req.body.password.length < 8 || req.body.password.length > 64)) {
@@ -96,7 +93,7 @@ router.route('/:id')
             } else if (a == 'email') {
                 if (req.body[a] != user[a]) return res.json({ success: false, message : "You cannot modify the email"});
             } else {
-                return res.json({ success: false, message : "You cannot modify the id"}); // TODO: check
+                if (user[a] != req.body[a]) return res.json({ success: false, message : "You cannot modify the id"}); // TODO: check
             }
         }
         user.save(function(err){                                                                           
@@ -109,11 +106,12 @@ router.route('/:id')
 })
 
 .delete(function(req, res){
- //if(req.decoded.id != req.params.id) return res.status(400).send({ success : false, message : "you are not authorised to change this user"}); 
     User.remove({
         '_id':req.params.id
     }, function(err, delRes){
-        if(err) return res.json({success: false, message: err.message}); 
+        if(err) return res.json({success: false, message: err.message});
+        // TODO: delete from Volunteer Assignment Schema and add unit test in mocha
+
         res.json({ success : true});
     }); 
 }); 
