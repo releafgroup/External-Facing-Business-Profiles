@@ -46,31 +46,22 @@ router.route('/auth/login')
 
 
 
-// Use to get id for an email
-router.get('/id', isLoggedIn, function(req, res) {
-    User.findOne({
-        'email':req.body.email
-    }, function(err, user) {
-        console.log(err);
-        if(!user) return res.json({ success : false , message : 'User not found'});
-        if(err) return res.json({success: false, message: err.message});
-        res.json({success: true, id: user.id});
-    });
-});
-
-
 router.route('/:id')
 .get(isLoggedIn, function(req, res){
+    if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
+    
     User.findOne({
          '_id':req.params.id
     }, function(err, user){
         if(!user) return res.json({ success : false , message : 'User not found'}); 
         if(err) return res.json({success: false, message: err.message});
-        res.json(user);   
+        res.json({success: true, message: user});
     }); 
 
 })
 .put(isLoggedIn, function(req,res){
+    if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
+
     User.findOne({
         '_id':req.params.id
     }, function(err, user){
@@ -101,6 +92,8 @@ router.route('/:id')
 })
 
 .delete(isLoggedIn, function(req, res){
+    if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
+
     User.remove({
         '_id':req.params.id
     }, function(err, delRes){
@@ -122,3 +115,14 @@ function isLoggedIn(req, res, next) {
 		return next();
     return res.json({success: false});
 }
+
+// TODO: check if this is actually the best way to do this
+// Checks if a give user can edit/retrieve info for another given profile
+// Checks if req session id is the same as the id in the parameters
+// Also checks that passport user is defined
+function checkUserProfilePermission(req, res) {
+    if( typeof req.session.passport.user === 'undefined' || req.session.passport.user === null ) return false; // TODO: when add sessions to admin + company, might need to change this. basically uses to make sure only UserSchema access routes in here
+    if (req.session.passport.user != req.params.id) return false;
+    return true;
+}
+

@@ -5,8 +5,9 @@ var mongoose = require('mongoose');
 var config = require('../config.js');
 var url = 'http://localhost:3000';
 var super_agent = request.agent(url);
+var super_agent2 = (require('supertest')).agent(url);
 
-
+var user1_id = -1;
 var user1 = {
     "first_name" : "test_first",
     "last_name" : "test_last",
@@ -44,7 +45,28 @@ user_update_info = { "first_name" : "ififififif",
 var user_update_id_bad = JSON.parse(JSON.stringify(user1));
 user_update_id_bad['id'] = '122222222';
 var user_update_email_bad = JSON.parse(JSON.stringify(user1));
+user_update_email_bad['email'] = "odddddd.com";
 
+var user2 = {
+    "first_name" : "test_sec",
+    "last_name" : "test_last_sec",
+    "password" : "eightdigits",
+    "email" : "test2@gmail.com",
+    "primary_institution": "stanny",
+    "secondary_institution": "odododdo",
+    "skill_1": "s",
+    "skill_2": "f",
+    "skill_3": "o",
+    "skill_1_rating": 2,
+    "skill_2_rating": 4,
+    "skill_3_rating": 3,
+    "gender": "Female",
+    "dob": "2016-06-07"
+}
+var user2_id = -1;
+
+
+// TODO: add test cases for user permissions i.e. companies can't access this shit, users can't access other users shit, etc.
 
 describe('Routing', function() {
     before(function(done) {
@@ -76,7 +98,7 @@ describe('Routing', function() {
                 .send(user1)
                 .expect(200) //Status code
                 .end(function(err, res) {
-                    console.log(res.body);
+                    user1_id = res.body.message._id;
                     res.body.success.should.equal(true);
                     done();
                 });
@@ -85,27 +107,23 @@ describe('Routing', function() {
 
         it('tests if user is logged in after sign up', function(done) {
             super_agent
-                .get('/users/id')
-                .send(user1)
+                .get('/users/' + user1_id)
                 .expect(200)
                 .end(function(err, res) {
-                    console.log(res.body);
                     res.body.success.should.equal(true);
                     done();
                 });
                 
         });
-
+        
         it('tests user log out and that user cant access routes after log out', function(done) {
             super_agent
                 .get('/users/auth/logout')
                 .expect(200)
                 .end(function(err, res) {
                     res.body.success.should.equal(true);
-                    console.log(res.body);
                     super_agent
-                        .get('/users/id')
-                        .send(user1)
+                        .get('/users/' + user1_id)
                         .end(function(err, res) {
                             res.body.success.should.not.equal(true);
                             done();
@@ -123,12 +141,9 @@ describe('Routing', function() {
                 .end(function(err, res) {
                     
                     res.body.success.should.equal(true);
-                    console.log(res.body);
                     super_agent
-                        .get('/users/id')
-                        .send(user1)
+                        .get('/users/' + user1_id)
                         .end(function(err, res) {
-                            console.log(res.body);
                             res.body.success.should.equal(true);
                             done();
                         });
@@ -139,17 +154,15 @@ describe('Routing', function() {
 
         it('tests updating password and all other extra information after initial account creation', function(done) {
             // Have to figure out ID first from email
-            // TODO: just store id from pass back in previous
             super_agent
-                .get('/users/id')
-                .send(user_update_info)
+                .get('/users/' + user1_id)
                 .end(function(err, res) {
                     if (res.body.success == true) {
                         super_agent
-                            .put('/users/' + res.body.id)
+                            .put('/users/' + res.body.message._id)
                             .send(user_update_info)
                             .end(function(err2, res2) {
-                                console.log(res2.body);
+
                                 res2.body.success.should.equal(true);
                                 done();
                             });
@@ -163,8 +176,8 @@ describe('Routing', function() {
 
     describe('Volunteer Validation', function() {
 
-
-        it('tests that we check if an email has valid format', function(done) {
+        // TODO: change
+       it('tests that we check if an email has valid format', function(done) {
             
 
             super_agent
@@ -179,7 +192,7 @@ describe('Routing', function() {
 
         });
 
-        
+        // TODO: change
         it('tests that required information is needed', function(done) {
             var user = {
                 "password" : "test_3",
@@ -193,6 +206,7 @@ describe('Routing', function() {
                 });
         });
         
+        // TODO: change
         it('tests that duplicate emails cannot be created', function(done) {
             var user = {
                 "first_name" : "test_first",
@@ -223,51 +237,88 @@ describe('Routing', function() {
 
 
         it('tests that volunteer cannot change id', function(done) {
-            // Have to figure out ID first from email
             super_agent
-                .get('/users/id')
+                .put('/users/' + user1_id)
                 .send(user_update_id_bad)
-                .end(function(err, res) {
-                    if (res.body.success == true) {
-                        super_agent
-                            .put('/users/' + res.body.id)
-                            .send(user_update_id_bad)
-                            .end(function(err2, res2) {
-                                console.log(res2.body);
-                                res2.body.success.should.not.equal(true);
-                                done();
-                            });
-                    }
+                .end(function(err2, res2) {
+                    console.log(res2.body);
+                    res2.body.success.should.not.equal(true);
+                    done();
                 });
-
-
         });
+
+
 
         it('tests that volunteer cannot change email', function(done) {
-            // Have to figure out ID first from email
-            super_agent
-                .get('/users/id')
+           super_agent
+                .put('/users/' + user1_id)
                 .send(user_update_email_bad)
-                .end(function(err, res) {
-                    if (res.body.success == true) {
-                        user_update_email_bad.email = "ddddddd.com";
-                        super_agent
-                            .put('/users/' + res.body.id)
-                            .send(user_update_email_bad)
-                            .end(function(err2, res2) {
-                                console.log(res2.body);
-                                res2.body.success.should.not.equal(true);
-                                done();
-                            });
-                    }
+                .end(function(err2, res2) {
+                    console.log(res2.body);
+                    res2.body.success.should.not.equal(true);
+                    done();
                 });
 
-
         });
-
 
     });
 
+    describe('test user permissions', function() {
 
+        it('creates another user', function(done) {
+            super_agent2
+                .post('/users/auth/signup')
+                .send(user2)
+                .end(function(err, res) {
+                    user2_id = res.body.message._id;
+                    res.body.success.should.equal(true);
+                    done();
+                });
+        });
+
+        it('tests that user2 cannot access user 1 info', function(done) {
+            super_agent2
+                .get('/users/' + user1_id)
+                .end(function(err, res) {
+                    console.log(res.body);
+                    res.body.success.should.not.equal(true);
+                    done();
+                });
+        });
+
+        it('tests that user1 cannot access user 2 info', function(done) {
+            super_agent
+                .get('/users/' + user2_id)
+                .end(function(err, res) {
+                    console.log(res.body);
+                    res.body.success.should.not.equal(true);
+                    done();
+                });
+        });
+
+        it('tests that user1 cannot delete user 2 info', function(done) {
+            super_agent
+                .delete('/users/' + user2_id)
+                .end(function(err, res) {
+                    console.log(res.body);
+                    res.body.success.should.not.equal(true);
+                    done();
+                });
+        });
+
+        it('tests that user1 cannot update user 2 info', function(done) {
+            super_agent
+                .put('/users/' + user2_id)
+                .send(user1)
+                .end(function(err, res) {
+                    console.log(res.body);
+                    res.body.success.should.not.equal(true);
+                    done();
+                });
+        });
+
+
+
+    });
 
 });

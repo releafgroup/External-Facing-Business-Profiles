@@ -43,8 +43,8 @@ var bcrypt = require('bcrypt');
                 // if no user is found, return the message
                 if (!user)
                     return done(null, false, {message: 'No user found.'});
-                //if (!user.comparePassword(password))
-                //    return done(null, false, {message: 'Oops! Wrong password.'});
+                if (!user.comparePassword(password))
+                    return done(null, false, {message: 'Oops! Wrong password.'});
 
                 // all is well, return user
                     return done(null, user);

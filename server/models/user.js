@@ -47,7 +47,7 @@ email_validation = {validator: function(email) { return re.test(email); }, messa
 // Create Volunteer Schema
 // _id serves as username
 var UserSchema = new Schema({
-    password : {type : String, select : false, required: true},
+    password : {type : String, required: true},
     first_name : {type : String, required : true},
     last_name : {type : String, required : true},
     email : { type  : String, required : true, validate: email_validation},
@@ -73,9 +73,7 @@ UserSchema.methods.generateHash = function(password) {
 };
 
 UserSchema.methods.comparePassword = function(password){
-    console.log(password);
     var user = this;
-    console.log(user.password);
     return bcrypt.compareSync(password, user.password);
 };
 
