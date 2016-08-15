@@ -1,9 +1,3 @@
-var express = require('express');
-var router = express.Router();
-var User = require('../models/user.js'); 
-var authFunc = require('../utils/authfunc.js'); 
-var bcrypt = require('bcrypt'); 
-
 
 // Function for user error handling in saving user info
 function handleUserSaveError(err) {
@@ -27,55 +21,47 @@ function handleUserSaveError(err) {
     }
     return err.message;
 }
-    
 
-router.route('/')
-.post(function(req, res){
-    var user = new User();
-    // Populate Information
-    for( a in req.body){
-        if(a!= "password"){
-            user[a]  = req.body[a];   
-        } else {
-            if (req.body.password.length < 8 || req.body.password.length > 64) {
-                return res.json({success: false, message: "Password not valid"}); // TODO: move to user.js
-            }
-            user.password = bcrypt.hashSync(req.body.password, 10);                 
-        }
-    }
-    user.save(function(err, user){
-        if(err){
-            return res.json({success: false, message: handleUserSaveError(err)});
-        }   
-            return res.json({id: user.id, success  : true}); // Returns user id
-    }); 
 
+module.exports = function(passport) {
+
+var express = require('express');
+var router = express.Router();
+var User = require('../models/user.js'); 
+var authFunc = require('../utils/authfunc.js'); 
+var bcrypt = require('bcrypt'); 
+
+
+router.route('/auth/signup')
+.post(passport.authenticate('local-signup', {}), function(req, res) {return res.json({success: true, message: req.user});});
+
+router.route('/auth/logout')
+.get(function(req, res) {
+		req.logout();
+        return res.json({success: true, message: 'logged out'});
 });
 
-// Use to get id for an email
-router.get('/id', function(req, res) {
-    User.findOne({
-        'email':req.body.email
-    }, function(err, user) {
-        if(!user) return res.json({ success : false , message : 'User not found'});
-        if(err) return res.json({success: false, message: err.message});
-        res.json({success: true, id: user.id});
-    });
-});
+router.route('/auth/login')
+.post(passport.authenticate('local-login', {}), function(req, res) {return res.json({success: true, message: req.user});});
+
 
 
 router.route('/:id')
-.get(function(req, res){
+.get(isLoggedIn, function(req, res){
+    if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
+    
     User.findOne({
          '_id':req.params.id
     }, function(err, user){
         if(!user) return res.json({ success : false , message : 'User not found'}); 
         if(err) return res.json({success: false, message: err.message});
-        res.json(user);   
+        res.json({success: true, message: user});
     }); 
 
 })
-.put(function(req,res){
+.put(isLoggedIn, function(req,res){
+    if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
+
     User.findOne({
         '_id':req.params.id
     }, function(err, user){
@@ -88,7 +74,7 @@ router.route('/:id')
                     if ((req.body.password.length < 8 || req.body.password.length > 64)) {
                         return res.json({success: false, message: "Password not valid"}); // TODO: move to user.js
                     }
-                    user.password = bcrypt.hashSync(req.body.password, 10);                 
+                    user[a] = user.generateHash(req.body[a]);                 
                 }
             } else if (a == 'email') {
                 if (req.body[a] != user[a]) return res.json({ success: false, message : "You cannot modify the email"});
@@ -105,7 +91,9 @@ router.route('/:id')
     }); 
 })
 
-.delete(function(req, res){
+.delete(isLoggedIn, function(req, res){
+    if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
+
     User.remove({
         '_id':req.params.id
     }, function(err, delRes){
@@ -117,9 +105,24 @@ router.route('/:id')
 }); 
 
 
+return router;
 
+};
 
-module.exports = router;
-    
+// route middleware to ensure user is logged in
+function isLoggedIn(req, res, next) {
+	if (req.isAuthenticated())
+		return next();
+    return res.json({success: false});
+}
 
+// TODO: check if this is actually the best way to do this
+// Checks if a give user can edit/retrieve info for another given profile
+// Checks if req session id is the same as the id in the parameters
+// Also checks that passport user is defined
+function checkUserProfilePermission(req, res) {
+    if( typeof req.session.passport.user === 'undefined' || req.session.passport.user === null ) return false; // TODO: when add sessions to admin + company, might need to change this. basically uses to make sure only UserSchema access routes in here
+    if (req.session.passport.user != req.params.id) return false;
+    return true;
+}
 
