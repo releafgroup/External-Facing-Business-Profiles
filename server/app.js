@@ -9,15 +9,10 @@ var mongoose = require('mongoose');
 var superSecret = config.superSecret;                                                                  
 var authfunc = require('./utils/authfunc.js');
 
+var user_passport = require('./utils/passport_user.js');
+var session = require('express-session');
 
 
-
-// import routes
-var routes = require('./routes/index');
-var users = require('./routes/users');
-var companies = require('./routes/companies');
-var admin = require('./routes/admin');
-var projects = require('./routes/projects');
 
 
 var app = express();
@@ -26,11 +21,24 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+app.use(user_passport.initialize());
+app.use(user_passport.session()); // persistent login sessions
+
+
 if (app.get('env') == 'mocha_db') { // TODO: abstract away better/clean up code quality
     mongoose.connect(config.mocha_database);
 } else {
     mongoose.connect(config.database);   
 }
+
+
+// import routes
+var routes = require('./routes/index');
+var users = require('./routes/users')(user_passport);
+var companies = require('./routes/companies');
+var admin = require('./routes/admin');
+var projects = require('./routes/projects');
 
 app.use('/', routes);                                                                                  
 app.use('/users', users); 

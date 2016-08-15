@@ -67,8 +67,15 @@ var UserSchema = new Schema({
 
 UserSchema.index({email: 1}, {unique: true}); // TODO: figure out why this doesn't work
 
-UserSchema.methods.comparePassword = function(password){ 
+
+UserSchema.methods.generateHash = function(password) {
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+};
+
+UserSchema.methods.comparePassword = function(password){
+    console.log(password);
     var user = this;
+    console.log(user.password);
     return bcrypt.compareSync(password, user.password);
 };
 
