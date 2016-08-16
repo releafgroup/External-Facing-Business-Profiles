@@ -8,7 +8,7 @@ var config = require('./config.js');
 var mongoose = require('mongoose');                                                                    
 var superSecret = config.superSecret;                                                                  
 var authfunc = require('./utils/authfunc.js');
-
+var io = require('socket.io')();
 var user_passport = require('./utils/passport_user.js');
 var session = require('express-session');
 
@@ -24,8 +24,9 @@ app.use(cookieParser());
 app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
 app.use(user_passport.initialize());
 app.use(user_passport.session()); // persistent login sessions
+app.set('io', io);
 
-
+mongoose.Promise = global.Promise;
 if (app.get('env') == 'mocha_db') { // TODO: abstract away better/clean up code quality
     mongoose.connect(config.mocha_database);
 } else {
@@ -39,12 +40,13 @@ var users = require('./routes/users')(user_passport);
 var companies = require('./routes/companies');
 var admin = require('./routes/admin');
 var projects = require('./routes/projects');
-
+var messenger = require('./routes/messenger')(app.get('io'));
 app.use('/', routes);                                                                                  
 app.use('/users', users); 
 app.use('/companies', companies);
 app.use('/admin', admin);
 app.use('/projects', projects);
+app.use('/messenger', messenger);
 app.use(authfunc);
 
 
