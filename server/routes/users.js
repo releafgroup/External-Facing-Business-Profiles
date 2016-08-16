@@ -33,7 +33,7 @@ var bcrypt = require('bcrypt');
 
 
 router.route('/auth/signup')
-.post(passport.authenticate('local-signup', {}), function(req, res) {return res.json({success: true, message: req.user});});
+.post(passport.authenticate('local-signup', {}), function(req, res) {return res.json({success: true, message: req.user._id});});
 
 router.route('/auth/logout')
 .get(function(req, res) {
@@ -42,7 +42,7 @@ router.route('/auth/logout')
 });
 
 router.route('/auth/login')
-.post(passport.authenticate('local-login', {}), function(req, res) {return res.json({success: true, message: req.user});});
+.post(passport.authenticate('local-login', {}), function(req, res) {return res.json({success: true, message: req.user._id});});
 
 
 

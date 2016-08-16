@@ -15,12 +15,8 @@ var user1 = {
     "email" : "test1@gmail.com",
     "primary_institution": "stanny",
     "secondary_institution": "odododdo",
-    "skill_1": "s",
-    "skill_2": "f",
-    "skill_3": "o",
-    "skill_1_rating": 2,
-    "skill_2_rating": 4,
-    "skill_3_rating": 3,
+    "skills": ["s", "f", "o"],
+    "skill_ratings": [1, 2, 3],
     "gender": "Female",
     "dob": "2016-06-07"
 }
@@ -34,12 +30,9 @@ user_update_info = { "first_name" : "ififififif",
                 "email" : "test1@gmail.com",
                 "primary_institution": "nahhhhh",
                 "secondary_institution": "okayyyyyyyy",
-                "skill_1": "c",
-                "skill_2": "l",
-                "skill_3": "t",
-                "skill_1_rating": 5,
-                "skill_2_rating": 2,
-                "skill_3_rating": 4,
+                "skills": ["c", "l", "t"],
+                "skill_ratings": [2, 3, 4],
+
                 "gender": "Male",
                 "dob": "2016-08-03"}
 var user_update_id_bad = JSON.parse(JSON.stringify(user1));
@@ -54,12 +47,8 @@ var user2 = {
     "email" : "test2@gmail.com",
     "primary_institution": "stanny",
     "secondary_institution": "odododdo",
-    "skill_1": "s",
-    "skill_2": "f",
-    "skill_3": "o",
-    "skill_1_rating": 2,
-    "skill_2_rating": 4,
-    "skill_3_rating": 3,
+    "skills" : ["s", "f", "o"],
+    "skill_ratings" : [2, 4, 3],
     "gender": "Female",
     "dob": "2016-06-07"
 }
@@ -98,7 +87,8 @@ describe('Routing', function() {
                 .send(user1)
                 .expect(200) //Status code
                 .end(function(err, res) {
-                    user1_id = res.body.message._id;
+                    console.log(res.body);
+                    user1_id = res.body.message;
                     res.body.success.should.equal(true);
                     done();
                 });
@@ -153,22 +143,13 @@ describe('Routing', function() {
 
 
         it('tests updating password and all other extra information after initial account creation', function(done) {
-            // Have to figure out ID first from email
             super_agent
-                .get('/users/' + user1_id)
-                .end(function(err, res) {
-                    if (res.body.success == true) {
-                        super_agent
-                            .put('/users/' + res.body.message._id)
-                            .send(user_update_info)
-                            .end(function(err2, res2) {
-
-                                res2.body.success.should.equal(true);
-                                done();
-                            });
-                    }
+                .put('/users/' + user1_id)
+                .send(user_update_info)
+                .end(function(err2, res2) {
+                    res2.body.success.should.equal(true);
+                    done();
                 });
-
         });
 
     });
@@ -270,7 +251,7 @@ describe('Routing', function() {
                 .post('/users/auth/signup')
                 .send(user2)
                 .end(function(err, res) {
-                    user2_id = res.body.message._id;
+                    user2_id = res.body.message;
                     res.body.success.should.equal(true);
                     done();
                 });

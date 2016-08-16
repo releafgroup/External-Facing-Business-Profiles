@@ -44,6 +44,8 @@ gender_validation = {validator: function(r) { return r == "Male" || r == "Female
 var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex outside for better performance
 email_validation = {validator: function(email) { return re.test(email); }, message: val_messages['email'][app.get('env')]};
 
+// TODO: figure out validation for skills + rating
+
 // Create Volunteer Schema
 // _id serves as username
 var UserSchema = new Schema({
@@ -53,12 +55,8 @@ var UserSchema = new Schema({
     email : { type  : String, required : true, validate: email_validation},
     primary_institution : { type : String, required: true, validate: primary_institution_validation},
     secondary_institution : { type : String, required: true, validate: secondary_institution_validation},
-    skill_1 : { type : String, validate: skill_1_validation, required: true},
-    skill_2 : { type : String, validate: skill_2_validation, required: true},
-    skill_3 : { type : String, validate: skill_3_validation, required: true},
-    skill_1_rating : { type : Number, validate: rating_1_validation, required: true},
-    skill_2_rating : { type : Number, validate: rating_2_validation, required: true},
-    skill_3_rating : { type : Number, validate: rating_3_validation, required: true},
+    skills : [{type : String }],
+    skill_ratings: [{type : String }],
     gender: {type: String, validate: gender_validation, required: true},
     dob: {type: Date, required: true, validate: dob_validation}
 }, {
