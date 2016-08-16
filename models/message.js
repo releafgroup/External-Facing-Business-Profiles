@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
-  Schema = mongoose.Schema;
+    Schema = mongoose.Schema;
+
 
 // create a schema for massage
 var MessageSchema = new Schema({
@@ -13,5 +14,6 @@ var MessageSchema = new Schema({
 var Message = mongoose.model('Message', MessageSchema);
 
 //we will add schema for groups later on
+
 
 module.exports = Message;

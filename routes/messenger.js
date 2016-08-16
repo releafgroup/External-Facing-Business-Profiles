@@ -10,17 +10,17 @@ module.exports = function (io) {
 
 //This route produces a list of message as filterd by 'room' query
   router
-        .get('/messages', function (req, res) {
-          debug(' got messages request ', req.query)
-          //Find
-          Message.find({
-            'room': req.query.room.toLowerCase()
-          }).exec(function (err, msgs) {
-            //Send
-            debug('Found saved messages for room ' + req.query.room.toLowerCase(), " Count" + msgs.length)
-            res.json(msgs);
-          });
-        })
+          .get('/messages', function (req, res) {
+            debug(' got messages request ', req.query)
+            //Find
+            Message.find({
+              'room': req.query.room.toLowerCase()
+            }).exec(function (err, msgs) {
+              //Send
+              debug('Found saved messages for room ' + req.query.room.toLowerCase(), " Count" + msgs.length)
+              res.json(msgs);
+            });
+          })
 
           //Listens for a new chat message
 //          .post('/new', function (req, res) {
@@ -40,7 +40,7 @@ module.exports = function (io) {
 //          });
           ;
   /*|||||||||||||||| SOCKET CONNECTION for messenger |||||||||||||||||||||||*/
-//Listen for connection socket
+//Listen for connection socket 
   io.on('connection', function (socket) {
 
     debug('new connection');
@@ -113,3 +113,6 @@ module.exports = function (io) {
   return router;
 
 }
+
+
+
