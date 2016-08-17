@@ -15,12 +15,8 @@ var user1 = {
     "email" : "test1@gmail.com",
     "primary_institution": "stanny",
     "secondary_institution": "odododdo",
-    "skill_1": "s",
-    "skill_2": "f",
-    "skill_3": "o",
-    "skill_1_rating": 2,
-    "skill_2_rating": 4,
-    "skill_3_rating": 3,
+    "skills": ["s", "f", "o"],
+    "skill_ratings": [1, 2, 3],
     "gender": "Female",
     "dob": "2016-06-07"
 }
@@ -34,12 +30,9 @@ user_update_info = { "first_name" : "ififififif",
                 "email" : "test1@gmail.com",
                 "primary_institution": "nahhhhh",
                 "secondary_institution": "okayyyyyyyy",
-                "skill_1": "c",
-                "skill_2": "l",
-                "skill_3": "t",
-                "skill_1_rating": 5,
-                "skill_2_rating": 2,
-                "skill_3_rating": 4,
+                "skills": ["c", "l", "t"],
+                "skill_ratings": [2, 3, 4],
+
                 "gender": "Male",
                 "dob": "2016-08-03"}
 var user_update_id_bad = JSON.parse(JSON.stringify(user1));
@@ -54,12 +47,8 @@ var user2 = {
     "email" : "test2@gmail.com",
     "primary_institution": "stanny",
     "secondary_institution": "odododdo",
-    "skill_1": "s",
-    "skill_2": "f",
-    "skill_3": "o",
-    "skill_1_rating": 2,
-    "skill_2_rating": 4,
-    "skill_3_rating": 3,
+    "skills" : ["s", "f", "o"],
+    "skill_ratings" : [2, 4, 3],
     "gender": "Female",
     "dob": "2016-06-07"
 }
@@ -98,7 +87,8 @@ describe('Routing', function() {
                 .send(user1)
                 .expect(200) //Status code
                 .end(function(err, res) {
-                    user1_id = res.body.message._id;
+                    console.log(res.body);
+                    user1_id = res.body.message;
                     res.body.success.should.equal(true);
                     done();
                 });
@@ -107,7 +97,7 @@ describe('Routing', function() {
 
         it('tests if user is logged in after sign up', function(done) {
             super_agent
-                .get('/users/' + user1_id)
+                .get('/users/')
                 .expect(200)
                 .end(function(err, res) {
                     res.body.success.should.equal(true);
@@ -123,7 +113,7 @@ describe('Routing', function() {
                 .end(function(err, res) {
                     res.body.success.should.equal(true);
                     super_agent
-                        .get('/users/' + user1_id)
+                        .get('/users/')
                         .end(function(err, res) {
                             res.body.success.should.not.equal(true);
                             done();
@@ -142,7 +132,7 @@ describe('Routing', function() {
                     
                     res.body.success.should.equal(true);
                     super_agent
-                        .get('/users/' + user1_id)
+                        .get('/users/')
                         .end(function(err, res) {
                             res.body.success.should.equal(true);
                             done();
@@ -153,22 +143,13 @@ describe('Routing', function() {
 
 
         it('tests updating password and all other extra information after initial account creation', function(done) {
-            // Have to figure out ID first from email
             super_agent
-                .get('/users/' + user1_id)
-                .end(function(err, res) {
-                    if (res.body.success == true) {
-                        super_agent
-                            .put('/users/' + res.body.message._id)
-                            .send(user_update_info)
-                            .end(function(err2, res2) {
-
-                                res2.body.success.should.equal(true);
-                                done();
-                            });
-                    }
+                .put('/users/')
+                .send(user_update_info)
+                .end(function(err2, res2) {
+                    res2.body.success.should.equal(true);
+                    done();
                 });
-
         });
 
     });
@@ -238,7 +219,7 @@ describe('Routing', function() {
 
         it('tests that volunteer cannot change id', function(done) {
             super_agent
-                .put('/users/' + user1_id)
+                .put('/users/')
                 .send(user_update_id_bad)
                 .end(function(err2, res2) {
                     console.log(res2.body);
@@ -251,7 +232,7 @@ describe('Routing', function() {
 
         it('tests that volunteer cannot change email', function(done) {
            super_agent
-                .put('/users/' + user1_id)
+                .put('/users/')
                 .send(user_update_email_bad)
                 .end(function(err2, res2) {
                     console.log(res2.body);
@@ -263,14 +244,14 @@ describe('Routing', function() {
 
     });
 
-    describe('test user permissions', function() {
-
+    describe('tests that must have signed in user to access user routes', function() {
+    /*
         it('creates another user', function(done) {
             super_agent2
                 .post('/users/auth/signup')
                 .send(user2)
                 .end(function(err, res) {
-                    user2_id = res.body.message._id;
+                    user2_id = res.body.message;
                     res.body.success.should.equal(true);
                     done();
                 });
@@ -278,7 +259,7 @@ describe('Routing', function() {
 
         it('tests that user2 cannot access user 1 info', function(done) {
             super_agent2
-                .get('/users/' + user1_id)
+                .get('/users/')
                 .end(function(err, res) {
                     console.log(res.body);
                     res.body.success.should.not.equal(true);
@@ -288,7 +269,7 @@ describe('Routing', function() {
 
         it('tests that user1 cannot access user 2 info', function(done) {
             super_agent
-                .get('/users/' + user2_id)
+                .get('/users/')
                 .end(function(err, res) {
                     console.log(res.body);
                     res.body.success.should.not.equal(true);
@@ -298,7 +279,7 @@ describe('Routing', function() {
 
         it('tests that user1 cannot delete user 2 info', function(done) {
             super_agent
-                .delete('/users/' + user2_id)
+                .delete('/users/')
                 .end(function(err, res) {
                     console.log(res.body);
                     res.body.success.should.not.equal(true);
@@ -308,7 +289,7 @@ describe('Routing', function() {
 
         it('tests that user1 cannot update user 2 info', function(done) {
             super_agent
-                .put('/users/' + user2_id)
+                .put('/users/')
                 .send(user1)
                 .end(function(err, res) {
                     console.log(res.body);
@@ -317,7 +298,17 @@ describe('Routing', function() {
                 });
         });
 
+    */
 
+        it('tests non-signed in user cannot access /users', function(done) {
+            request(url)
+                .get('/users/')
+                .end(function(err, res) {
+                    console.log(res.body);
+                    res.body.success.should.not.equal(true);
+                    done();
+                });
+        });
 
     });
 
