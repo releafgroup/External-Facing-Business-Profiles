@@ -8,7 +8,7 @@ var Company = require('../models/company.js');
 var User = require('../models/user.js');
 var Project = require('../models/project.js'); 
 var VolunteerAssignment = require('../models/volunteer_assignment.js'); 
-var bcrypt = require('bcrypt'); 
+var bcrypt = require('bcryptjs'); 
 
 
 //////////////////////////////////////////////////// GET REQUESTS ///////////////////
