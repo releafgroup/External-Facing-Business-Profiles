@@ -12,16 +12,36 @@ var io = require('socket.io')();
 var user_passport = require('./utils/passport_user.js');
 var session = require('express-session');
 
-
-
+var MongoStore = require('express-session-mongo');
 
 var app = express();
 app.use(logger('dev'));
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
 
-app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+// TODO: maybe switch to cors plugin
+app.use(function (req, res, next) {
+
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001'); //TODO: add in FE
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    // Pass to next layer of middleware
+    next();
+});
+
+
+app.use(session({ secret: 'releaf4lyfe',  store: new MongoStore() })); // session secret
 app.use(user_passport.initialize());
 app.use(user_passport.session()); // persistent login sessions
 app.set('io', io);
@@ -33,6 +53,7 @@ if (app.get('env') == 'mocha_db') { // TODO: abstract away better/clean up code 
     mongoose.connect(config.database);   
 }
 
+//mongoose.connection.db.sessions.ensureIndex( { "lastAccess": 1 }, { expireAfterSeconds: 3600 } )
 
 // import routes
 var routes = require('./routes/index');
