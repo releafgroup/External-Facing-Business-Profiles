@@ -12,8 +12,7 @@ var authfunc = require('./utils/authfunc.js');
 var user_passport = require('./utils/passport_user.js');
 var session = require('express-session');
 
-
-
+var MongoStore = require('express-session-mongo');
 
 var app = express();
 app.use(logger('dev'));
@@ -25,7 +24,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(function (req, res, next) {
 
     // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001'); //TODO: add in FE
 
     // Request methods you wish to allow
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -42,7 +41,7 @@ app.use(function (req, res, next) {
 });
 
 
-app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+app.use(session({ secret: 'releaf4lyfe',  store: new MongoStore() })); // session secret
 app.use(user_passport.initialize());
 app.use(user_passport.session()); // persistent login sessions
 
@@ -53,6 +52,7 @@ if (app.get('env') == 'mocha_db') { // TODO: abstract away better/clean up code 
     mongoose.connect(config.database);   
 }
 
+//mongoose.connection.db.sessions.ensureIndex( { "lastAccess": 1 }, { expireAfterSeconds: 3600 } )
 
 // import routes
 var routes = require('./routes/index');

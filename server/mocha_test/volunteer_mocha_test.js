@@ -97,7 +97,7 @@ describe('Routing', function() {
 
         it('tests if user is logged in after sign up', function(done) {
             super_agent
-                .get('/users/' + user1_id)
+                .get('/users/')
                 .expect(200)
                 .end(function(err, res) {
                     res.body.success.should.equal(true);
@@ -113,7 +113,7 @@ describe('Routing', function() {
                 .end(function(err, res) {
                     res.body.success.should.equal(true);
                     super_agent
-                        .get('/users/' + user1_id)
+                        .get('/users/')
                         .end(function(err, res) {
                             res.body.success.should.not.equal(true);
                             done();
@@ -132,7 +132,7 @@ describe('Routing', function() {
                     
                     res.body.success.should.equal(true);
                     super_agent
-                        .get('/users/' + user1_id)
+                        .get('/users/')
                         .end(function(err, res) {
                             res.body.success.should.equal(true);
                             done();
@@ -144,7 +144,7 @@ describe('Routing', function() {
 
         it('tests updating password and all other extra information after initial account creation', function(done) {
             super_agent
-                .put('/users/' + user1_id)
+                .put('/users/')
                 .send(user_update_info)
                 .end(function(err2, res2) {
                     res2.body.success.should.equal(true);
@@ -219,7 +219,7 @@ describe('Routing', function() {
 
         it('tests that volunteer cannot change id', function(done) {
             super_agent
-                .put('/users/' + user1_id)
+                .put('/users/')
                 .send(user_update_id_bad)
                 .end(function(err2, res2) {
                     console.log(res2.body);
@@ -232,7 +232,7 @@ describe('Routing', function() {
 
         it('tests that volunteer cannot change email', function(done) {
            super_agent
-                .put('/users/' + user1_id)
+                .put('/users/')
                 .send(user_update_email_bad)
                 .end(function(err2, res2) {
                     console.log(res2.body);
@@ -244,8 +244,8 @@ describe('Routing', function() {
 
     });
 
-    describe('test user permissions', function() {
-
+    describe('tests that must have signed in user to access user routes', function() {
+    /*
         it('creates another user', function(done) {
             super_agent2
                 .post('/users/auth/signup')
@@ -259,7 +259,7 @@ describe('Routing', function() {
 
         it('tests that user2 cannot access user 1 info', function(done) {
             super_agent2
-                .get('/users/' + user1_id)
+                .get('/users/')
                 .end(function(err, res) {
                     console.log(res.body);
                     res.body.success.should.not.equal(true);
@@ -269,7 +269,7 @@ describe('Routing', function() {
 
         it('tests that user1 cannot access user 2 info', function(done) {
             super_agent
-                .get('/users/' + user2_id)
+                .get('/users/')
                 .end(function(err, res) {
                     console.log(res.body);
                     res.body.success.should.not.equal(true);
@@ -279,7 +279,7 @@ describe('Routing', function() {
 
         it('tests that user1 cannot delete user 2 info', function(done) {
             super_agent
-                .delete('/users/' + user2_id)
+                .delete('/users/')
                 .end(function(err, res) {
                     console.log(res.body);
                     res.body.success.should.not.equal(true);
@@ -289,7 +289,7 @@ describe('Routing', function() {
 
         it('tests that user1 cannot update user 2 info', function(done) {
             super_agent
-                .put('/users/' + user2_id)
+                .put('/users/')
                 .send(user1)
                 .end(function(err, res) {
                     console.log(res.body);
@@ -298,7 +298,17 @@ describe('Routing', function() {
                 });
         });
 
+    */
 
+        it('tests non-signed in user cannot access /users', function(done) {
+            request(url)
+                .get('/users/')
+                .end(function(err, res) {
+                    console.log(res.body);
+                    res.body.success.should.not.equal(true);
+                    done();
+                });
+        });
 
     });
 

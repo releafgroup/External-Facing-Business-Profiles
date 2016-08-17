@@ -46,12 +46,12 @@ router.route('/auth/login')
 
 
 
-router.route('/:id')
+router.route('/')
 .get(isLoggedIn, function(req, res){
     if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
     
     User.findOne({
-         '_id':req.params.id
+         '_id':req.session.passport.user
     }, function(err, user){
         if(!user) return res.json({ success : false , message : 'User not found'}); 
         if(err) return res.json({success: false, message: err.message});
@@ -63,7 +63,7 @@ router.route('/:id')
     if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
 
     User.findOne({
-        '_id':req.params.id
+        '_id':req.session.passport.user
     }, function(err, user){
         if(!user) return res.json({ success : false , message : 'User not found'});
         if(err) return res.json({success: false, message: err.message});
@@ -89,20 +89,7 @@ router.route('/:id')
             return res.json({success: true});                                                  
         });         
     }); 
-})
-
-.delete(isLoggedIn, function(req, res){
-    if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
-
-    User.remove({
-        '_id':req.params.id
-    }, function(err, delRes){
-        if(err) return res.json({success: false, message: err.message});
-        // TODO: delete from Volunteer Assignment Schema and add unit test in mocha
-
-        res.json({ success : true});
-    }); 
-}); 
+});
 
 
 return router;
@@ -113,16 +100,14 @@ return router;
 function isLoggedIn(req, res, next) {
 	if (req.isAuthenticated())
 		return next();
-    return res.json({success: false});
+    return res.json({success: false, message: "Not logged in"});
 }
 
 // TODO: check if this is actually the best way to do this
-// Checks if a give user can edit/retrieve info for another given profile
-// Checks if req session id is the same as the id in the parameters
-// Also checks that passport user is defined
+// Checks that passport user is defined
+// TODO: likley redudant with isLoggedIn
 function checkUserProfilePermission(req, res) {
     if( typeof req.session.passport.user === 'undefined' || req.session.passport.user === null ) return false; // TODO: when add sessions to admin + company, might need to change this. basically uses to make sure only UserSchema access routes in here
-    if (req.session.passport.user != req.params.id) return false;
     return true;
 }
 
