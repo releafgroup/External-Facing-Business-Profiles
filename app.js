@@ -20,11 +20,16 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+var domain_allowed = 'https://releaf-frontend-app.herokuapp.com';
+if (app.get('env') == 'mocha_db' || app.get('env') == 'development') {
+    domain_allowed = 'http://localhost:3001';
+}
+
 // TODO: maybe switch to cors plugin
 app.use(function (req, res, next) {
 
     // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001'); //TODO: add in FE
+    res.setHeader('Access-Control-Allow-Origin', domain_allowed); //TODO: add in FE
 
     // Request methods you wish to allow
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
