@@ -65,7 +65,6 @@ var bcrypt = require('bcrypt');
     function(req, email, password, done) {
         // asynchronous
         process.nextTick(function() {
-
             //  Whether we're signing up or connecting an account, we'll need
             //  to know if the email address is in use.
             User.findOne({'email': email}, function(err, existingUser) {
@@ -83,17 +82,25 @@ var bcrypt = require('bcrypt');
                     // create the user
                     var newUser = new User();
                     for( a in req.body){
-                        if(a!= "password"){
+                        if(a!= "password" && a != "skills" && a != "skill_ratings"){
                             newUser[a]  = req.body[a];   
-                        } else {
+                        } else if (a == "password") {
                            if (req.body.password.length < 8 || req.body.password.length > 64) {
                                 return res.json({success: false, message: "Password not valid"}); // TODO: move to user.js
                            }
                            newUser[a] = newUser.generateHash(req.body[a]);                 
+                        } else {
+                            var arr = [];
+                            for (var prop in req.body[a]) {
+                                arr.push(req.body[a][prop]);
+                            }
+                            
+                            newUser[a] = arr;
                         }
                     }
                     newUser.save(function(err) {
                         if (err) {
+                            console.log(err);
                             return done(null, false, {message: err.message});
                         }
                         return done(null, newUser);
