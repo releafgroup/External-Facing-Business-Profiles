@@ -3,7 +3,7 @@
 ## Introduction
 This is where the API for the Ikeora Project sits. The infographics below explains the relationship between different components of the application.
 
-![alt Site Map](http://imgur.com/lLdpVoP)
+![alt Site Map](http://imgur.com/lLdpVoP.png)
 
 ## Getting Started
 
