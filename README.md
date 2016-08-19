@@ -115,10 +115,10 @@ Ikeora Backend Server
 
 ## How to run the backend
 
-1.) In one terminal, you always need to have the following running: `mongod --dbpath path_to_directory_created_above`
-2.) If you just want to run the set of unit tests, in another terminal run the following: `npm run-script mocha_test`
+1. In one terminal, you always need to have the following running: `mongod --dbpath path_to_directory_created_above`
+2. If you just want to run the set of unit tests, in another terminal run the following: `npm run-script mocha_test`
   - Now, in another terminal, run: `mocha test_want_to_run`
-3.) If you want to actually use the BE with the FE, then you need to the following instead: `npm test`
+3. If you want to actually use the BE with the FE, then you need to the following instead: `npm test`
   - You need to have this running the whole time you are using the website
   - The reason the command is different from 2 is because every time we run a test script we delete and re-create the database
 
