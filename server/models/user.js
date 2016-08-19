@@ -46,20 +46,35 @@ email_validation = {validator: function(email) { return re.test(email); }, messa
 
 // Create Volunteer Schema
 // _id serves as username
-var UserSchema = new Schema({ local: {
-    password : {type : String, required: true},
-    first_name : {type : String, required : true},
-    last_name : {type : String, required : true},
-    email : { type  : String, required : true, validate: email_validation} },
-    primary_institution : { type : String, required: true, validate: primary_institution_validation},
-    secondary_institution : { type : String, required: true, validate: secondary_institution_validation},
-    skills : [{type : String}],
-    skill_ratings: [{type : String }],
-    gender: {type: String, validate: gender_validation, required: true},
-    dob: {type: Date, required: true, validate: dob_validation}
-}, {
-    timestamps: true
-}); 
+var UserSchema = new Schema(
+    { 
+        local: {
+            password : {type : String, required: true},
+            first_name : {type : String, required : true},
+            last_name : {type : String, required : true},
+            email : { type  : String, required : true, validate: email_validation} 
+        },
+
+        facebook: {
+            id: {type: String, required: true},
+            email: String,
+            token: {type: String, required: true},
+            last_name: {type: String, required: true},
+            first_name: {type: String, required: true}
+        },
+        
+        primary_institution : { type : String, required: true, validate: primary_institution_validation},
+        secondary_institution : { type : String, required: true, validate: secondary_institution_validation},
+        skills : [{type : String}],
+        skill_ratings: [{type : String }],
+        gender: {type: String, validate: gender_validation, required: true},
+        dob: {type: Date, required: true, validate: dob_validation}
+    }, 
+
+    {
+        timestamps: true  
+    }
+); 
 
 UserSchema.index({email: 1}, {unique: true}); // TODO: figure out why this doesn't work
 
@@ -77,7 +92,7 @@ UserSchema.methods.generateHash = function(password) {
 
 UserSchema.methods.comparePassword = function(password){
     var user = this;
-    return bcrypt.compareSync(password, user.password);
+    return bcrypt.compareSync(password, user.local.password);
 };
 
 /**

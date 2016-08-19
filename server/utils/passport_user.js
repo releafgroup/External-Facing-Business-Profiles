@@ -28,16 +28,19 @@ var bcrypt = require('bcryptjs');
     // =========================================================================
     passport.use('local-login', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
-        usernameField : 'login.email',
-        passwordField : 'password',
+        usernameField : 'local.email',
+        passwordField : 'local.password',
         passReqToCallback : true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
-    },
-    function(req, email, password, done) {
-        console.log(email, password);
+    }, function(req, email, password, done) {
+        // console.log(req);
+        // done();
+    // }
+    // function(req, email, password, done) {
+    //     console.log(email, password);
         // asynchronous
         process.nextTick(function() {
             User.findOne({ 'local.email' :  email }, function(err, user) {
-                console.log(user);
+                console.log(password);
                 // if there are any errors, return the error
                 if (err)
                     return done(err);

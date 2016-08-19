@@ -21,7 +21,7 @@ var user1 = {
     "dob": "2016-06-07"
 }
 var user_bad_email = JSON.parse(JSON.stringify(user1));
-user_bad_email['email'] = "odddddd.com";
+user_bad_email['local.email'] = "odddddd.com";
 
 var user_update_info = JSON.parse(JSON.stringify(user1));
 user_update_info = { "local.first_name" : "ififififif",
@@ -38,7 +38,7 @@ user_update_info = { "local.first_name" : "ififififif",
 var user_update_id_bad = JSON.parse(JSON.stringify(user1));
 user_update_id_bad['id'] = '122222222';
 var user_update_email_bad = JSON.parse(JSON.stringify(user1));
-user_update_email_bad['email'] = "odddddd.com";
+user_update_email_bad['local.email'] = "odddddd.com";
 
 var user2 = {
     "local.first_name" : "test_sec",
@@ -87,7 +87,6 @@ describe('Routing', function() {
                 .send(user1)
                 .expect(200) //Status code
                 .end(function(err, res) {
-                    console.log(res.body);
                     user1_id = res.body.message;
                     res.body.success.should.equal(true);
                     done();
@@ -129,7 +128,6 @@ describe('Routing', function() {
                 .expect(200)
                 .send(user1)
                 .end(function(err, res) {
-                    // console.log(res.body);
                     res.body.success.should.equal(true);
                     super_agent
                         .get('/users/')
