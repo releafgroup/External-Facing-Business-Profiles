@@ -245,61 +245,7 @@ describe('Routing', function() {
     });
 
     describe('tests that must have signed in user to access user routes', function() {
-    /*
-        it('creates another user', function(done) {
-            super_agent2
-                .post('/users/auth/signup')
-                .send(user2)
-                .end(function(err, res) {
-                    user2_id = res.body.message;
-                    res.body.success.should.equal(true);
-                    done();
-                });
-        });
-
-        it('tests that user2 cannot access user 1 info', function(done) {
-            super_agent2
-                .get('/users/')
-                .end(function(err, res) {
-                    console.log(res.body);
-                    res.body.success.should.not.equal(true);
-                    done();
-                });
-        });
-
-        it('tests that user1 cannot access user 2 info', function(done) {
-            super_agent
-                .get('/users/')
-                .end(function(err, res) {
-                    console.log(res.body);
-                    res.body.success.should.not.equal(true);
-                    done();
-                });
-        });
-
-        it('tests that user1 cannot delete user 2 info', function(done) {
-            super_agent
-                .delete('/users/')
-                .end(function(err, res) {
-                    console.log(res.body);
-                    res.body.success.should.not.equal(true);
-                    done();
-                });
-        });
-
-        it('tests that user1 cannot update user 2 info', function(done) {
-            super_agent
-                .put('/users/')
-                .send(user1)
-                .end(function(err, res) {
-                    console.log(res.body);
-                    res.body.success.should.not.equal(true);
-                    done();
-                });
-        });
-
-    */
-
+    
         it('tests non-signed in user cannot access /users', function(done) {
             request(url)
                 .get('/users/')
