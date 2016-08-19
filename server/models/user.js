@@ -62,7 +62,7 @@ var UserSchema = new Schema({
     primary_institution : { type : String, required: true, validate: primary_institution_validation},
     secondary_institution : { type : String, required: true, validate: secondary_institution_validation},
     skills : [{type : String}],
-    skill_ratings: [{type : String }],
+    skill_ratings: [{type : Number }],
     gender: {type: String, validate: gender_validation, required: true},
     dob: {type: Date, required: true, validate: dob_validation}
 }, {
