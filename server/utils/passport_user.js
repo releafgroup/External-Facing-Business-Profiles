@@ -2,7 +2,7 @@ var LocalStrategy    = require('passport-local').Strategy;
 var passport = require('passport');
 // load up the user model
 var User = require('../models/user');
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 
 
 // =========================================================================

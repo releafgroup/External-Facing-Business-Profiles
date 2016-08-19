@@ -29,7 +29,7 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models/user.js'); 
 var authFunc = require('../utils/authfunc.js'); 
-var bcrypt = require('bcrypt'); 
+var bcrypt = require('bcryptjs'); 
 
 
 router.route('/auth/signup')

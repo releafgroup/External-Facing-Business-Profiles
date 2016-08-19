@@ -1,6 +1,6 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    bcrypt = require('bcrypt'); 
+    bcrypt = require('bcryptjs'); 
 
 // Super Simple Schema to allow access to admin dashboard
 var AdminSchema = new Schema({
