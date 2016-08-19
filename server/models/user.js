@@ -46,11 +46,11 @@ email_validation = {validator: function(email) { return re.test(email); }, messa
 
 // Create Volunteer Schema
 // _id serves as username
-var UserSchema = new Schema({
+var UserSchema = new Schema({ local: {
     password : {type : String, required: true},
     first_name : {type : String, required : true},
     last_name : {type : String, required : true},
-    email : { type  : String, required : true, validate: email_validation},
+    email : { type  : String, required : true, validate: email_validation} },
     primary_institution : { type : String, required: true, validate: primary_institution_validation},
     secondary_institution : { type : String, required: true, validate: secondary_institution_validation},
     skills : [{type : String}],
@@ -79,5 +79,30 @@ UserSchema.methods.comparePassword = function(password){
     var user = this;
     return bcrypt.compareSync(password, user.password);
 };
+
+/**
+ * Since local/facebook introduces a level of indexing,
+ * this function takes care of the added layer
+ * @param obj a User
+ * @param key eg local.password or skills
+ * @param value 
+ * Side Effects: Mutates obj
+ */
+UserSchema.methods.setItem = function (key, value) {
+    var user = this;
+    key = key.split('.');
+    if (key.length === 2) {
+        user[key[0]][key[1]] = value;
+    } else {
+        user[key[0]] = value;
+    }
+}
+
+UserSchema.methods.getItem = function (key) {
+    var user = this;
+    key = key.split('.');
+    if (key.length === 2) return user[key[0]][key[1]];
+    return user[key[0]];
+}
 
 module.exports = mongoose.model('User', UserSchema);

@@ -9,10 +9,10 @@ var super_agent2 = (require('supertest')).agent(url);
 
 var user1_id = -1;
 var user1 = {
-    "first_name" : "test_first",
-    "last_name" : "test_last",
-    "password" : "eightdigits",
-    "email" : "test1@gmail.com",
+    "local.first_name" : "test_first",
+    "local.last_name" : "test_last",
+    "local.password" : "eightdigits",
+    "local.email" : "test1@gmail.com",
     "primary_institution": "stanny",
     "secondary_institution": "odododdo",
     "skills": ["s", "f", "o"],
@@ -24,10 +24,10 @@ var user_bad_email = JSON.parse(JSON.stringify(user1));
 user_bad_email['email'] = "odddddd.com";
 
 var user_update_info = JSON.parse(JSON.stringify(user1));
-user_update_info = { "first_name" : "ififififif",
-                "last_name" : "testee",
-                "password" : "eightdigitsboy",
-                "email" : "test1@gmail.com",
+user_update_info = { "local.first_name" : "ififififif",
+                "local.last_name" : "testee",
+                "local.password" : "eightdigitsboy",
+                "local.email" : "test1@gmail.com",
                 "primary_institution": "nahhhhh",
                 "secondary_institution": "okayyyyyyyy",
                 "skills": ["c", "l", "t"],
@@ -41,10 +41,10 @@ var user_update_email_bad = JSON.parse(JSON.stringify(user1));
 user_update_email_bad['email'] = "odddddd.com";
 
 var user2 = {
-    "first_name" : "test_sec",
-    "last_name" : "test_last_sec",
-    "password" : "eightdigits",
-    "email" : "test2@gmail.com",
+    "local.first_name" : "test_sec",
+    "local.last_name" : "test_last_sec",
+    "local.password" : "eightdigits",
+    "local.email" : "test2@gmail.com",
     "primary_institution": "stanny",
     "secondary_institution": "odododdo",
     "skills" : ["s", "f", "o"],
@@ -129,7 +129,7 @@ describe('Routing', function() {
                 .expect(200)
                 .send(user1)
                 .end(function(err, res) {
-                    
+                    // console.log(res.body);
                     res.body.success.should.equal(true);
                     super_agent
                         .get('/users/')
@@ -147,6 +147,7 @@ describe('Routing', function() {
                 .put('/users/')
                 .send(user_update_info)
                 .end(function(err2, res2) {
+                    console.log(res2.body);
                     res2.body.success.should.equal(true);
                     done();
                 });
