@@ -1,13 +1,14 @@
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
-    
+        Schema = mongoose.Schema;
+
 
 // create a schema for massage
 var MessageSchema = new Schema({
-  created: Date,
-  content: String,
-  username: String,
-  room: String
+  username: {type: String, required: true},
+  room: {type: String, required: true},
+  content: {type: String}
+}, {
+  timestamps: true
 });
 
 // create a model from the message schema
