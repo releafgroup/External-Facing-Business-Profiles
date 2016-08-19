@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Project = require('../models/project.js');
 var Company = require('../models/company.js');
-var bcrypt = require('bcrypt'); 
+var bcrypt = require('bcryptjs'); 
 
 
 // Function for project error handling in saving project info
