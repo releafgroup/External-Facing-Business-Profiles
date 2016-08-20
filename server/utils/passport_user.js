@@ -3,6 +3,7 @@ var passport = require('passport');
 // load up the user model
 var User = require('../models/user');
 var bcrypt = require('bcryptjs');
+var FacebookStrategy = require('./passport_fb');
 
 
 // =========================================================================
@@ -32,11 +33,6 @@ var bcrypt = require('bcryptjs');
         passwordField : 'local.password',
         passReqToCallback : true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
     }, function(req, email, password, done) {
-        // console.log(req);
-        // done();
-    // }
-    // function(req, email, password, done) {
-    //     console.log(email, password);
         // asynchronous
         process.nextTick(function() {
             User.findOne({ 'local.email' :  email }, function(err, user) {
@@ -113,5 +109,8 @@ var bcrypt = require('bcryptjs');
         });
 
     }));
+
+    // Facebook login
+    passport.use('facebook', FacebookStrategy);
 
 module.exports = passport;

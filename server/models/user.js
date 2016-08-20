@@ -54,15 +54,27 @@ var UserSchema = new Schema(
             last_name : {type : String, required : true},
             email : { type  : String, required : true, validate: email_validation} 
         },
+        // local: {
+        //     password : String,
+        //     first_name : String,
+        //     last_name : String,
+        //     email : { type  : String} 
+        // },
 
         facebook: {
             id: {type: String, required: true},
             email: String,
-            token: {type: String, required: true},
-            last_name: {type: String, required: true},
-            first_name: {type: String, required: true}
+            token: {type: String},
+            last_name: {type: String},
+            first_name: {type: String}
         },
         
+        // primary_institution : { type : String},
+        // secondary_institution : { type : String},
+        // skills : [{type : String}],
+        // skill_ratings: [{type : String }],
+        // gender: {type: String},
+        // dob: {type: Date, validate: dob_validation}
         primary_institution : { type : String, required: true, validate: primary_institution_validation},
         secondary_institution : { type : String, required: true, validate: secondary_institution_validation},
         skills : [{type : String}],

@@ -44,7 +44,20 @@ router.route('/auth/logout')
 router.route('/auth/login')
 .post(passport.authenticate('local-login', {}), function(req, res) {return res.json({success: true, message: req.user._id});});
 
+router.get('/auth/facebook/login',
+    passport.authenticate('facebook', { scope: ['email'] }
+));
 
+router.get('/auth/facebook/login/callback',  passport.authenticate('facebook',
+        { 
+            successRedirect: '/users/faceDone',
+            failureRedirect: '/auth/facebook/login' //login page 
+        }
+    ));
+
+router.get('/faceDone', (req, res) => {
+    res.json(({success: true, message: 'hell yeah we done!'}));
+})
 
 router.route('/')
 .get(isLoggedIn, function(req, res){
