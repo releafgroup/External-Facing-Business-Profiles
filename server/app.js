@@ -11,10 +11,30 @@ var authfunc = require('./utils/authfunc.js');
 var io = require('socket.io')();
 var user_passport = require('./utils/passport_user.js');
 var session = require('express-session');
-
+var email = require('email-verification');
+var emailConfig = require('./utils/email');
 var MongoStore = require('express-session-mongo');
 
 var app = express();
+
+mongoose.Promise = global.Promise;
+if (app.get('env') == 'mocha_db') { // TODO: abstract away better/clean up code quality
+    mongoose.connect(config.mocha_database);
+} else {
+    mongoose.connect(config.database);   
+}
+
+// setup email verification
+var emailVerification = new email(mongoose);
+emailVerification.configure(emailConfig, function(err, options) {
+  if (err) { console.log(err); return; }
+  console.log('configured: ' + (typeof options === 'object'));
+});
+emailVerification.generateTempUserModel(User, function(err, tempUserModel) {
+  if (err) { console.log(err); return; }
+  console.log('generated temp user model: ' + (typeof tempUserModel === 'function'));
+});
+
 app.use(logger('dev'));
 app.use(cookieParser());
 app.use(bodyParser.json());
@@ -46,12 +66,7 @@ app.use(user_passport.initialize());
 app.use(user_passport.session()); // persistent login sessions
 app.set('io', io);
 
-mongoose.Promise = global.Promise;
-if (app.get('env') == 'mocha_db') { // TODO: abstract away better/clean up code quality
-    mongoose.connect(config.mocha_database);
-} else {
-    mongoose.connect(config.database);   
-}
+
 
 //mongoose.connection.db.sessions.ensureIndex( { "lastAccess": 1 }, { expireAfterSeconds: 3600 } )
 
