@@ -53,9 +53,9 @@ var UserSchema = new Schema(
                                                                  // social media users
 
         local: {
-            password : { type : String, required: this.fullUserFormSumitted || this.signupType === 'local' },
-            first_name : { type : String, required : this.fullUserFormSumitted || this.signupType === 'local' },
-            last_name : { type : String, required : this.fullUserFormSumitted || this.signupType === 'local' },
+            password : { type : String, required: this.signupType === 'local' },
+            first_name : { type : String, required : this.signupType === 'local' },
+            last_name : { type : String, required : this.signupType === 'local' },
             email : { type  : String, required : this.fullUserFormSumitted || this.signupType === 'local' , validate: email_validation } 
         },
 
