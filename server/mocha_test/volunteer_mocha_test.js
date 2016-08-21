@@ -92,6 +92,16 @@ describe('Routing', function() {
                     res.body.success.should.equal(true);
                     done();
                 });
+                super_agent
+                .post('/users/auth/signup')
+                .send(user2)
+                .expect(200) //Status code
+                .end(function(err, res) {
+                    console.log(res.body);
+                    user2_id = res.body.message;
+                    res.body.success.should.equal(true);
+                    done();
+                });
 
         });
 

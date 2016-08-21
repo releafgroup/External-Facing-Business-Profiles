@@ -12,6 +12,8 @@ module.exports = function (io) {
   //var db = mongoose.connection;
   //console.log("Collections:", db.collection('messages'), db.messages);
 //This route produces a list of message as filterd by 'room' query
+//57b71e36d3a81910262fd7c5
+//57b9d53b3163c5dc321f2435
   router
           .get('/messages/:room', function (req, res) {
             debug(' got messages request ', req.params)
@@ -20,7 +22,7 @@ module.exports = function (io) {
               'room': req.params.room.toLowerCase()
             }, null, {
               skip: 0, // Starting Row
-              limit: 20, // Ending Row
+              limit: 100, // Ending Row
               sort: {
                 createdAt: -1 //Sort by Date Added DESC
               }
@@ -50,29 +52,36 @@ module.exports = function (io) {
           ;
   router.route('/groups')
           //gets all saved active groups
-          //will filter later on
+          //will filter later on//{$where : 'this.members.indexOf("USERID") != -1'}
           .get(function (req, res) {
             debug(' got groups request ', req.query)
-
-//            Find
-            Groups.find({
-              status: true
-            }).exec(function (err, groups) {
-              //Send
-              debug('Found saved groups  Count' + groups.length)
-              res.json(groups);
+            getGroups(function (err, groups) {
+              if (err)
+                return res.json({success: false, message: err.message});
+              res.json({success: true, groups: groups});
             });
+//           
           })
           //add new group//with members//
           .post(function (req, res) {
-            debug('groups post request ', req.body)
-            var members = JSON.parse(req.body.members);
-            if (!req.body.private) {
-              var query = req.body.name;
-            } else {
+            var user = "57b6fda08edf43040d2c9574";//req.session.passport.user;
 
-              var query = {"$in": [req.session.passport.user + "_private_" + req.req.body.members[0], req.req.body.members[0] + "_private_" + req.session.passport.user]}
+            debug('groups post request ', user)
+            var members = JSON.parse(req.body.members);
+            debug('members ', members)
+            if (req.body.type == 'private') {
+
+              debug('private  ', user + "_private_" + members[0])
+              var query = {"$in": [
+                  user + "_private_" + members[0],
+                  members[0] + "_private_" + user
+                ]}
+              debug(' query ', query)
+              var private = true;
+            } else {
+              var query = req.body.name;
             }
+            //debug('query ', query)
             Groups.findOne({
               'name': query
             }).exec(function (err, group) {
@@ -83,20 +92,20 @@ module.exports = function (io) {
                 //send error that this group name is taken already
                 return res.json({success: false, message: handleGroupSaveError({code: 11000})});
               }
+              debug(' not found ')
 
 
 
-
-              var owner = req.session.passport.user;//for now we keep it blank//this should be req.session.passport.user
-              members.unshift(req.session.passport.user);
+              var owner = user;//for now we keep it blank//this should be req.session.passport.user
+              members.unshift(user);
               var groupData = {
                 name: req.body.name, //uniq
                 owner: owner,
                 members: members
               };
-              if (req.body.private) {
+              if (private) {
                 groupData.name = members.join('_private_');
-                groupData.type = req.body.private;
+                groupData.type = req.body.type;
               }
               // Populate Information to group instance
               var group = new Groups(groupData);
@@ -110,6 +119,7 @@ module.exports = function (io) {
           });
   router.route('/groups/:name')
           //make inactive a group
+
           .put(function (req, res) {
             debug('groups put request ', req.params)
             Groups.findOne({name: req.params.name}).exec(function (err, doc) {
@@ -170,6 +180,21 @@ module.exports = function (io) {
             });
           });
   ///general functtions
+  function getGroups(option, cb) {
+//     Find
+    var query = {status: true};
+    if (typeof option == 'function') {
+      cb = option;
+    } else {
+      option.username = "57b6fda08edf43040d2c9574";
+      if (option.username) {
+        query.members = option.username;
+      }
+    }
+    Groups.find(query // "57b6fda08edf43040d2c9574",//to get only that users saved groups
+            ).exec(cb);
+
+  }
   function handleGroupSaveError(err) {
     // Check if business name already exists
     if (err.code == 11000) {
@@ -206,7 +231,7 @@ module.exports = function (io) {
 //      rooms: rooms //will implement rooms from database later on//actually saved groups
 //    });
 
-    
+
     //Listens for new user
     socket.on('user:new', function (data) {
       debug('on new user event ', data);
@@ -215,11 +240,15 @@ module.exports = function (io) {
       }
       username = data.username;
       data.room = defaultRoom;
-      socket.emit('init', {username: username, room:data.room, users: usersOnline});
       //New user joins the default room
       socket.join(defaultRoom);
-      //Tell all those in the room that a new user joined
-      io.in(defaultRoom).emit('user:joined', data);
+      getGroups({
+        username: username
+      }, function (err, groups) {
+        socket.emit('init', {username: username, room: data.room, users: usersOnline, groups: groups});
+        //Tell all those in the room that a new user joined
+        io.in(defaultRoom).emit('user:joined', data);
+      });
     });
 //Listens for switch room
     socket.on('switch room', function (data) {
@@ -266,7 +295,7 @@ module.exports = function (io) {
     });
     socket.on('disconnect', function () {
       debug("disconnected client ", username); //If Verbose Debug
-      usersOnline.splice(usersOnline.indexOf(username), username);
+      usersOnline.splice(usersOnline.indexOf(username), 1);
       socket.broadcast.emit('user:left', {
         username: username
       });
