@@ -94,11 +94,12 @@ router.route('/')
                 if (user.getItem(a) !== req.body[a]) return res.json({ success: false, message : "You cannot modify the id"}); // TODO: check
             }
         }
-        if (user.signupType !== 'local') { user.fullUserFormSumitted = true } // start requiring default fields
+
         user.save(function(err){                                                                           
             if(err){                                                                                       
                return res.json({success: false, message: handleUserSaveError(err)});                                                                   
-            }                                                                                              
+            }
+            if (user.signupType !== 'local') { user.fullUserFormSumitted = true } // start requiring default fields
             return res.json({success: true});                                                  
         });         
     }); 
