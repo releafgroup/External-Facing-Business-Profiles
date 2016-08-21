@@ -10,6 +10,8 @@ var Project = require('../models/project.js');
 var VolunteerAssignment = require('../models/volunteer_assignment.js'); 
 var bcrypt = require('bcryptjs'); 
 var user_functions = require('../utils/user_functions.js');
+var company_functions = require('../utils/company_functions.js');
+var project_functions = require('../utils/project_functions.js');
 
 
 //////////////////////////////////////////////////// GET REQUESTS ///////////////////
@@ -36,22 +38,15 @@ router.route('/volunteers/:id')
 router.route('/companies')
 .get(function(req, res){
 
-    Company.find(function(err, companies){
-        if(err) return res.json({success: false, message: err.message}); 
-        res.json(companies); 
-    });
+    return company_functions.getAllCompanies(req, res);
+
 });
 
 // Get single company
 router.route('/companies/:id')
 .get(function(req, res){
-    Company.findOne({
-         '_id':req.params.id
-    }, function(err, company){
-        if(!company) return res.json({ success : false , message : 'Company not found'}); 
-        if(err) return res.json({success: false, message: err.message});
-        res.json(company);   
-    }); 
+
+    return company_functions.getCompanyById(req.params.id, req, res);
 
 })
 
@@ -59,24 +54,16 @@ router.route('/companies/:id')
 // TODO: implement paging later
 router.route('/projects')
 .get(function(req, res){
-
-    Project.find(function(err, projects){
-        if(err) return res.json({success: false, message: err.message}); 
-        res.json(projects); 
-    });
+    
+    return project_functions.getAllProjects(req, res);
 });
 
 // Get single project
 router.route('/projects/:id')
 .get(function(req, res){ // TODO: add in extracting info from company
-    Project.findOne({
-         '_id':req.params.id
-    }, function(err, project){
-        if(!project) return res.json({ success : false , message : 'Project not found'}); 
-        if(err) return res.json({success: false, message: err.message});
-        res.json(project);   
-    }); 
-
+    
+    return project_functions.getProjectById(req.params.id, req, res);
+    
 })
 ///////////////////////////////////////////////////////////////////////
 

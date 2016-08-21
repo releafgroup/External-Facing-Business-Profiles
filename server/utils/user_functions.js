@@ -81,7 +81,7 @@ exports.getAllUsers = function(req, res) {
     
     User.find(function(err, users){
         if(err) return res.json({success: false, message: err.message}); 
-        res.json(users); 
+        res.json({success: true, message: users}); 
     });
 
 }
