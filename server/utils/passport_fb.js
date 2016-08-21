@@ -4,6 +4,9 @@ var User = require('../models/user');
 
 var HOST_DOMAIN = 'http://localhost:3000';
 
+/**
+ * FacebookStrategy to be used by passport during authentication.
+ */
 module.exports = new FacebookStrategy({
     clientID: secret.facebook.id,
     clientSecret: secret.facebook.secret,
@@ -25,7 +28,7 @@ module.exports = new FacebookStrategy({
                     last_name: profile.name.familyName
                 },
 
-                signupType: 'facebook'
+                signupType: 'facebook' // allows db to save user even though some fields are missing
             });
 
             newUser.save(function(err) {
