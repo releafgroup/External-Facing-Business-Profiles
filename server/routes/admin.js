@@ -9,6 +9,7 @@ var User = require('../models/user.js');
 var Project = require('../models/project.js'); 
 var VolunteerAssignment = require('../models/volunteer_assignment.js'); 
 var bcrypt = require('bcryptjs'); 
+var user_functions = require('../utils/user_functions.js');
 
 
 //////////////////////////////////////////////////// GET REQUESTS ///////////////////
@@ -18,23 +19,15 @@ var bcrypt = require('bcryptjs');
 router.route('/volunteers')
 .get(function(req, res){
 
-    User.find(function(err, users){
-        if(err) return res.json({success: false, message: err.message}); 
-        res.json(users); 
-    });
+    return user_functions.getAllUsers(req, res);    
 
 });
 
 // Get single volunteer
 router.route('/volunteers/:id')
 .get(function(req, res){
-    User.findOne({
-         '_id':req.params.id
-    }, function(err, user){
-        if(!user) return res.json({ success : false , message : 'User not found'}); 
-        if(err) return res.json({success: false, message: err.message});
-        res.json(user);   
-    }); 
+
+    return user_functions.getUserById(req.params.id, req, res);
 
 })
 

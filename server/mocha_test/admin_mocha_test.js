@@ -8,8 +8,7 @@ var config = require('../config.js');
 // Checks if users can be retrieved, companies retrieved, and if assignments can be made
 // SUPER IMPORTANT NOTE: throughout the test cases we may modify these variables. the modifications persist across all of the test cases after any modification
 
-
-
+var user1_id = -1;
 var user1 = {
     "first_name" : "test_first",
     "last_name" : "test_last",
@@ -17,32 +16,25 @@ var user1 = {
     "email" : "test1@gmail.com",
     "primary_institution": "stanny",
     "secondary_institution": "odododdo",
-    "skill_1": "s",
-    "skill_2": "f",
-    "skill_3": "o",
-    "skill_1_rating": 2,
-    "skill_2_rating": 4,
-    "skill_3_rating": 3,
+    "skills": ["s", "f", "o"],
+    "skill_ratings": [1, 2, 3],
     "gender": "Female",
     "dob": "2016-06-07"
 }
 
 var user2 = {
-    "first_name" : "test_first_2",
-    "last_name" : "test_last_2",
+    "first_name" : "test_sec",
+    "last_name" : "test_last_sec",
     "password" : "eightdigits",
     "email" : "test2@gmail.com",
     "primary_institution": "stanny",
     "secondary_institution": "odododdo",
-    "skill_1": "s",
-    "skill_2": "f",
-    "skill_3": "o",
-    "skill_1_rating": 2,
-    "skill_2_rating": 4,
-    "skill_3_rating": 3,
-    "gender": "Male",
+    "skills" : ["s", "f", "o"],
+    "skill_ratings" : [2, 4, 3],
+    "gender": "Female",
     "dob": "2016-06-07"
 }
+var user2_id = -1;
 
 var company1 = {
     "business_name" : "business_first",
@@ -116,8 +108,6 @@ describe('Routing', function() {
         });
         done();
     });
-    var user1_id = -1;
-    var user2_id = -1;
     var comp1_id = -1;
     var proj1_id = -1;
     var proj2_id = -1;
