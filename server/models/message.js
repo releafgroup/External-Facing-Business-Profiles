@@ -6,7 +6,9 @@ var mongoose = require('mongoose'),
 var MessageSchema = new Schema({
   username: {type: String, required: true},
   room: {type: String, required: true},
-  content: {type: String}
+  content: {type: String},
+  type: {type: String, default: "group", enum: ['group', 'private']},
+  to: {type: String}//private(direct-user to user)//group
 }, {
   timestamps: true
 });

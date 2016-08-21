@@ -2,7 +2,8 @@ var express = require('express');
 
 module.exports = function (io) {
 
-  //var mongoose = require('mongoose'); //get collection mongoose.connections[0].collections;
+  var usersOnline = [];
+//var mongoose = require('mongoose'); //get collection mongoose.connections[0].collections;
   var debug = require('debug')('server:io');
   var router = express.Router();
   var Message = require('../models/message.js');
@@ -17,9 +18,15 @@ module.exports = function (io) {
             //Find
             Message.find({
               'room': req.params.room.toLowerCase()
+            }, null, {
+              skip: 0, // Starting Row
+              limit: 20, // Ending Row
+              sort: {
+                createdAt: -1 //Sort by Date Added DESC
+              }
             }).exec(function (err, msgs) {
               //Send
-              debug('Found saved messages for room ' + req.query.room.toLowerCase(), " Count" + msgs.length)
+              debug('Found saved messages for room ' + req.params.room.toLowerCase(), " Count" + msgs.length)
               res.json(msgs);
             });
           })
@@ -59,8 +66,15 @@ module.exports = function (io) {
           //add new group//with members//
           .post(function (req, res) {
             debug('groups post request ', req.body)
+            var members = JSON.parse(req.body.members);
+            if (!req.body.private) {
+              var query = req.body.name;
+            } else {
+
+              var query = {"$in": [req.session.passport.user + "_private_" + req.req.body.members[0], req.req.body.members[0] + "_private_" + req.session.passport.user]}
+            }
             Groups.findOne({
-              'name': req.body.name
+              'name': query
             }).exec(function (err, group) {
               if (err) {
                 return res.json({success: false, message: handleGroupSaveError(err)});
@@ -71,15 +85,19 @@ module.exports = function (io) {
               }
 
 
-              var members = JSON.parse(req.body.members);
 
-              var owner = '';//req.session.passport.user;//for now we keep it blank//this should be req.session.passport.user
-              
+
+              var owner = req.session.passport.user;//for now we keep it blank//this should be req.session.passport.user
+              members.unshift(req.session.passport.user);
               var groupData = {
                 name: req.body.name, //uniq
                 owner: owner,
                 members: members
               };
+              if (req.body.private) {
+                groupData.name = members.join('_private_');
+                groupData.type = req.body.private;
+              }
               // Populate Information to group instance
               var group = new Groups(groupData);
               group.save(function (err, group) {
@@ -90,8 +108,6 @@ module.exports = function (io) {
               });
             })
           });
-
-
   router.route('/groups/:name')
           //make inactive a group
           .put(function (req, res) {
@@ -127,10 +143,9 @@ module.exports = function (io) {
       });
     });
   });
-
   //add remove group members any time
   router
-          .route('/groups/:name/member/:id/')//id===username/email
+          .route('/groups/:name/member/:id')//id===username/email
           .post(function (req, res) {
 
             Groups.update(
@@ -143,7 +158,7 @@ module.exports = function (io) {
             });
           })
           .delete(function (req, res) {
-            // TODO: delete associated projects
+            // TODO: delete associated 
             Groups.update(
                     {name: req.params.name},
                     {$pull: {'members': req.params.id}}
@@ -155,7 +170,6 @@ module.exports = function (io) {
             });
           });
   ///general functtions
-  // Function for company error handling in saving company info
   function handleGroupSaveError(err) {
     // Check if business name already exists
     if (err.code == 11000) {
@@ -182,7 +196,8 @@ module.exports = function (io) {
 //Listen for connection socket 
   io.on('connection', function (socket) {
 
-    debug('new connection');
+    var username = '';
+    debug('new connection ');//socket.request
     var defaultRoom = 'general';
     //var rooms = ["General", "private"];
 
@@ -191,14 +206,20 @@ module.exports = function (io) {
 //      rooms: rooms //will implement rooms from database later on//actually saved groups
 //    });
 
+    
     //Listens for new user
-    socket.on('new user', function (data) {
+    socket.on('user:new', function (data) {
       debug('on new user event ', data);
+      if (usersOnline.indexOf(data.username) == -1) {
+        usersOnline.push(data.username);
+      }
+      username = data.username;
       data.room = defaultRoom;
+      socket.emit('init', {username: username, room:data.room, users: usersOnline});
       //New user joins the default room
       socket.join(defaultRoom);
       //Tell all those in the room that a new user joined
-      io.in(defaultRoom).emit('user joined', data);
+      io.in(defaultRoom).emit('user:joined', data);
     });
 //Listens for switch room
     socket.on('switch room', function (data) {
@@ -210,20 +231,27 @@ module.exports = function (io) {
       io.in(data.newRoom).emit('user joined', data);
     });
     //Listens for a new chat message
-    socket.on('message', function (data) {
+    socket.on('send:message', function (data) {
       debug('on message event with ', data);
       //Create message
-      var newMsg = new Message({
+      var msgNew = {
         username: data.username,
-        content: data.message,
-        room: data.room.toLowerCase(),
-        created: new Date()
-      });
+        content: data.content,
+        room: data.room.toLowerCase()
+      };
+      if (data.type) {
+        msgNew.type = data.type;
+      }
+      if (data.to) {
+        msgNew.to = data.to;
+      }
+      var newMsg = new Message(msgNew);
       //Save it to database
       newMsg.save(function (err, msg) {
         if (err) {
           debug('Error saving message', err);
-          return;
+          socket.emit('error', {success: false, message: err.message});
+          // return ;
         }
         //implementation of private person to person message later on
         //if(msg.private && meg.to){
@@ -232,12 +260,16 @@ module.exports = function (io) {
         //}
 
         //Send message to those connected in the room
-        debug('Saved  message', msg.room);
-        io.in(msg.room).emit('message', msg);
+        debug('sending message', msg.room);
+        io.in(msg.room).emit('send:message', msg);
       });
     });
     socket.on('disconnect', function () {
-      debug("disconnected client"); //If Verbose Debug
+      debug("disconnected client ", username); //If Verbose Debug
+      usersOnline.splice(usersOnline.indexOf(username), username);
+      socket.broadcast.emit('user:left', {
+        username: username
+      });
     });
   });
   //end of socket server implementation
