@@ -50,14 +50,11 @@ router.get('/auth/facebook/login',
 
 router.get('/auth/facebook/login/callback',  passport.authenticate('facebook',
         { 
-            successRedirect: '/users/faceDone',
-            failureRedirect: '/auth/facebook/login' //login page 
+            successRedirect: '/users/',
+            failureRedirect: '/users/auth/facebook/login' //login page 
         }
-    ));
+));
 
-router.get('/faceDone', (req, res) => {
-    res.json(({success: true, message: 'hell yeah we done!'}));
-})
 
 router.route('/')
 .get(isLoggedIn, function(req, res){
@@ -81,7 +78,7 @@ router.route('/')
         if(!user) return res.json({ success : false , message : 'User not found'});
         if(err) return res.json({success: false, message: err.message});
         for( a in req.body){
-            if(a !== "id" && a !== 'local.email' && a !== "_id"){
+            if(a !== "id" && a !== 'local.email' && a !== "_id" && a !== 'facebook.id'){
                 user[a]  = req.body[a];   
                 if(a === "local.password"){
                     if ((req.body[a].length < 8 || req.body[a].length > 64)) {
@@ -91,10 +88,13 @@ router.route('/')
                 }
             } else if (a === 'local.email') {
                 if (req.body[a] !== user.getItem(a)) return res.json({ success: false, message : "You cannot modify the email"});
+            } else if (a === 'facebook.id') {
+                if (req.body[a] !== user.getItem(a)) return res.json({ success: false, message : "You cannot modify the facebook id"});
             } else {
                 if (user.getItem(a) !== req.body[a]) return res.json({ success: false, message : "You cannot modify the id"}); // TODO: check
             }
         }
+        if (user.signupType !== 'local') { user.fullUserFormSumitted = true } // start requiring default fields
         user.save(function(err){                                                                           
             if(err){                                                                                       
                return res.json({success: false, message: handleUserSaveError(err)});                                                                   

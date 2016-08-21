@@ -36,7 +36,6 @@ var FacebookStrategy = require('./passport_fb');
         // asynchronous
         process.nextTick(function() {
             User.findOne({ 'local.email' :  email }, function(err, user) {
-                console.log(password);
                 // if there are any errors, return the error
                 if (err)
                     return done(err);
@@ -100,7 +99,7 @@ var FacebookStrategy = require('./passport_fb');
                     newUser.save(function(err) {
                         if (err) {
                             console.log(err);
-                            return done(null, false, {message: err.message});
+                            return done(null, false, {success: false, message: err.message});
                         }
                         return done(null, newUser);
                     });
