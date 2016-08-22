@@ -3,6 +3,7 @@ var passport = require('passport');
 // load up the user model
 var User = require('../models/user');
 var bcrypt = require('bcryptjs');
+var FacebookStrategy = require('./passport_fb');
 
 
 // =========================================================================
@@ -28,18 +29,16 @@ var bcrypt = require('bcryptjs');
     // =========================================================================
     passport.use('local-login', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
-        usernameField : 'email',
-        passwordField : 'password',
+        usernameField : 'local.email',
+        passwordField : 'local.password',
         passReqToCallback : true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
-    },
-    function(req, email, password, done) {
+    }, function(req, email, password, done) {
         // asynchronous
         process.nextTick(function() {
-            User.findOne({ 'email' :  email }, function(err, user) {
+            User.findOne({ 'local.email' :  email }, function(err, user) {
                 // if there are any errors, return the error
                 if (err)
                     return done(err);
-
                 // if no user is found, return the message
                 if (!user)
                     return done(null, false, {message: 'No user found.'});
@@ -58,8 +57,8 @@ var bcrypt = require('bcryptjs');
     // =========================================================================
     passport.use('local-signup', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
-        usernameField : 'email',
-        passwordField : 'password',
+        usernameField : 'local.email',
+        passwordField : 'local.password',
         passReqToCallback : true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
     },
     function(req, email, password, done) {
@@ -67,7 +66,7 @@ var bcrypt = require('bcryptjs');
         process.nextTick(function() {
             //  Whether we're signing up or connecting an account, we'll need
             //  to know if the email address is in use.
-            User.findOne({'email': email}, function(err, existingUser) {
+            User.findOne({'local.email': email}, function(err, existingUser) {
 
                 // if there are any errors, return the error
                 if (err)
@@ -82,26 +81,25 @@ var bcrypt = require('bcryptjs');
                     // create the user
                     var newUser = new User();
                     for( a in req.body){
-                        if(a!= "password" && a != "skills" && a != "skill_ratings"){
-                            newUser[a]  = req.body[a];   
-                        } else if (a == "password") {
-                           if (req.body.password.length < 8 || req.body.password.length > 64) {
+                        if(a !== "local.password" && a !== "skills" && a !== "skill_ratings"){
+                            newUser.setItem(a, req.body[a]);
+                        } else if (a === "local.password") {
+                           if (req.body[a].length < 8 || req.body[a].length > 64) {
                                 return res.json({success: false, message: "Password not valid"}); // TODO: move to user.js
                            }
-                           newUser[a] = newUser.generateHash(req.body[a]);                 
+                           newUser.setItem(a, newUser.generateHash(req.body[a]));
                         } else {
                             var arr = [];
                             for (var prop in req.body[a]) {
                                 arr.push(req.body[a][prop]);
                             }
-                            
-                            newUser[a] = arr;
+                            newUser.setItem(a, arr);
                         }
                     }
                     newUser.save(function(err) {
                         if (err) {
                             console.log(err);
-                            return done(null, false, {message: err.message});
+                            return done(null, false, {success: false, message: err.message});
                         }
                         return done(null, newUser);
                     });
@@ -111,5 +109,7 @@ var bcrypt = require('bcryptjs');
 
     }));
 
+    // Facebook login
+    passport.use('facebook', FacebookStrategy);
 
 module.exports = passport;

@@ -3,16 +3,20 @@ var assert = require('assert');
 var request = require('supertest');  
 var mongoose = require('mongoose');
 var config = require('../config.js');
-var url = 'http://localhost:3000';
+var path = require('path');
+var env = require('node-env-file');
+
+env(path.join(__dirname, '../.env'));
+var url = process.env.HOST_DOMAIN;
 var super_agent = request.agent(url);
 var super_agent2 = (require('supertest')).agent(url);
 
 var user1_id = -1;
 var user1 = {
-    "first_name" : "test_first",
-    "last_name" : "test_last",
-    "password" : "eightdigits",
-    "email" : "test1@gmail.com",
+    "local.first_name" : "test_first",
+    "local.last_name" : "test_last",
+    "local.password" : "eightdigits",
+    "local.email" : "test1@gmail.com",
     "primary_institution": "stanny",
     "secondary_institution": "odododdo",
     "skills": ["s", "f", "o"],
@@ -21,13 +25,13 @@ var user1 = {
     "dob": "2016-06-07"
 }
 var user_bad_email = JSON.parse(JSON.stringify(user1));
-user_bad_email['email'] = "odddddd.com";
+user_bad_email['local.email'] = "odddddd.com";
 
 var user_update_info = JSON.parse(JSON.stringify(user1));
-user_update_info = { "first_name" : "ififififif",
-                "last_name" : "testee",
-                "password" : "eightdigitsboy",
-                "email" : "test1@gmail.com",
+user_update_info = { "local.first_name" : "ififififif",
+                "local.last_name" : "testee",
+                "local.password" : "eightdigitsboy",
+                "local.email" : "test1@gmail.com",
                 "primary_institution": "nahhhhh",
                 "secondary_institution": "okayyyyyyyy",
                 "skills": ["c", "l", "t"],
@@ -38,13 +42,13 @@ user_update_info = { "first_name" : "ififififif",
 var user_update_id_bad = JSON.parse(JSON.stringify(user1));
 user_update_id_bad['id'] = '122222222';
 var user_update_email_bad = JSON.parse(JSON.stringify(user1));
-user_update_email_bad['email'] = "odddddd.com";
+user_update_email_bad['local.email'] = "odddddd.com";
 
 var user2 = {
-    "first_name" : "test_sec",
-    "last_name" : "test_last_sec",
-    "password" : "eightdigits",
-    "email" : "test2@gmail.com",
+    "local.first_name" : "test_sec",
+    "local.last_name" : "test_last_sec",
+    "local.password" : "eightdigits",
+    "local.email" : "test2@gmail.com",
     "primary_institution": "stanny",
     "secondary_institution": "odododdo",
     "skills" : ["s", "f", "o"],
@@ -87,7 +91,6 @@ describe('Routing', function() {
                 .send(user1)
                 .expect(200) //Status code
                 .end(function(err, res) {
-                    console.log(res.body);
                     user1_id = res.body.message;
                     res.body.success.should.equal(true);
                     done();
@@ -129,7 +132,6 @@ describe('Routing', function() {
                 .expect(200)
                 .send(user1)
                 .end(function(err, res) {
-                    
                     res.body.success.should.equal(true);
                     super_agent
                         .get('/users/')
@@ -147,6 +149,7 @@ describe('Routing', function() {
                 .put('/users/')
                 .send(user_update_info)
                 .end(function(err2, res2) {
+                    console.log(res2.body);
                     res2.body.success.should.equal(true);
                     done();
                 });
@@ -245,61 +248,7 @@ describe('Routing', function() {
     });
 
     describe('tests that must have signed in user to access user routes', function() {
-    /*
-        it('creates another user', function(done) {
-            super_agent2
-                .post('/users/auth/signup')
-                .send(user2)
-                .end(function(err, res) {
-                    user2_id = res.body.message;
-                    res.body.success.should.equal(true);
-                    done();
-                });
-        });
-
-        it('tests that user2 cannot access user 1 info', function(done) {
-            super_agent2
-                .get('/users/')
-                .end(function(err, res) {
-                    console.log(res.body);
-                    res.body.success.should.not.equal(true);
-                    done();
-                });
-        });
-
-        it('tests that user1 cannot access user 2 info', function(done) {
-            super_agent
-                .get('/users/')
-                .end(function(err, res) {
-                    console.log(res.body);
-                    res.body.success.should.not.equal(true);
-                    done();
-                });
-        });
-
-        it('tests that user1 cannot delete user 2 info', function(done) {
-            super_agent
-                .delete('/users/')
-                .end(function(err, res) {
-                    console.log(res.body);
-                    res.body.success.should.not.equal(true);
-                    done();
-                });
-        });
-
-        it('tests that user1 cannot update user 2 info', function(done) {
-            super_agent
-                .put('/users/')
-                .send(user1)
-                .end(function(err, res) {
-                    console.log(res.body);
-                    res.body.success.should.not.equal(true);
-                    done();
-                });
-        });
-
-    */
-
+    
         it('tests non-signed in user cannot access /users', function(done) {
             request(url)
                 .get('/users/')
