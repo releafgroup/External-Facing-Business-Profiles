@@ -1,14 +1,28 @@
-var express = require('express');
 
 module.exports = function (io) {
+  var moment = require('moment');
 
+  var config = require('./../config');
+  
+
+  var schedule = require('node-schedule');
+  
+  var express = require('express');
+  
+  var spanHours = 34;
+  var cronString = '39 * * * *';//4 hours// * */4 * * *
   var usersOnline = [];
+  var msgQ = [];
+  var userSockets = {};
 //var mongoose = require('mongoose'); //get collection mongoose.connections[0].collections;
   var debug = require('debug')('server:io');
   var router = express.Router();
-  var Message = require('../models/message.js');
+  var Message = require('./../models/message.js');
   //var authFunc = require('../utils/authfunc.js');
-  var Groups = require('../models/chat_groups.js');
+  var Groups = require('./../models/chat_groups.js');
+  
+  var nodemailer = require('./controller/nodeMailer.js');
+  nodemailer.setupTransport(config.mailConfig.smtp);
   //var db = mongoose.connection;
   //console.log("Collections:", db.collection('messages'), db.messages);
 //This route produces a list of message as filterd by 'room' query
@@ -64,7 +78,7 @@ module.exports = function (io) {
           })
           //add new group//with members//
           .post(function (req, res) {
-            var user = "57b6fda08edf43040d2c9574";//req.session.passport.user;
+            var user = "57b6fda08edf43040d2c9574"; //req.session.passport.user;
 
             debug('groups post request ', user)
             var members = JSON.parse(req.body.members);
@@ -96,7 +110,7 @@ module.exports = function (io) {
 
 
 
-              var owner = user;//for now we keep it blank//this should be req.session.passport.user
+              var owner = user; //for now we keep it blank//this should be req.session.passport.user
               members.unshift(user);
               var groupData = {
                 name: req.body.name, //uniq
@@ -193,7 +207,6 @@ module.exports = function (io) {
     }
     Groups.find(query // "57b6fda08edf43040d2c9574",//to get only that users saved groups
             ).exec(cb);
-
   }
   function handleGroupSaveError(err) {
     // Check if business name already exists
@@ -216,13 +229,96 @@ module.exports = function (io) {
     }
     return err.message;
   }
+  var isOnline = function (userId) {
+    return usersOnline.indexOf(userId) != -1;
+  }
+  //get emails by user
+  var getQueuedPrivateMsg = function (cb, options) {
+    Message.find({
+//      'room': req.params.room.toLowerCase(),
+      type: 'private',
+//      from: options.from,
+//      to: options.to,
+      createdAt: {$gt: new Date() - (spanHours * 60 * 60 * 1000) - 10 * 1000}//-10 second rewind
+
+    }, null, {
+      skip: 0, // Starting Row
+      limit:2,
+      sort: {
+        createdAt: 1 //Sort by Date Added DESC
+      }
+    }).exec(function (err, msgs) {
+      //Send
+      debug('Found saved messages for user ' + options.to + ' Count ' + msgs.length)
+//      res.json(msgs);
+      cb(err, msgs);
+    });
+  }
+  ///
+  function formatTime(dateStr) {
+    return moment(dateStr).format('LT');
+  }
+  function formatMessage(msg) {
+    return "<br>At: " + formatTime(msg.createdAt) + " <br> " + msg.content + " <br>" + msg.createdAt + "<br>";
+  }
+  //will get the array of the queue and get all messages for each users to send and get the email of the user
+  //then send emails
+
+
+  function filterByUser(msgs) {
+    var d = {};
+
+    for (var i in msgs) {
+      var msg = msgs[i];
+ debug("Msg", msgs[i]);
+      if (!d[msg.to]) {
+        d[msg.to] = {};
+        d[msg.to].messages = [];
+        d[msg.to].html = '';
+      }
+      d[msg.to].html += formatMessage(msg);
+      d[msg.to].messages.push(msg);
+    }
+    return d;
+  }
+
+
+///here will run cron job acording to the string top
+//  var j = schedule.scheduleJob(cronString, function (y) {
+//    console.log('The answer to life, the universe, and everything!', new Date());
+
+    getQueuedPrivateMsg(function (err, msgs) {
+      //will get all messages for last 4 hours
+      //now will filter by user and send emails 
+      var filteredMsg = filterByUser(msgs);//filteredMsg[idTo]//somehow we need to get the emails of the id users
+      debug("Msgs", filteredMsg);
+      for (var i in filteredMsg) {
+        (function (msg) {
+         
+          var mailOptions = {
+            from: 'Mustak <tester0715@gmail.com', // sender address
+            to: 'mahmed0715@gmail.com', // list of receivers
+            subject: "Unread message from " + msg.messages[0].username, // Subject line
+            html: msg.html // html body
+          };
+          nodemailer.sendMail(mailOptions);
+        })(filteredMsg[i]);
+      }
+
+
+    }, {
+      //option here
+    });
+//  })
+
+
 
   /*|||||||||||||||| SOCKET CONNECTION for messenger |||||||||||||||||||||||*/
 //Listen for connection socket 
   io.on('connection', function (socket) {
 
     var username = '';
-    debug('new connection ');//socket.request
+    debug('new connection '); //socket.request
     var defaultRoom = 'general';
     //var rooms = ["General", "private"];
 
@@ -238,7 +334,9 @@ module.exports = function (io) {
       if (usersOnline.indexOf(data.username) == -1) {
         usersOnline.push(data.username);
       }
+
       username = data.username;
+      userSockets[username] = socket;
       data.room = defaultRoom;
       //New user joins the default room
       socket.join(defaultRoom);
@@ -291,6 +389,12 @@ module.exports = function (io) {
         //Send message to those connected in the room
         debug('sending message', msg.room);
         io.in(msg.room).emit('send:message', msg);
+        if (msg.type == 'private') {
+          if (!isOnline(msg.to)) {
+            if (msgQ.index(msg.to == -1))
+              msgQ.push(msg.to);
+          }
+        }
       });
     });
     socket.on('disconnect', function () {
