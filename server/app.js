@@ -11,6 +11,7 @@ var authfunc = require('./utils/authfunc.js');
 var io = require('socket.io')();
 var user_passport = require('./utils/passport_user.js');
 var session = require('express-session');
+var multer = require('multer');
 
 var MongoStore = require('express-session-mongo');
 
@@ -19,6 +20,10 @@ app.use(logger('dev'));
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({dest: './uploads/'})); //catch all multipart data, fileuploads automatically and stores the file to ‘uploads/’ folder.
+
+//TODO: Front end to have a form tag, with its action pointed to the express route. 
+//Fileupload handling will be taken care automatically and all file moved to ‘uploads’ folder.
 
 // TODO: maybe switch to cors plugin
 app.use(function (req, res, next) {
@@ -62,12 +67,14 @@ var companies = require('./routes/companies');
 var admin = require('./routes/admin');
 var projects = require('./routes/projects');
 var messenger = require('./routes/messenger')(app.get('io'));
+var uploads = require('./routes/uploads');
 app.use('/', routes);                                                                                  
 app.use('/users', users); 
 app.use('/companies', companies);
 app.use('/admin', admin);
 app.use('/projects', projects);
 app.use('/messenger', messenger);
+app.use('/uploads',uploads);
 app.use(authfunc);
 
 
