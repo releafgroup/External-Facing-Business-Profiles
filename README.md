@@ -50,6 +50,16 @@ Install [nodeJs][1] and [npm][2] on your system
 
 ## Configuration
 
+### Setting up facebook login ###
+
+* Go to the [facebook developer console](https://developers.facebook.com/apps) and create a test app.
+
+* Under `products->Facebook Login`, Add the following urls to the list of `Valid OAuth redirect URIs`. ${url} is the host name
+	* `${url}/users/auth/facebook/login`
+	* `${url}/users/auth/facebook/login/callback`
+
+To run the `volunteer_fb_login.test.js` test, make sure you have `secret.facebook.[fbEmail|fbPassword]` point to your email and password for facebook.
+
 ## Database Creation
 
 ## How to run the test Suite
