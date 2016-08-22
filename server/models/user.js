@@ -93,13 +93,13 @@ UserSchema.index({email: 1}, {unique: true}); // TODO: figure out why this doesn
 
 UserSchema.path('skills').validate(function(arr){
     if (this.fullUserFormSumitted || this.signupType === 'local') {
-        return array_validation(arr, false);
+        return skills_validation(arr);
     } return true;
 }, val_messages['skills'][app.get('env')]);
 
 UserSchema.path('skill_ratings').validate(function(arr){
     if (this.fullUserFormSumitted || this.signupType === 'local') {
-        return array_validation(arr, true);
+        return ratings_validation(arr);
     } return true;
 }, val_messages['skill_ratings'][app.get('env')]);
 

@@ -3,7 +3,11 @@ var assert = require('assert');
 var request = require('supertest');  
 var mongoose = require('mongoose');
 var config = require('../config.js');
-var url = 'http://localhost:3000';
+var path = require('path');
+var env = require('node-env-file');
+
+env(path.join(__dirname, '../.env'));
+var url = process.env.HOST_DOMAIN;
 var super_agent = request.agent(url);
 var super_agent2 = (require('supertest')).agent(url);
 

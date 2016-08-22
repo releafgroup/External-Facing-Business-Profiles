@@ -5,8 +5,11 @@ var mongoose = require('mongoose');
 var config = require('../config.js');
 var secret = require('../../secret').secret;
 var Browser = require('zombie');
-var url = 'http://localhost:3000';
-var super_agent = request.agent(url);
+var path = require('path');
+var env = require('node-env-file');
+
+env(path.join(__dirname, '../.env'));
+var url = process.env.HOST_DOMAIN;
 Browser.localhost(url, 2000);
 
 user_update_info = { "local.first_name" : "ififififif",
