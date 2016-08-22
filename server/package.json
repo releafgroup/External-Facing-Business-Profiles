@@ -27,6 +27,7 @@
     "socket.io": "^1.4.8",
     "socket.io-client": "^1.4.8",
     "supertest": "1.2.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "zombie": "^4.2.1"
   }
 }

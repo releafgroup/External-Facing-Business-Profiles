@@ -1,0 +1,74 @@
+var should = require('should'); 
+var assert = require('assert');
+var request = require('supertest');  
+var mongoose = require('mongoose');
+var config = require('../config.js');
+var secret = require('../../secret').secret;
+var Browser = require('zombie');
+var path = require('path');
+var env = require('node-env-file');
+
+env(path.join(__dirname, '../.env'));
+var url = process.env.HOST_DOMAIN;
+Browser.localhost(url, 2000);
+
+user_update_info = { "local.first_name" : "ififififif",
+                "local.last_name" : "testee",
+                "local.email" : "test@gmail.com",
+                "primary_institution": "rel",
+                "secondary_institution": "eaf",
+                "skills": ["he", "is", "dope"],
+                "skill_ratings": [1, 3, 3],
+
+                "gender": "Male",
+                "dob": "1996-04-02"};
+
+describe('Facebook Login', function(done) {
+     const TestBrowser = new Browser();
+
+    before(function(done) {
+        // Use mocha test db
+        mongoose.connect(config.mocha_database,function(){
+            /* Drop the DB */
+            mongoose.connection.db.dropDatabase();
+        });
+        done();
+    });
+
+    describe('logs into facebook', function() {
+            this.timeout(10000);
+            before(function() {
+                return Promise.resolve(TestBrowser.visit(`${url}/users/auth/facebook/login`)).then(() => {
+                    return TestBrowser.fill('email', secret.facebook.fbEmail)
+                                    .fill('pass', secret.facebook.fbPassword)
+                                    .pressButton('Log In');
+                });
+            });
+
+            it('should complete successfully', function() {
+                TestBrowser.assert.success();
+            });
+
+            it('gets user data', function() {
+                var bodyContent = JSON.parse(TestBrowser.document.body._childNodes[0]._data);
+                bodyContent.message.facebook.should.have.property('id');
+                bodyContent.message.skills.length.should.equal(0);
+            });
+
+            it('can logout', function(done) {
+                TestBrowser.visit(`${url}/users/auth/logout`, function() {
+                    var bodyContent = JSON.parse(TestBrowser.document.body._childNodes[0]._data);
+                    bodyContent.message.should.equal('logged out');
+                    done();
+                });
+            });
+
+            it('can not access user data after logging out', function(done) {
+                TestBrowser.visit(`${url}/users/`, function() {
+                    var bodyContent = JSON.parse(TestBrowser.document.body._childNodes[0]._data);
+                    bodyContent.message.should.equal('Not logged in');
+                    done();
+                });
+            });
+    });
+});
