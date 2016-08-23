@@ -1,8 +1,11 @@
 var FacebookStrategy = require('passport-facebook').Strategy;
 var secret = require('../../secret').secret;
 var User = require('../models/user');
+var path = require('path');
+var env = require('node-env-file');
 
-var HOST_DOMAIN = 'http://localhost:3000';
+env(path.join(__dirname, '../.env'));
+var HOST_DOMAIN = process.env.HOST_DOMAIN;
 
 /**
  * FacebookStrategy to be used by passport during authentication.
