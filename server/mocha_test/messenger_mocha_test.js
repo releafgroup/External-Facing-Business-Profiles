@@ -80,7 +80,7 @@ describe("Messenger Socket Server", function () {
 
   it('retrieves saved messsages in a room', function (done) {
     request(socketURL)
-            .get('/messenger/messages?room=general')
+            .get('/messenger/messages/general')
             .send()
             .expect(200)
             .expect('Content-Type', /json/)
