@@ -20,6 +20,17 @@ router.route('/auth/logout')
 router.route('/auth/login')
 .post(passport.authenticate('local-login', {}), function(req, res) {return res.json({success: true, message: req.user._id});});
 
+router.get('/auth/facebook/login',
+    passport.authenticate('facebook', { scope: ['email'] }
+));
+
+router.get('/auth/facebook/login/callback',  passport.authenticate('facebook',
+        { 
+            successRedirect: '/users/',
+            failureRedirect: '/users/auth/facebook/login' //login page 
+        }
+));
+
 router.route('/')
 .get(isLoggedIn, function(req, res){
     if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
@@ -29,7 +40,6 @@ router.route('/')
 .put(isLoggedIn, function(req,res){
     if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
     return user_functions.updateUserById(req.session.passport.user, req, res);
-
 });
 
 return router;

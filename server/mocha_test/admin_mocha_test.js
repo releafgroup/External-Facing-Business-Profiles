@@ -15,8 +15,8 @@ var user1_id = -1;
 var user1 = {
     "first_name" : "test_first",
     "last_name" : "test_last",
-    "password" : "eightdigits",
-    "email" : "test1@gmail.com",
+    "local.password" : "eightdigits",
+    "local.email" : "test1@gmail.com",
     "primary_institution": "stanny",
     "secondary_institution": "odododdo",
     "skills": ["s", "f", "o"],
@@ -30,8 +30,8 @@ var user2_id = -1;
 var user2 = {
     "first_name" : "test_sec",
     "last_name" : "test_last_sec",
-    "password" : "eightdigits",
-    "email" : "test2@gmail.com",
+    "local.password" : "eightdigits",
+    "local.email" : "test2@gmail.com",
     "primary_institution": "stanny",
     "secondary_institution": "odododdo",
     "skills" : ["s", "f", "o"],
