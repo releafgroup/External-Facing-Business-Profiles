@@ -3,7 +3,7 @@ var router = express.Router();
 var Project = require('../models/project.js');
 var Company = require('../models/company.js');
 var bcrypt = require('bcryptjs'); 
-
+var project_functions = require('../utils/project_functions.js');
 
 // Function for project error handling in saving project info
 function handleProjectSaveError(err) {
@@ -61,41 +61,10 @@ router.route('/')
 
 router.route('/:id')
 .get(function(req, res){ // TODO: add in extracting info from company
-    Project.findOne({
-         '_id':req.params.id
-    }, function(err, project){
-        if(!project) return res.json({ success : false , message : 'Project not found'}); 
-        if(err) return res.json({success: false, message: err.message});
-        res.json(project);   
-    }); 
-
+    return project_functions.getProjectById(req.params.id, req, res);
 })
 .put(function(req,res){
-    Project.findOne({
-        '_id':req.params.id
-    }, function(err, project){
-        if(!project) return res.json({ success : false , message : 'Project not found'});
-        if(err) return res.json({success: false, message: err.message});
-        console.log(req.body);
-        for( a in req.body){
-            if(a != "id" && a != "_company" && a != "_id" && a != "is_verified"){
-                project[a]  = req.body[a];
-            } else if (a == "_company") {
-                if (project[a] != req.body[a]) return res.json({ success: false, message : "You cannot modify the company"});
-            } else if (a == "is_verified") {
-                if (project[a] != req.body[a]) return res.json({ success: false, message : "You cannot modify is_verified"});
-            } else {
-                if (project[a] != req.body[a]) return res.json({ success: false, message : "You cannot modify the id"});
-            }
-        }
-        
-        project.save(function(err){
-            if(err){                                                                                       
-               return res.json({success: false, message: handleProjectSaveError(err)});                                                                   
-            }                                                                                              
-            return res.json({success: true});                                                  
-        });         
-    }); 
+    return project_functions.updateProjectById(req.params.id, req, res);
 })
 
 .delete(function(req, res){

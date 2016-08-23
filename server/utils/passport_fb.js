@@ -1,9 +1,9 @@
 var FacebookStrategy = require('passport-facebook').Strategy;
-var secret = require('../../secret').secret;
+//var secret = require('../../secret').secret;
 var User = require('../models/user');
 var path = require('path');
 var env = require('node-env-file');
-
+var secret = {'facebook' : {'id' : 1, 'secret': 2}};
 env(path.join(__dirname, '../.env'));
 var HOST_DOMAIN = process.env.HOST_DOMAIN;
 

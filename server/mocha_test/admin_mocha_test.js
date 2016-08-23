@@ -8,42 +8,39 @@ var config = require('../config.js');
 // Checks if users can be retrieved, companies retrieved, and if assignments can be made
 // SUPER IMPORTANT NOTE: throughout the test cases we may modify these variables. the modifications persist across all of the test cases after any modification
 
+var url = 'http://localhost:3000';
 
-
+var super_agent1 = request.agent(url);
+var user1_id = -1;
 var user1 = {
     "first_name" : "test_first",
     "last_name" : "test_last",
-    "password" : "eightdigits",
-    "email" : "test1@gmail.com",
+    "local.password" : "eightdigits",
+    "local.email" : "test1@gmail.com",
     "primary_institution": "stanny",
     "secondary_institution": "odododdo",
-    "skill_1": "s",
-    "skill_2": "f",
-    "skill_3": "o",
-    "skill_1_rating": 2,
-    "skill_2_rating": 4,
-    "skill_3_rating": 3,
+    "skills": ["s", "f", "o"],
+    "skill_ratings": [1, 2, 3],
     "gender": "Female",
     "dob": "2016-06-07"
 }
 
+var super_agent2 = (require('supertest')).agent(url);
+var user2_id = -1;
 var user2 = {
-    "first_name" : "test_first_2",
-    "last_name" : "test_last_2",
-    "password" : "eightdigits",
-    "email" : "test2@gmail.com",
+    "first_name" : "test_sec",
+    "last_name" : "test_last_sec",
+    "local.password" : "eightdigits",
+    "local.email" : "test2@gmail.com",
     "primary_institution": "stanny",
     "secondary_institution": "odododdo",
-    "skill_1": "s",
-    "skill_2": "f",
-    "skill_3": "o",
-    "skill_1_rating": 2,
-    "skill_2_rating": 4,
-    "skill_3_rating": 3,
-    "gender": "Male",
+    "skills" : ["s", "f", "o"],
+    "skill_ratings" : [2, 4, 3],
+    "gender": "Female",
     "dob": "2016-06-07"
 }
 
+var comp1_id = -1;
 var company1 = {
     "business_name" : "business_first",
     "primary_contact_name" : "emmmmmmmmmm o",
@@ -63,6 +60,7 @@ var company1 = {
     "internet_access" : "Work Hours"
 }
 
+var comp2_id = -1;
 var company2 = {
     "business_name" : "business_second",
     "primary_contact_name" : "emmmmmmmmmm o",
@@ -82,6 +80,7 @@ var company2 = {
     "internet_access" : "Work Hours"
 }
 
+var proj1_id = -1;
 var project1 = {
     "project_description" : "test_first",
     "core_skill_1" : "App Development",
@@ -93,6 +92,7 @@ var project1 = {
     "is_verified" : false
 }
 
+var proj2_id = -1;
 var project2 = {
     "project_description" : "test_second",
     "core_skill_1" : "App Development",
@@ -107,7 +107,6 @@ var project2 = {
 
 
 describe('Routing', function() {
-    var url = 'http://localhost:3000';
     before(function(done) {
         // Use mocha test db
         mongoose.connect(config.mocha_database,function(){
@@ -116,36 +115,34 @@ describe('Routing', function() {
         });
         done();
     });
-    var user1_id = -1;
-    var user2_id = -1;
-    var comp1_id = -1;
-    var proj1_id = -1;
-    var proj2_id = -1;
 
     describe('Setup users, projects companies for admin test', function() {
         it('creates user 1', function(done) {
-            request(url)
-                .post('/users')
+             super_agent1
+                .post('/users/auth/signup')
                 .send(user1)
                 .expect(200) //Status code
                 .end(function(err, res) {
-                    user1_id = res.body.id;
+                    console.log(res.body);
+                    user1_id = res.body.message;
                     res.body.success.should.equal(true);
                     done();
                 });
         });
 
         it('creates user 2', function(done) {
-            request(url)
-                .post('/users')
+             super_agent2
+                .post('/users/auth/signup')
                 .send(user2)
                 .expect(200) //Status code
                 .end(function(err, res) {
-                    user2_id = res.body.id;
+                    console.log(res.body);
+                    user2_id = res.body.message;
                     res.body.success.should.equal(true);
                     done();
                 });
         });
+    
 
         it('creates company 1', function(done) {
             request(url)
@@ -256,7 +253,7 @@ describe('Routing', function() {
 
     });
 
-    describe('User-Company Assignment', function() {
+    /*describe('User-Company Assignment', function() {
         
 
         it('create user-project assignment', function(done) {
@@ -336,7 +333,7 @@ describe('Routing', function() {
         });
 
 
-    });
+    }); */
 
 });
 

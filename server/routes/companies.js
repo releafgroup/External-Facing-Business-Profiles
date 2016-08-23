@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var Company = require('../models/company.js'); 
-var bcrypt = require('bcryptjs'); 
+var bcrypt = require('bcryptjs');
+var company_functions = require('../utils/company_functions.js');
 
 
 // Function for company error handling in saving company info
@@ -52,66 +53,13 @@ router.route('/')
 });
 
 
-// Use to get id for a given business_name
-router.get('/id', function(req, res) {
-    Company.findOne({
-        'business_name':req.body.business_name
-    }, function(err, company) {
-        if(!company) return res.json({ success : false , message : 'Company not found'});
-        if(err) return res.json({success: false, message: err.message});
-        res.json({success: true, id: company.id});
-    });
-});
-
-
 router.route('/:id')
 .get(function(req, res){
-    Company.findOne({
-         '_id':req.params.id
-    }, function(err, company){
-        if(!company) return res.json({ success : false , message : 'Company not found'}); 
-        if(err) return res.json({success: false, message: err.message});
-        res.json(company);   
-    }); 
-
+    return company_functions.getCompanyById(req.params.id, req, res);    
 })
 .put(function(req,res){
-    Company.findOne({
-        '_id':req.params.id
-    }, function(err, company){
-        if(!company) return res.json({ success : false , message : 'Company not found'});
-        if(err) return res.json({success: false, message: err.message});
-        for( a in req.body){
-            if(a!= "id" && a != "business_name" && a != "_id"){
-                company[a]  = req.body[a];   
-                if(a == "password"){
-                    company.password = bcrypt.hashSync(req.body.password, 10);                 
-                }
-            } else if (a == "business_name") {
-                if (req.body[a] != company[a]) return res.json({ success: false, message : "You cannot modify the business name"});                
-            } else {
-                if (company[a] != req.body[a]) return res.json({ success: false, message : "You cannot modify the id"});
-            }
-        }
-        company.save(function(err){
-            if(err){                                                                                       
-               return res.json({success: false, message: handleCompanySaveError(err)});                                                                   
-            }                                                                                              
-            return res.json({success: true});                                                  
-        });         
-    }); 
-})
-
-.delete(function(req, res){
-    // TODO: delete associated projects
-    Company.remove({
-        '_id':req.params.id
-    }, function(err, delRes){
-        if(err) return res.json({success: false, message: err.message}); 
-        res.json({ success : true});
-    }); 
-}); 
-
+    return company_functions.updateCompanyById(req.params.id, req, res);         
+});
 
 
 

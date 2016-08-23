@@ -139,7 +139,7 @@ describe('Routing', function() {
             request(url)
                 .get('/companies/' + comp_id)
                 .end(function(err, res) {
-                    res.body.projects.length.should.equal(2);
+                    res.body.message.projects.length.should.equal(2);
                     if (!err) done();
                 });
         });
