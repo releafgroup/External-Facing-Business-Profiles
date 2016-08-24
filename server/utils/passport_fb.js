@@ -1,5 +1,5 @@
 var FacebookStrategy = require('passport-facebook').Strategy;
-var secret = require('../../secret').secret;
+var secret = require('../../secret.save').secret;
 var User = require('../models/user');
 
 var HOST_DOMAIN = 'http://localhost:3000';
