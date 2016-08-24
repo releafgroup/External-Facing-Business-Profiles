@@ -3,14 +3,14 @@ module.exports = function (io) {
   var moment = require('moment');
 
   var config = require('./../config');
-  
+
 
   var schedule = require('node-schedule');
-  
+
   var express = require('express');
-  
-  var spanHours = 34;
-  var cronString = '39 * * * *';//4 hours// * */4 * * *
+
+  var spanHours = .5;
+  var cronString = '59 * * * *';//4 hours// * */4 * * *
   var usersOnline = [];
   var msgQ = [];
   var userSockets = {};
@@ -20,7 +20,7 @@ module.exports = function (io) {
   var Message = require('./../models/message.js');
   //var authFunc = require('../utils/authfunc.js');
   var Groups = require('./../models/chat_groups.js');
-  
+
   var nodemailer = require('./controller/nodeMailer.js');
   nodemailer.setupTransport(config.mailConfig.smtp);
   //var db = mongoose.connection;
@@ -243,7 +243,7 @@ module.exports = function (io) {
 
     }, null, {
       skip: 0, // Starting Row
-      limit:2,
+      limit: 2,
       sort: {
         createdAt: 1 //Sort by Date Added DESC
       }
@@ -259,7 +259,7 @@ module.exports = function (io) {
     return moment(dateStr).format('LT');
   }
   function formatMessage(msg) {
-    return "<br>At: " + formatTime(msg.createdAt) + " <br> " + msg.content + " <br>" + msg.createdAt + "<br>";
+    return "<br>At: " + formatTime(msg.createdAt) + " <br> " + msg.content + " <br><br>";
   }
   //will get the array of the queue and get all messages for each users to send and get the email of the user
   //then send emails
@@ -270,7 +270,7 @@ module.exports = function (io) {
 
     for (var i in msgs) {
       var msg = msgs[i];
- debug("Msg", msgs[i]);
+      debug("Msg", msgs[i]);
       if (!d[msg.to]) {
         d[msg.to] = {};
         d[msg.to].messages = [];
@@ -284,8 +284,8 @@ module.exports = function (io) {
 
 
 ///here will run cron job acording to the string top
-//  var j = schedule.scheduleJob(cronString, function (y) {
-//    console.log('The answer to life, the universe, and everything!', new Date());
+  var j = schedule.scheduleJob(cronString, function (y) {
+    console.log('The answer to life, the universe, and everything!', new Date());
 
     getQueuedPrivateMsg(function (err, msgs) {
       //will get all messages for last 4 hours
@@ -294,7 +294,7 @@ module.exports = function (io) {
       debug("Msgs", filteredMsg);
       for (var i in filteredMsg) {
         (function (msg) {
-         
+
           var mailOptions = {
             from: 'Mustak <tester0715@gmail.com', // sender address
             to: 'mahmed0715@gmail.com', // list of receivers
@@ -309,7 +309,7 @@ module.exports = function (io) {
     }, {
       //option here
     });
-//  })
+  })
 
 
 
@@ -336,16 +336,23 @@ module.exports = function (io) {
       }
 
       username = data.username;
+
+      //userSockets.mustak = sockID
       userSockets[username] = socket;
-      data.room = defaultRoom;
-      //New user joins the default room
       socket.join(defaultRoom);
+      if (!data.romm)
+        data.room = defaultRoom;
+
+
+      //New user joins the default room
+      socket.join(data.room);
+
       getGroups({
         username: username
       }, function (err, groups) {
         socket.emit('init', {username: username, room: data.room, users: usersOnline, groups: groups});
         //Tell all those in the room that a new user joined
-        io.in(defaultRoom).emit('user:joined', data);
+        io.emit('user:joined', data);
       });
     });
 //Listens for switch room
@@ -359,10 +366,13 @@ module.exports = function (io) {
     });
     //Listens for a new chat message
     socket.on('send:message', function (data) {
-      debug('on message event with ', data);
+
       //Create message
+      if (!username)
+        return socket.emit('error', {success: false, message: 'not logged in'});
+      ;
       var msgNew = {
-        username: data.username,
+        username: username,
         content: data.content,
         room: data.room.toLowerCase()
       };
@@ -372,12 +382,13 @@ module.exports = function (io) {
       if (data.to) {
         msgNew.to = data.to;
       }
+      debug('on message event with ', msgNew);
       var newMsg = new Message(msgNew);
       //Save it to database
       newMsg.save(function (err, msg) {
         if (err) {
           debug('Error saving message', err);
-          socket.emit('error', {success: false, message: err.message});
+          return socket.emit('error', {success: false, message: err.message});
           // return ;
         }
         //implementation of private person to person message later on
@@ -390,19 +401,29 @@ module.exports = function (io) {
         debug('sending message', msg.room);
         io.in(msg.room).emit('send:message', msg);
         if (msg.type == 'private') {
+          debug('private-msg.to', msg.to);
           if (!isOnline(msg.to)) {
-            if (msgQ.index(msg.to == -1))
+            debug('isOnline', isOnline);
+            if (msgQ.indexOf(msg.to) == -1)
               msgQ.push(msg.to);
           }
+          //userSockets[msg.to] is the saved socket for the specific user
+          console.log();
+          if (userSockets[msg.to]) {
+            userSockets[msg.to].emit('send:message', msg);
+          }
+          debug('userSockets:', userSockets);
         }
       });
     });
     socket.on('disconnect', function () {
       debug("disconnected client ", username); //If Verbose Debug
-      usersOnline.splice(usersOnline.indexOf(username), 1);
-      socket.broadcast.emit('user:left', {
-        username: username
-      });
+      setTimeout(function () {
+        usersOnline.splice(usersOnline.indexOf(username), 1);
+        socket.broadcast.emit('user:left', {
+          username: username
+        });
+      }, 0);
     });
   });
   //end of socket server implementation
