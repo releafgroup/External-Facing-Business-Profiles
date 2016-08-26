@@ -1,18 +1,19 @@
 var FacebookStrategy = require('passport-facebook').Strategy;
-//var secret = require('../../secret').secret;
+var secret = require('../../secret');
 var User = require('../models/user');
 var path = require('path');
 var env = require('node-env-file');
-var secret = {'facebook' : {'id' : 1, 'secret': 2}};
 env(path.join(__dirname, '../.env'));
 var HOST_DOMAIN = process.env.HOST_DOMAIN;
+
+var fbInfo = process.env.NODE_ENV === 'production' ? secret.facebook.production : secret.facebook.dev;
 
 /**
  * FacebookStrategy to be used by passport during authentication.
  */
 module.exports = new FacebookStrategy({
-    clientID: secret.facebook.id,
-    clientSecret: secret.facebook.secret,
+    clientID: fbInfo.id,
+    clientSecret: fbInfo.secret,
     callbackURL: `${HOST_DOMAIN}/users/auth/facebook/login/callback`
   },
   function(accessToken, refreshToken, profile, done) {

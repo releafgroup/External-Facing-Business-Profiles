@@ -3,7 +3,7 @@ var assert = require('assert');
 var request = require('supertest');  
 var mongoose = require('mongoose');
 var config = require('../config.js');
-var secret = require('../../secret').secret;
+var secret = require('../../secret');
 var Browser = require('zombie');
 var path = require('path');
 var env = require('node-env-file');
@@ -36,7 +36,7 @@ describe('Facebook Login', function(done) {
     });
 
     describe('logs into facebook', function() {
-            this.timeout(10000);
+            this.timeout(20000);
             before(function() {
                 return Promise.resolve(TestBrowser.visit(`${url}/users/auth/facebook/login`)).then(() => {
                     return TestBrowser.fill('email', secret.facebook.fbEmail)
@@ -49,10 +49,11 @@ describe('Facebook Login', function(done) {
                 TestBrowser.assert.success();
             });
 
-            it('gets user data', function() {
+            it('gets user data', function(done) {
                 var bodyContent = JSON.parse(TestBrowser.document.body._childNodes[0]._data);
                 bodyContent.message.facebook.should.have.property('id');
                 bodyContent.message.skills.length.should.equal(0);
+                done();
             });
 
             it('can logout', function(done) {
