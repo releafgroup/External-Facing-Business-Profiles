@@ -3,7 +3,6 @@ var secret = require('../../secret');
 var User = require('../models/user');
 var path = require('path');
 var env = require('node-env-file');
-// var secret = require('../../secret');
 env(path.join(__dirname, '../.env'));
 var HOST_DOMAIN = process.env.HOST_DOMAIN;
 
