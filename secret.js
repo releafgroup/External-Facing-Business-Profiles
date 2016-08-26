@@ -33,7 +33,8 @@ module.exports = {
     },
 
     gmail: {
+            smtpEmail: 'releafnoreply%40gmail.com', //used for gmail SMTP purposes
             email: 'releafnoreply@gmail.com', //gmail signin address
-            password: 'IkeoRaF0rLyf' //gmail signin password
+            password: 'TheRFgroup1' //gmail signin password
     }
 };

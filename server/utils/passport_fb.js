@@ -8,6 +8,7 @@ env(path.join(__dirname, '../.env'));
 var HOST_DOMAIN = process.env.HOST_DOMAIN;
 
 var fbInfo = process.env.NODE_ENV === 'production' ? secret.facebook.production : secret.facebook.dev;
+
 /**
  * FacebookStrategy to be used by passport during authentication.
  */
