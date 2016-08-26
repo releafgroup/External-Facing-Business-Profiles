@@ -1,5 +1,7 @@
 var fs = require('fs');
 var mongoose = require('mongoose');
+var express = require('express');
+var router = express.Router();
 
 //save uploaded file to mongodb
 //localhost:3000/upload
@@ -47,3 +49,5 @@ router.get('/file/:id',function(req,res){
         }
     });
 });
+
+module.exports = router;
