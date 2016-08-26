@@ -62,7 +62,7 @@ app.set('io', io);
 
 // import routes
 var routes = require('./routes/index');
-var users = require('./routes/users')(user_passport);
+var users = require('./routes/users')(user_passport, verifyEmail);
 var companies = require('./routes/companies');
 var admin = require('./routes/admin');
 var projects = require('./routes/projects');

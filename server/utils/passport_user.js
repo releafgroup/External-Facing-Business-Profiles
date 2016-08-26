@@ -6,6 +6,22 @@ var bcrypt = require('bcryptjs');
 var FacebookStrategy = require('./passport_fb');
 
 module.exports = function(emailVerification) {
+    emailVerification.insertTempUser = function(password, tempUserData, callback) {
+        // password may or may not be hashed
+        tempUserData[options.passwordFieldName] = password;
+        var newTempUser = new options.tempUserModel();
+        Object.keys(tempUserData).forEach(key => {
+            newTempUser[key] = tempUserData[key];
+        })
+        console.log(newTempUser);
+        newTempUser.save(function(err, tempUser) {
+        if (err) {
+            return callback(err, null, null);
+        }
+        return callback(null, null, tempUser);
+        });
+    };
+    // emailVerification.generateTempUserModel = generateTempUserModel;
     var passport = require('passport');
 // =========================================================================
     // passport session setup ==================================================
@@ -63,51 +79,6 @@ module.exports = function(emailVerification) {
         passReqToCallback : true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
     },
     function(req, email, password, done) {
-        // asynchronous
-        // process.nextTick(function() {
-            //  Whether we're signing up or connecting an account, we'll need
-            //  to know if the email address is in use.
-
-            /*
-            User.findOne({'local.email': email}, function(err, existingUser) {
-
-                // if there are any errors, return the error
-                if (err)
-                    return done(null, false, {message: err.message});
-
-                // check to see if there's already a user with that email
-                if (existingUser) {
-                    return done(null, false, {message: 'user with that email already exists'});
-
-                } 
-                //  We're not logged in, so we're creating a brand new user.
-                    // create the user
-                    var newUser = new User();
-                    for( a in req.body){
-                        if(a !== "local.password" && a !== "skills" && a !== "skill_ratings"){
-                            newUser.setItem(a, req.body[a]);
-                        } else if (a === "local.password") {
-                           if (req.body[a].length < 8 || req.body[a].length > 64) {
-                                return res.json({success: false, message: "Password not valid"}); // TODO: move to user.js
-                           }
-                           newUser.setItem(a, newUser.generateHash(req.body[a]));
-                        } else {
-                            var arr = [];
-                            for (var prop in req.body[a]) {
-                                arr.push(req.body[a][prop]);
-                            }
-                            newUser.setItem(a, arr);
-                        }
-                    }
-                    newUser.save(function(err) {
-                        if (err) {
-                            console.log(err);
-                            return done(null, false, {success: false, message: err.message});
-                        }
-                        return done(null, newUser);
-                    });
-
-            }); */
             if (req.actionType === 'register') { //if type is not 'register', will resend verification email
                 // Create new user but don't save yet
                 var newUser = new User();
@@ -128,8 +99,11 @@ module.exports = function(emailVerification) {
                         newUser.setItem(a, arr);
                     }
                 }
-
                 emailVerification.createTempUser(newUser, function(err, existingPersistentUser, newTempUser) {
+                    // console.log(newUser.local);
+                    // newTempUser.local = newUser.local;
+                    // newTempUser.save((err, newt) => console.log(newt));
+                    
                     if (err) {
                         return done(null, false, {message: 'ERROR: creating temporary user FAILED'});
                         // return res.status(404).send('ERROR: creating temporary user FAILED');
@@ -138,34 +112,24 @@ module.exports = function(emailVerification) {
                     // user already exists in persistent collection
                     if (existingPersistentUser) {
                         return done(null, false, {message: 'You have already signed up and confirmed your account. Did you forget your password?'});
-                        // return res.json({
-                        //     msg: 'You have already signed up and confirmed your account. Did you forget your password?'
-                        // });
                     }
 
                     // new user created
                     if (newTempUser) {
                         var URL = newTempUser[emailVerification.options.URLFieldName];
-
-                        emailVerification.sendVerificationEmail(email, URL, function(err, info) {
-                            if (err) {
-                                console.log(err);
-                                return done(null, false, {message: 'ERROR: sending verification email FAILED'});
-                                // return res.status(404).send('ERROR: sending verification email FAILED');
-                            }
-                            return done(null, false, {message: 'An email has been sent to you. Please check it to verify your account.'});
-                            // res.json({
-                            //     msg: 'An email has been sent to you. Please check it to verify your account.',
-                            //     info: info
-                            // });
-                        });
-
+                        // console.log(newTempUser);
+                        // emailVerification.sendVerificationEmail(email, URL, function(err, info) {
+                        //     if (err) {
+                        //         console.log(err);
+                        //         return done(null, false, {message: 'ERROR: sending verification email FAILED'});
+                        //         // return res.status(404).send('ERROR: sending verification email FAILED');
+                        //     }
+                        //     return done(null, false, {message: 'An email has been sent to you. Please check it to verify your account.'});
+                        // });
+                        return done(null, false, {message: 'Wait a bit'});
                     // user already exists in temporary collection!
                     } else {
                         return done(null, false, {message: 'You have already signed up. Please check your email to verify your account.'});
-                        // res.json({
-                        //     msg: 'You have already signed up. Please check your email to verify your account.'
-                        // });
                     }
                 });
 
@@ -198,6 +162,22 @@ module.exports = function(emailVerification) {
 
     return passport;
 }
+
+var insertTempUser = function(password, tempUserData, callback) {
+    // password may or may not be hashed
+    tempUserData[options.passwordFieldName] = password;
+    var newTempUser = new options.tempUserModel();
+    Object.keys(tempUserData).forEach(key => {
+        newTempUser[key] = tempUserData[key];
+    })
+    console.log(newTempUser);
+    newTempUser.save(function(err, tempUser) {
+      if (err) {
+        return callback(err, null, null);
+      }
+      return callback(null, null, tempUser);
+    });
+  };
 // module.exports = passport;
 
 /*
