@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
+    ObjectId = Schema.ObjectId,
     bcrypt = require('bcryptjs'); 
 var express = require('express');
 var app = express();
@@ -81,7 +82,8 @@ var UserSchema = new Schema(
         skills : [{ type : String }],
         skill_ratings: [{type : String }],
         gender: {type: String, validate: gender_validation, required: this.fullUserFormSumitted || this.signupType === 'local'},
-        dob: {type: Date, required: this.fullUserFormSumitted || this.signupType === 'local', validate: dob_validation}
+        dob: {type: Date, required: this.fullUserFormSumitted || this.signupType === 'local', validate: dob_validation},
+        favorite: {type: ObjectId, ref: 'ProjectSchema'}
     }, 
 
     {
