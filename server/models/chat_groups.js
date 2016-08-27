@@ -8,7 +8,9 @@ var GroupsSchema = new Schema({
   owner: {type: String}, //email of the creater
   members: {type: [mongoose.Schema.Types.ObjectId], "default": []}, //add remove members //username//actually id
   status: {type: Boolean, default: true}, //either its active or deleted,
-  type: {type: String, default: "group", enum: ['group', 'private']} //private(direct-user to user)//group
+  type: {type: String, default: "group", enum: ['group', 'private']},
+    //private(direct-user to user)//group
+  photo: {data: Buffer, name:String}
 }, {
   timestamps: true
 });

@@ -8,8 +8,8 @@ var MessageSchema = new Schema({
   room: {type: String, required: true},
   content: {type: String},
   type: {type: String, default: "group", enum: ['group', 'private']},
-  to: {type: String}//private(direct-user to user)//group,
- // attachment:{type:BSON}// could be BSON to store 16mb data to db directlly //need to investigate
+  to: {type: String},//private(direct-user to user)//group,
+  file :{data:Buffer, contentType:String, name:String}// could be BSON to store 16mb data to db directlly //need to investigate
 }, {
   timestamps: true
 });

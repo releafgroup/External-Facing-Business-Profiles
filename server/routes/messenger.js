@@ -8,7 +8,9 @@ module.exports = function (io) {
   var schedule = require('node-schedule');
 
   var express = require('express');
-
+  var path = require('path');
+  var fs = require('fs');
+  var dl = require('delivery');
   var spanHours = .5;
   var cronString = '59 * * * *';//4 hours// * */4 * * *
   var usersOnline = [];
@@ -64,6 +66,32 @@ module.exports = function (io) {
 //            });
 //          });
           ;
+
+//OK:100% //need to protect it by auth
+//
+// @id is the message _id
+//this will send the file to download on request
+  router.route('/messages/file/:id')
+          .get(function (req, res) {
+            debug(' got file download request ', req.params)
+            //Find
+            Message.findOne({
+              '_id': req.params.id
+            }).exec(function (err, msg) {
+              if (err) {
+                return res.status(500).end('No file found!');
+              }
+              if (!msg || !msg.file || !msg.file.data) {
+                return res.status(404).end('No file found!');
+              }
+              //Send
+              debug('Found saved message by id', msg.file)
+              res.writeHead(200, {'Content-Type': 'application/force-download', 'Content-disposition': 'attachment; filename=' + msg.file.name});
+              res.end(msg.file.data);
+            });
+          });
+  //file sharing done
+
   router.route('/groups')
           //gets all saved active groups
           //will filter later on//{$where : 'this.members.indexOf("USERID") != -1'}
@@ -315,7 +343,72 @@ module.exports = function (io) {
 
   /*|||||||||||||||| SOCKET CONNECTION for messenger |||||||||||||||||||||||*/
 //Listen for connection socket 
+  
   io.on('connection', function (socket) {
+
+    var delivery = dl.listen(socket);
+    delivery.on('receive.success', function (file) {
+      var data = file.params;
+      if(!validateReuest(data)){
+       return socket.emit('error',{success:false, message:'Missing data on request!'});
+      };
+      var msgNew = {
+        username: username,
+        content: data.content,
+        room: data.room.toLowerCase(),
+        file: {
+          name: file.name,
+          data: file.buffer,
+          contentType: data.file.contentType
+        }
+      };
+      if (data.type) {
+        msgNew.type = data.type;
+      }
+      if (data.to) {
+        msgNew.to = data.to;
+      }
+      debug('on message event with ', msgNew);
+      var newMsg = new Message(msgNew);
+      //Save it to database
+      newMsg.save(function (err, msg) {
+        if (err) {
+          debug('Error saving message', err);
+          return socket.emit('error', {success: false, message: err.message});
+          // return ;
+        }
+        debug('File saved in DB:', msg);
+        debug('sending message', msg.room);
+        //send to all
+        io.in(msg.room).emit('send:message', msg);
+        //sending private message
+        sendPrivateMessage(msg);
+      });
+    });
+    delivery.on('receive.progress', function (file) {
+      console.log('in progress', file.name)
+    });
+
+    var validateReuest = function (data) {
+      if (!data.username || !username)
+        return false;
+    }
+    function sendPrivateMessage(msg) {
+      if (msg.type == 'private') {
+        debug('private-msg.to', msg.to);
+        if (!isOnline(msg.to)) {
+          debug('isOnline', isOnline);
+          if (msgQ.indexOf(msg.to) == -1)
+            msgQ.push(msg.to);
+        }
+        //userSockets[msg.to] is the saved socket for the specific user
+        console.log();
+        if (userSockets[msg.to]) {
+          userSockets[msg.to].emit('send:message', msg);
+        }
+        debug('userSockets:', userSockets);
+      }
+    }
 
     var username = '';
     debug('new connection '); //socket.request
@@ -391,29 +484,14 @@ module.exports = function (io) {
           return socket.emit('error', {success: false, message: err.message});
           // return ;
         }
-        //implementation of private person to person message later on
-        //if(msg.private && meg.to){
-        //  //code goes here to send message to that user's socket only
-        //  //if the targeted user not online we will send an email later on with the gross messages
-        //}
 
         //Send message to those connected in the room
+        //we will not send data for now 
+        //if user needs it there will be downloads available
+        msg.file.data = [];
         debug('sending message', msg.room);
         io.in(msg.room).emit('send:message', msg);
-        if (msg.type == 'private') {
-          debug('private-msg.to', msg.to);
-          if (!isOnline(msg.to)) {
-            debug('isOnline', isOnline);
-            if (msgQ.indexOf(msg.to) == -1)
-              msgQ.push(msg.to);
-          }
-          //userSockets[msg.to] is the saved socket for the specific user
-          console.log();
-          if (userSockets[msg.to]) {
-            userSockets[msg.to].emit('send:message', msg);
-          }
-          debug('userSockets:', userSockets);
-        }
+        sendPrivateMessage(msg);
       });
     });
     socket.on('disconnect', function () {
