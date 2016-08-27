@@ -42,6 +42,17 @@ router.route('/')
     return user_functions.updateUserById(req.session.passport.user, req, res);
 });
 
+
+/* Route: /users/email
+** Checks if given email exists
+** 'email' must be passed in the req body
+** See checkIfEmailExists for more info
+*/
+router.route('/email')
+.get(function(req, res) {
+    return user_functions.checkIfEmailExists(req.body.email, req, res);  
+});
+
 return router;
 
 };
