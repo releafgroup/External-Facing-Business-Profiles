@@ -48,6 +48,7 @@ router.get('/auth/facebook/login/callback',  passport.authenticate('facebook',
         }
 ));
 
+
 /** Route: /users
  * GET: Gets all information for the signed in user
  * No inputs
@@ -56,6 +57,26 @@ router.get('/auth/facebook/login/callback',  passport.authenticate('facebook',
  * Input: User object
  * See updateUserById for more info
 */
+router.route('/users/projects/:id/favorite')
+.put(function(req, res) {
+    
+    Project.findOne({ id: req.id }, function (err, proj){
+        var current_user = user_functions.getUserById(req.session.passport.user, req, res);
+        if (current_user.favorite == 'undefined') {
+            current_user.favorite = proj.id;
+            proj.favorite_count++;
+        } else {
+            if (current_user.favorite == proj.id) {
+                current_user.favorite == 'undefined';
+                proj.favorite_count--;
+            } else if (current_user.favorite != proj.id) {
+                // Throw error that one cannot like another project
+            }
+        }
+        proj.save();
+    });
+})
+
 router.route('/')
 .get(isLoggedIn, function(req, res){
     if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
