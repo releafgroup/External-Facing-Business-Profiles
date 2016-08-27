@@ -81,13 +81,16 @@ Ikeora Backend Server
 
 ### Setting up facebook login ###
 
-* Go to the [facebook developer console](https://developers.facebook.com/apps) and create a test app.
+* Go to the [facebook developer console](https://developers.facebook.com/apps) and login with the credentials found in `secret.js`.
 
-* Under `products->Facebook Login`, Add the following urls to the list of `Valid OAuth redirect URIs`. ${url} is the host name
+* For production, make sure `App Review -> Make Releaf Ikeora public?` is set to `Yes`.
+
+* Under `products -> Facebook Login`, Add the following urls to the list of `Valid OAuth redirect URIs`. ${url} is production host name
 	* `${url}/users/auth/facebook/login`
 	* `${url}/users/auth/facebook/login/callback`
 
-To run the `volunteer_fb_login.test.js` test, make sure you have `secret.facebook.[fbEmail|fbPassword]` point to your email and password for facebook.
+##### NOTE: #####
+For development purposes, there exists a second app named `Ikeora Dev` which already registers `${url}` as `http://localhost:3000`.
 
 ## Database Creation
 1. Clone the application
