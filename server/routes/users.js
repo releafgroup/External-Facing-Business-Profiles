@@ -113,7 +113,7 @@ router.route('/auth/email-verification/:URL')
   emailVerification.confirmTempUser(url, function(err, user) {
     if (user) {
         console.log(user);
-      emailVerification.sendConfirmationEmail(user.local.email, function(err, info) {
+      emailVerification.sendConfirmationEmail(user.email, function(err, info) {
         if (err) {
           return res.status(404).send('ERROR: sending confirmation email FAILED');
         }

@@ -79,6 +79,7 @@ module.exports = function(emailVerification) {
         passReqToCallback : true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
     },
     function(req, email, password, done) {
+
             if (req.actionType === 'register') { //if type is not 'register', will resend verification email
                 // Create new user but don't save yet
                 var newUser = new User();
@@ -99,11 +100,12 @@ module.exports = function(emailVerification) {
                         newUser.setItem(a, arr);
                     }
                 }
+                // console.log(newUser);
                 emailVerification.createTempUser(newUser, function(err, existingPersistentUser, newTempUser) {
                     // console.log(newUser.local);
                     // newTempUser.local = newUser.local;
                     // newTempUser.save((err, newt) => console.log(newt));
-                    
+
                     if (err) {
                         return done(null, false, {message: 'ERROR: creating temporary user FAILED'});
                         // return res.status(404).send('ERROR: creating temporary user FAILED');
@@ -162,6 +164,7 @@ module.exports = function(emailVerification) {
 
     return passport;
 }
+
 
 var insertTempUser = function(password, tempUserData, callback) {
     // password may or may not be hashed
