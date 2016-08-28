@@ -100,15 +100,10 @@ module.exports = function(emailVerification) {
                         newUser.setItem(a, arr);
                     }
                 }
-                // console.log(newUser);
                 emailVerification.createTempUser(newUser, function(err, existingPersistentUser, newTempUser) {
-                    // console.log(newUser.local);
-                    // newTempUser.local = newUser.local;
-                    // newTempUser.save((err, newt) => console.log(newt));
 
                     if (err) {
                         return done(null, false, {message: 'ERROR: creating temporary user FAILED'});
-                        // return res.status(404).send('ERROR: creating temporary user FAILED');
                     }
 
                     // user already exists in persistent collection
@@ -119,15 +114,14 @@ module.exports = function(emailVerification) {
                     // new user created
                     if (newTempUser) {
                         var URL = newTempUser[emailVerification.options.URLFieldName];
-                        // console.log(newTempUser);
-                        // emailVerification.sendVerificationEmail(email, URL, function(err, info) {
-                        //     if (err) {
-                        //         console.log(err);
-                        //         return done(null, false, {message: 'ERROR: sending verification email FAILED'});
-                        //         // return res.status(404).send('ERROR: sending verification email FAILED');
-                        //     }
-                        //     return done(null, false, {message: 'An email has been sent to you. Please check it to verify your account.'});
-                        // });
+                        emailVerification.sendVerificationEmail(email, URL, function(err, info) {
+                            if (err) {
+                                console.log(err);
+                                return done(null, false, {message: 'ERROR: sending verification email FAILED'});
+                                // return res.status(404).send('ERROR: sending verification email FAILED');
+                            }
+                            return done(null, false, {message: 'An email has been sent to you. Please check it to verify your account.'});
+                        });
                         return done(null, false, {message: 'Wait a bit'});
                     // user already exists in temporary collection!
                     } else {
@@ -140,23 +134,14 @@ module.exports = function(emailVerification) {
                 emailVerification.resendVerificationEmail(email, function(err, userFound) {
                     if (err) {
                         return done(null, false, {message: 'ERROR: resending verification email FAILED'});
-                        // return res.status(404).send('ERROR: resending verification email FAILED');
                     }
                     if (userFound) {
                         return done(null, false, {message: 'An email has been sent to you, yet again. Please check it to verify your account.'});
-                        // res.json({
-                        //     msg: 'An email has been sent to you, yet again. Please check it to verify your account.'
-                        // });
                     } else {
                         return done(null, false, {message: 'Your verification code has expired. Please sign up again.'});
-                        // res.json({
-                        //     msg: 'Your verification code has expired. Please sign up again.'
-                        // });
                     }
                 });
             }
-        // });
-
     }));
 
     // Facebook login
@@ -164,87 +149,3 @@ module.exports = function(emailVerification) {
 
     return passport;
 }
-
-
-var insertTempUser = function(password, tempUserData, callback) {
-    // password may or may not be hashed
-    tempUserData[options.passwordFieldName] = password;
-    var newTempUser = new options.tempUserModel();
-    Object.keys(tempUserData).forEach(key => {
-        newTempUser[key] = tempUserData[key];
-    })
-    console.log(newTempUser);
-    newTempUser.save(function(err, tempUser) {
-      if (err) {
-        return callback(err, null, null);
-      }
-      return callback(null, null, tempUser);
-    });
-  };
-// module.exports = passport;
-
-/*
-router.post('/auth/signup', function(req, res, next) {
-  var email = req.body.email;
-
-  // register button was clicked
-  if (req.body.type === 'register') { //if type is not 'register', will resend verification email
-    var pw = req.body.pw;
-    var newUser = new User({
-      email: email,
-      pw: pw
-    });
-
-    emailVerification.createTempUser(newUser, function(err, existingPersistentUser, newTempUser) {
-      if (err) {
-        return res.status(404).send('ERROR: creating temporary user FAILED');
-      }
-
-      // user already exists in persistent collection
-      if (existingPersistentUser) {
-        return res.json({
-          msg: 'You have already signed up and confirmed your account. Did you forget your password?'
-        });
-      }
-
-      // new user created
-      if (newTempUser) {
-        var URL = newTempUser[emailVerification.options.URLFieldName];
-
-        emailVerification.sendVerificationEmail(email, URL, function(err, info) {
-          if (err) {
-            return res.status(404).send('ERROR: sending verification email FAILED');
-          }
-          res.json({
-            msg: 'An email has been sent to you. Please check it to verify your account.',
-            info: info
-          });
-        });
-
-      // user already exists in temporary collection!
-      } else {
-        res.json({
-          msg: 'You have already signed up. Please check your email to verify your account.'
-        });
-      }
-    });
-
-  // resend verification button was clicked
-  } else {
-    emailVerification.resendVerificationEmail(email, function(err, userFound) {
-      if (err) {
-        return res.status(404).send('ERROR: resending verification email FAILED');
-      }
-      if (userFound) {
-        res.json({
-          msg: 'An email has been sent to you, yet again. Please check it to verify your account.'
-        });
-      } else {
-        res.json({
-          msg: 'Your verification code has expired. Please sign up again.'
-        });
-      }
-    });
-  }
-});
-*/
