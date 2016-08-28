@@ -54,7 +54,7 @@ exports.getUserById = function(user_id, req, res) {
 // Possible errors are attempting to modify the email or user_id and deleting a required element
 exports.updateUserById = function(user_id, req, res) {
     User.findOne({
-        '_id':req.session.passport.user
+        '_id':user_id
     }, function(err, user){
         if(!user) return res.json({ success : false , message : 'User not found'});
         if(err) return res.json({success: false, message: err.message});

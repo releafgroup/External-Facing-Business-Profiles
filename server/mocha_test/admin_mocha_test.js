@@ -10,6 +10,13 @@ var config = require('../config.js');
 
 var url = 'http://localhost:3000';
 
+var admin1_id = -1;
+var super_agent_admin = (require('supertest')).agent(url);
+var admin1 = {
+    'name' : 'admin1@gmail.com',
+    'password' : 'admin1'
+}
+
 var super_agent1 = request.agent(url);
 var user1_id = -1;
 var user1 = {
@@ -116,6 +123,36 @@ describe('Routing', function() {
         done();
     });
 
+    describe('Creates admin user', function() {
+        it('creates admin 1', function(done) {
+            super_agent_admin
+                .post('/admin')
+                .send(admin1)
+                .expect(200)
+                .end(function(err, res) {
+                    console.log(res.body);
+                    admin1_id = res.body.message;
+                    res.body.success.should.equal(true);
+                    done();
+                });
+            
+        });
+
+        it('tries to login admin 1', function(done) {
+            super_agent_admin
+                .post('/admin/auth/login')
+                .send(admin1)
+                .end(function(err, res) {
+                    console.log(res.body);
+                    res.body.success.should.equal(true);
+                    done();
+                });
+
+        });
+
+
+    });
+
     describe('Setup users, projects companies for admin test', function() {
         it('creates user 1', function(done) {
              super_agent1
@@ -188,66 +225,84 @@ describe('Routing', function() {
 
     describe('User, Company, Project Retrieval', function() {
         it('tests retrieval of all users', function(done) {
-            request(url)
+            super_agent_admin
                 .get('/admin/volunteers')
                 .expect(200) //Status code
                 .end(function(err, res) {
                     console.log(res.body);
-                    if (!err) done();
+                    if (!err) {
+                        res.body.success.should.equal(true);
+                        done();
+                    }
                 });  
         
         });
 
         it('tests retrieval of all companies', function(done) {
-            request(url)
+            super_agent_admin
                 .get('/admin/companies')
                 .expect(200) //Status code
                 .end(function(err, res) {
                     console.log(res.body);
-                    if (!err) done();
+                    if (!err) {
+                        res.body.success.should.equal(true);
+                        done();
+                    }
                 });  
         
         });
 
 
         it('tests retrieval of all projects', function(done) {
-            request(url)
+            super_agent_admin
                 .get('/admin/projects')
                 .expect(200) //Status code
                 .end(function(err, res) {
                     console.log(res.body);
-                    if (!err) done();
+                    if (!err) {
+                        res.body.success.should.equal(true);
+                        done();
+                    }
                 });
         
         });
 
         it('tests retrieveal of single user', function(done) {
-            request(url)
+            super_agent_admin
                 .get('/admin/volunteers/' + user1_id)
                 .expect(200) //Status code
                 .end(function(err, res) {
                     console.log(res.body);
-                    if (!err) done();
+                    if (!err) {
+                        res.body.success.should.equal(true);
+                        done();
+                    }
                 });
         });
 
         it('tests retrieveal of single company', function(done) {
-            request(url)
+            super_agent_admin
                 .get('/admin/companies/' + comp1_id)
                 .expect(200) //Status code
                 .end(function(err, res) {
                     console.log(res.body);
-                    if (!err) done();
+                    if (!err) {
+                        res.body.success.should.equal(true);
+                        done();
+                    }
                 });
         });
 
         it('tests retrieveal of single project', function(done) {
-            request(url)
+            super_agent_admin
                 .get('/admin/projects/' + proj1_id)
                 .expect(200) //Status code
                 .end(function(err, res) {
                     console.log(res.body);
-                    if (!err) done();
+                    if (!err) {
+                        res.body.success.should.equal(true);
+                        done();
+                    }
                 });
         });
 

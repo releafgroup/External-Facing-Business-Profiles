@@ -65,7 +65,7 @@ if (app.get('env') == 'mocha_db') { // TODO: abstract away better/clean up code 
 var routes = require('./routes/index');
 var users = require('./routes/users')(user_passport);
 var companies = require('./routes/companies');
-var admin = require('./routes/admin');
+var admin = require('./routes/admin')(user_passport);
 var projects = require('./routes/projects');
 var messenger = require('./routes/messenger')(app.get('io'));
 var upload = require('./routes/upload');

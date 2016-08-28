@@ -2,9 +2,14 @@ var LocalStrategy    = require('passport-local').Strategy;
 var passport = require('passport');
 // load up the user model
 var User = require('../models/user');
+var Admin = require('../models/admin');
 var bcrypt = require('bcryptjs');
 var FacebookStrategy = require('./passport_fb');
+var AdminLoginStrategy = require('./passport_admin');
 
+/* References: http://stackoverflow.com/questions/27637609/understanding-passport-serialize-deserialize
+** Read to understand how sessions work with multiple types of Schemas
+*/
 
 // =========================================================================
     // passport session setup ==================================================
@@ -14,14 +19,25 @@ var FacebookStrategy = require('./passport_fb');
 
     // used to serialize the user for the session
     passport.serializeUser(function(user, done) {
-        done(null, user.id);
+        type = 'volunteer';
+        if (user instanceof Admin) {
+            type = 'admin';
+        }
+        done(null, {'id': user.id, 'type': type});
     });
 
     // used to deserialize the user
-    passport.deserializeUser(function(id, done) {
-        User.findById(id, function(err, user) {
-            done(err, user);
-        });
+    passport.deserializeUser(function(session_info, done) {
+        console.log(session_info);
+        if (session_info.type == 'volunteer') {
+            User.findById(session_info.id, function(err, user) {
+                done(err, user);
+            });
+        } else {
+            Admin.findById(session_info.id, function(err, user) {
+                done(err, user);
+            });
+        }
     });
 
     // =========================================================================
@@ -111,5 +127,8 @@ var FacebookStrategy = require('./passport_fb');
 
     // Facebook login
     passport.use('facebook', FacebookStrategy);
+   
+    // Admin Login
+    passport.use('admin-login', AdminLoginStrategy);
 
 module.exports = passport;
