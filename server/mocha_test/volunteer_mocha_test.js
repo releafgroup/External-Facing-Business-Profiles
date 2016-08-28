@@ -20,7 +20,8 @@ var user1 = {
     "skills": ["s", "f", "o"],
     "skill_ratings": [1, 2, 3],
     "gender": "Female",
-    "dob": "2016-06-07"
+    "dob": "2016-06-07",
+    "favorite": null
 }
 var user_bad_email = JSON.parse(JSON.stringify(user1));
 user_bad_email['local.email'] = "odddddd.com";
@@ -56,6 +57,19 @@ var user2 = {
 }
 var user2_id = -1;
 
+var project = {
+    "project_description" : "test_second",
+    "core_skill_1" : "App Development",
+    "core_skill_2" : "Growth Strategy",
+    "core_skill_3" : "Business Plan",
+    "industry_focus": "Storage",
+    "completion_time": 10,
+    "number_staffed" : 5,
+    "is_verified" : false,
+    "favorite_count": 0
+}
+
+var project_id = -1;
 
 // TODO: add test cases for user permissions i.e. companies can't access this shit, users can't access other users shit, etc.
 
@@ -282,6 +296,22 @@ describe('Routing', function() {
                 });
         });
 
+    });
+
+    describe('tests favoriting a project', function() {
+        it('should increase project favorite count', function(done){
+            super_agent
+                .put('/users/projects/'+ project_id + '/favorite/')
+                .send(user1)
+                .expect(200)
+                .end(function(err2, res2) {
+                    console.log(super_agent);
+                    console.log(res2.body);
+                    res2.body.success.should.equal(true);
+                    done();
+                });
+             
+        });
     });
 
 });

@@ -2,7 +2,8 @@ module.exports = function(passport) {
 
 var express = require('express');
 var router = express.Router();
-var User = require('../models/user.js'); 
+var User = require('../models/user.js');
+var Project = require('../models/project.js'); 
 var authFunc = require('../utils/authfunc.js'); 
 var bcrypt = require('bcryptjs');
 var user_functions = require('../utils/user_functions.js');
@@ -61,19 +62,19 @@ router.route('/users/projects/:id/favorite')
 .put(function(req, res) {
     
     Project.findOne({ id: req.id }, function (err, proj){
-        var current_user = user_functions.getUserById(req.session.passport.user, req, res);
-        if (current_user.favorite == 'undefined') {
-            current_user.favorite = proj.id;
+        var user = user_functions.getUserById(req.session.passport.user, req, res);
+        if (user.favorite == 'undefined') {
+            user.favorite = proj.id;
             proj.favorite_count++;
         } else {
-            if (current_user.favorite == proj.id) {
-                current_user.favorite == 'undefined';
+            if (user.favorite == proj.id) {
+                user.favorite == 'undefined';
                 proj.favorite_count--;
-            } else if (current_user.favorite != proj.id) {
+            } else if (user.favorite != proj.id) {
                 // Throw error that one cannot like another project
             }
         }
-        proj.save();
+        if (proj.save()) return res.json({success: true, message : 'Project'});
     });
 })
 
