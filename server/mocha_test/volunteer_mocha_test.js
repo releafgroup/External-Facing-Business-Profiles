@@ -261,4 +261,29 @@ describe('Routing', function() {
 
     });
 
+    describe('Tests check email route', function() {
+        it('tests that can determine email is actually in system', function(done) {
+            request(url)
+                .get('/users/email')
+                .send({'email': 'test1@gmail.com'})
+                .end(function(err, res) {
+                    console.log(res.body);
+                    res.body.success.should.equal(true);
+                    done();
+                });
+        });
+
+        it('tests that can determine email is not in system', function(done) {
+            request(url)
+                .get('/users/email')
+                .send({'email': 'hey@gmail.com'})
+                .end(function(err, res) {
+                    console.log(res.body);
+                    res.body.success.should.not.equal(true);
+                    done();
+                });
+        });
+
+    });
+
 });

@@ -30,6 +30,22 @@ function handleUserSaveError(err) {
 
 var exports = module.exports = {};
 
+// Checks if a given email is associated with a user id
+// @params: email, req, res
+// Output: If successful, {success: true}
+// If not, {success: false, message: error_message}
+exports.checkIfEmailExists = function(email, req, res) {
+    User.findOne({ 'local.email' :  email }, function(err, user) {
+        // if there are any errors, return the error
+        if (err)
+            return res.json({success: false, message: err.message});
+        // if no user is found, return the message
+        if (!user)
+            return res.json({success: false, message: "no user"});
+        return res.json({success: true});
+    });
+}
+
 
 // Gets information for given User id
 // @params: user_id, req, res
