@@ -1,5 +1,6 @@
 
 module.exports = function (io) {
+  var username = '';
   var moment = require('moment');
 
   var config = require('./../config');
@@ -11,7 +12,7 @@ module.exports = function (io) {
   var path = require('path');
   var fs = require('fs');
   var dl = require('delivery');
-  var spanHours = .5;
+  var spanHours = .5;//
   var cronString = '59 * * * *';//4 hours// * */4 * * *
   var usersOnline = [];
   var msgQ = [];
@@ -49,23 +50,8 @@ module.exports = function (io) {
             });
           })
 
-          //Listens for a new chat message
-//          .post('/new', function (req, res) {
-//            //Create message
-//            var data = req.body;
-//            var newMsg = new Message({
-//              username: data.username,
-//              content: data.message,
-//              room: data.room.toLowerCase(),
-//              created: new Date()
-//            });
-//            //Save it to database
-//            newMsg.save(function (err, msg) {
-//              //Send message to those connected in the room
-//              res.json(msg);
-//            });
-//          });
-          ;
+
+
 
 //OK:100% //need to protect it by auth
 //
@@ -94,7 +80,8 @@ module.exports = function (io) {
 
   router.route('/groups')
           //gets all saved active groups
-          //will filter later on//{$where : 'this.members.indexOf("USERID") != -1'}
+          //will filter later on
+          //FILTER THERE IN INNER FUNC
           .get(function (req, res) {
             debug(' got groups request ', req.query)
             getGroups(function (err, groups) {
@@ -221,20 +208,55 @@ module.exports = function (io) {
               res.json({success: true, d: delRes});
             });
           });
-  ///general functtions
+
+
+
+
+///==================================== general functtions====================================//
+  function fetchMessages(option, cb) {
+    var query = {};
+
+    if (option.type == 'private') {
+      query.room = {$in: [option.room, '@' + username]};
+    } else {
+      query.room = option.room.toLowerCase();
+    }
+
+    var skip = 0;
+    if (option.skip) {
+      skip = option.skip;
+    }
+
+    var limit = 1000;
+    if (option.limit) {
+      limit = option.limit;
+    }
+
+    Message.find(query,
+            {'file.data': 0}, //we skip the file data for faster messages loading
+            {
+              skip: skip * limit, // Starting Row
+              limit: limit, // Ending Row
+              sort: {
+                createdAt: 1 //Sort by Date Added DESC
+              }
+            }).exec(cb);
+  }
   function getGroups(option, cb) {
 //     Find
     var query = {status: true};
     if (typeof option == 'function') {
       cb = option;
     } else {
-      option.username = "57b6fda08edf43040d2c9574";
+//      option.username = "57b6fda08edf43040d2c9574";
       if (option.username) {
         query.members = option.username;
       }
     }
-    Groups.find(query // "57b6fda08edf43040d2c9574",//to get only that users saved groups
-            ).exec(cb);
+    // "57b6fda08edf43040d2c9574",//to get only that users saved groups
+    debug('Query in getGroups:', query);
+    Groups.
+            find(query).populate('members').exec(cb);
   }
   function handleGroupSaveError(err) {
     // Check if business name already exists
@@ -338,20 +360,25 @@ module.exports = function (io) {
       //option here
     });
   })
+  
+  j.cancel();
 
 
 
   /*|||||||||||||||| SOCKET CONNECTION for messenger |||||||||||||||||||||||*/
 //Listen for connection socket 
-  
+
   io.on('connection', function (socket) {
 
+    debug('new connection '); //socket.request
+    var defaultRoom = 'general';
     var delivery = dl.listen(socket);
     delivery.on('receive.success', function (file) {
       var data = file.params;
-      if(!validateReuest(data)){
-       return socket.emit('error',{success:false, message:'Missing data on request!'});
-      };
+      if (!validateReuest(data)) {
+        return socket.emit('error', {success: false, message: 'Missing data on request!'});
+      }
+      ;
       var msgNew = {
         username: username,
         content: data.content,
@@ -392,6 +419,7 @@ module.exports = function (io) {
     var validateReuest = function (data) {
       if (!data.username || !username)
         return false;
+      return true;
     }
     function sendPrivateMessage(msg) {
       if (msg.type == 'private') {
@@ -409,16 +437,6 @@ module.exports = function (io) {
         debug('userSockets:', userSockets);
       }
     }
-
-    var username = '';
-    debug('new connection '); //socket.request
-    var defaultRoom = 'general';
-    //var rooms = ["General", "private"];
-
-    //Emit the rooms array
-//    socket.emit('rooms', {
-//      rooms: rooms //will implement rooms from database later on//actually saved groups
-//    });
 
 
     //Listens for new user
@@ -443,19 +461,32 @@ module.exports = function (io) {
       getGroups({
         username: username
       }, function (err, groups) {
-        socket.emit('init', {username: username, room: data.room, users: usersOnline, groups: groups});
+        socket.emit('init', {username: username, room: data.room, usersOnline: usersOnline, groups: groups});
         //Tell all those in the room that a new user joined
         io.emit('user:joined', data);
       });
     });
+
+    //// listen for fetchMessage request for a room///
+    //--params 
+    //@room : the room name
+    //@skip : the page number
+    socket.on('fetch:message', function (option) {
+      fetchMessages(option, function (err, msgs) {
+        socket.emit('fetch:message', {messages: msgs, option: option});
+      });
+    });
+    
+    
+    
 //Listens for switch room
-    socket.on('switch room', function (data) {
+    socket.on('join:room', function (data) {
       //Handles joining and leaving rooms
       debug("On switch room ", data);
-      socket.leave(data.room);
-      socket.join(data.newRoom);
-      io.in(data.room).emit('user left', data);
-      io.in(data.newRoom).emit('user joined', data);
+//      socket.leave(data.room);
+      socket.join(data.room);
+//      io.in(data.room).emit('user left', data);
+//      io.in(data.newRoom).emit('user joined', data);
     });
     //Listens for a new chat message
     socket.on('send:message', function (data) {
@@ -474,6 +505,9 @@ module.exports = function (io) {
       }
       if (data.to) {
         msgNew.to = data.to;
+      }
+      if(data.createdAt){
+        msgNew.createdAt = data.createdAt;
       }
       debug('on message event with ', msgNew);
       var newMsg = new Message(msgNew);
