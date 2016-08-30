@@ -16,17 +16,28 @@ var user_functions = require('../utils/user_functions.js');
 var company_functions = require('../utils/company_functions.js');
 var project_functions = require('../utils/project_functions.js');
 var path = require('path');
-var env = require('node-env-file');
-env(path.join(__dirname, '../.env'));
+
 
 //////////////////////////////////////////////////// LOGIN //////////////////////////
 
+/* Route: /admin/auth/logout
+** GET
+** Logs out signed in admin
+** No input
+** If success: {success: true, ...}
+*/
 router.route('/auth/logout')
 .get(function(req, res) {
 		req.logout();
         return res.json({success: true, message: 'logged out'});
 });
 
+/* Route: /admin/auth/login
+** POST
+** Logs in admin
+** Input: {'name' : name, 'password' : password}
+** If success: {success: true, message: admin_id}
+*/
 router.route('/auth/login')
 .post(passport.authenticate('admin-login', {}), function(req, res) {return res.json({success: true, message: req.user._id});}); //TODO: user or admin???
 
@@ -51,8 +62,14 @@ if (process.env.NODE_ENV !== 'production') {
 
 //////////////////////////////////////////////////// GET REQUESTS ///////////////////
 
-// Get all volunteers
-// TODO: implement paging later
+/* Route: /admin/volunteers
+** GET
+** No input
+** Returns list of all volunteers
+** If success: {success: true, message: [volunteers]}
+** If failure: {success: false, ...}
+** See getAllUsers for more info
+*/
 router.route('/volunteers')
 .get(function(req, res){
     if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
@@ -60,7 +77,14 @@ router.route('/volunteers')
 
 });
 
-// Get single volunteer
+/* Route: /admin/volunteers/:id
+** GET
+** No input
+** Returns volunteer with id
+** If success: {success: true, message: volunteer}
+** If failure: {success: false, ...}
+** See getUserById for more info
+*/
 router.route('/volunteers/:id')
 .get(function(req, res){
     if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});    
@@ -68,8 +92,14 @@ router.route('/volunteers/:id')
 
 })
 
-// Get all businesses
-// TODO: implement paging later
+/* Route: /admin/companies
+** GET
+** No input
+** Returns list of all companies
+** If success: {success: true, message: [companies]}
+** If failure: {success: false, ...}
+** See getAllCompanies for more info
+*/
 router.route('/companies')
 .get(isLoggedIn, function(req, res){
     if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});    
@@ -77,7 +107,14 @@ router.route('/companies')
 
 });
 
-// Get single company
+/* Route: /admin/companies/:id
+** GET
+** No input
+** Returns company with id
+** If success: {success: true, message: company}
+** If failure: {success: false, ...}
+** See getCompanyById for more info
+*/
 router.route('/companies/:id')
 .get(isLoggedIn, function(req, res){
     if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});    
@@ -85,15 +122,28 @@ router.route('/companies/:id')
 
 })
 
-// Get all projects
-// TODO: implement paging later
+/* Route: /admin/projects
+** GET
+** No input
+** Returns list of all projects
+** If success: {success: true, message: [projects]}
+** If failure: {success: false, ...}
+** See getAllProjects for more info
+*/
 router.route('/projects')
 .get(isLoggedIn, function(req, res){
     if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});    
     return project_functions.getAllProjects(req, res);
 });
 
-// Get single project
+/* Route: /admin/projects/:id
+** GET
+** No input
+** Returns project with id
+** If success: {success: true, message: project}
+** If failure: {success: false, ...}
+** See getProjectById for more info
+*/
 router.route('/projects/:id')
 .get(isLoggedIn, function(req, res){ // TODO: add in extracting info from company
     if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});    

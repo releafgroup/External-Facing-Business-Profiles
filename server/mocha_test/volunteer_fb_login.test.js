@@ -6,10 +6,9 @@ var config = require('../config.js');
 var secret = require('../../secret');
 var Browser = require('zombie');
 var path = require('path');
-var env = require('node-env-file');
+var HOST_DOMAIN = process.env.HOST_DOMAIN || 'http://localhost:3000';
 
-env(path.join(__dirname, '../.env'));
-var url = process.env.HOST_DOMAIN;
+var url = HOST_DOMAIN;
 Browser.localhost(url, 2000);
 
 user_update_info = { "local.first_name" : "ififififif",
