@@ -34,12 +34,11 @@ router.get('/auth/facebook/login/callback',  passport.authenticate('facebook',
 router.route('/')
 .get(isLoggedIn, function(req, res){
     if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
-    
-    return user_functions.getUserById(req.session.passport.user, req, res);
+    return user_functions.getUserById(req.session.passport.user.id, req, res);
 })
 .put(isLoggedIn, function(req,res){
     if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
-    return user_functions.updateUserById(req.session.passport.user, req, res);
+    return user_functions.updateUserById(req.session.passport.user.id, req, res);
 });
 
 
@@ -68,6 +67,7 @@ function isLoggedIn(req, res, next) {
 // Checks that passport user is defined
 // TODO: likley redudant with isLoggedIn
 function checkUserProfilePermission(req, res) {
-    if( typeof req.session.passport.user === 'undefined' || req.session.passport.user === null ) return false; // TODO: when add sessions to admin + company, might need to change this. basically uses to make sure only UserSchema access routes in here
+    console.log(req.session.passport.user);
+    if( typeof req.session.passport.user === 'undefined' || req.session.passport.user === null || req.session.passport.user.type != "volunteer" ) return false;
     return true;
 }
