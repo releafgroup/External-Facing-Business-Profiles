@@ -2,9 +2,7 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 var secret = require('../../secret');
 var User = require('../models/user');
 var path = require('path');
-var env = require('node-env-file');
-env(path.join(__dirname, '../.env'));
-var HOST_DOMAIN = process.env.HOST_DOMAIN;
+var HOST_DOMAIN = process.env.HOST_DOMAIN || 'http://localhost:3000' ;
 
 var fbInfo = process.env.NODE_ENV === 'production' ? secret.facebook.production : secret.facebook.dev;
 

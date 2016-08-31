@@ -4,10 +4,8 @@ var request = require('supertest');
 var mongoose = require('mongoose');
 var config = require('../config.js');
 var path = require('path');
-var env = require('node-env-file');
+var url = process.env.HOST_DOMAIN || 'http://localhost:3000';
 
-env(path.join(__dirname, '../.env'));
-var url = process.env.HOST_DOMAIN;
 var super_agent = request.agent(url);
 var super_agent2 = (require('supertest')).agent(url);
 

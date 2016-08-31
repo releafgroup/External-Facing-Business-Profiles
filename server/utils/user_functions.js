@@ -3,9 +3,10 @@
 var User = require('../models/user.js');
 
 
-// Function for user error handling in saving user info
-// @params: error from saving a user
-// Output: parsed error message
+/** Function for user error handling in saving user info
+ * @params: error from saving a user
+ * Output: parsed error message
+*/
 function handleUserSaveError(err) {
     // Check if email already exists
     if (err.code == 11000) {
@@ -30,10 +31,11 @@ function handleUserSaveError(err) {
 
 var exports = module.exports = {};
 
-// Checks if a given email is associated with a user id
-// @params: email, req, res
-// Output: If successful, {success: true}
-// If not, {success: false, message: error_message}
+/** Checks if a given email is associated with a user id
+ * @params: email, req, res
+ * Output: If successful, {success: true}
+ * If not, {success: false, message: error_message}
+*/
 exports.checkIfEmailExists = function(email, req, res) {
     User.findOne({ 'local.email' :  email }, function(err, user) {
         // if there are any errors, return the error
@@ -47,11 +49,12 @@ exports.checkIfEmailExists = function(email, req, res) {
 }
 
 
-// Gets information for given User id
-// @params: user_id, req, res
-// Output: If successful, {success: true, message : user_info}
-// If not, {success: false, message: error_message}
-// Possible errors are: User not found and networking issues
+/** Gets information for given User id
+ * @params: user_id, req, res
+ * Output: If successful, {success: true, message : user_info}
+ * If not, {success: false, message: error_message}
+ * Possible errors are: User not found and networking issues
+*/
 exports.getUserById = function(user_id, req, res) {
     User.findOne({
          '_id':user_id
@@ -63,11 +66,12 @@ exports.getUserById = function(user_id, req, res) {
     });
 }
 
-// Updates information for given User id
-// @params: user_id, req, res
-// Output: If successful, {success: true}
-// If not, {success: false, message: error_message}
-// Possible errors are attempting to modify the email or user_id and deleting a required element
+/** Updates information for given User id
+ * @params: user_id, req, res
+ * Output: If successful, {success: true}
+ * If not, {success: false, message: error_message}
+ * Possible errors are attempting to modify the email or user_id and deleting a required element
+*/
 exports.updateUserById = function(user_id, req, res) {
     User.findOne({
         '_id':user_id
@@ -102,10 +106,11 @@ exports.updateUserById = function(user_id, req, res) {
     });
 }
 
-// Gets all Users
-// @params: req, res
-// Output: If successful, {success: true, message: list_of_users}
-// If not, {success: false, message: error_message}
+/** Gets all Users
+ * @params: req, res
+ * Output: If successful, {success: true, message: list_of_users}
+ * If not, {success: false, message: error_message}
+*/
 exports.getAllUsers = function(req, res) {
     
     User.find(function(err, users){

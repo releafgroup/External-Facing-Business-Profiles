@@ -1,8 +1,9 @@
 var Project = require('../models/project.js');
 
-// Function for project error handling in saving project info
-// @params: error from saving a project
-// Output: parsed error message
+/** Function for project error handling in saving project info
+ * @params: error from saving a project
+ * Output: parsed error message
+*/
 function handleProjectSaveError(err) {
     // If project validation, gets one of the errors to return
     if (err.message == "Project validation failed") {
@@ -23,11 +24,12 @@ function handleProjectSaveError(err) {
 var exports = module.exports = {};
 
 
-// Gets information for given Project id
-// @params: project_id, req, res
-// Output: If successful, {success: true, message : project_info}
-// If not, {success: false, message: error_message}
-// Possible errors are: User not found and networking issues
+/** Gets information for given Project id
+ * @params: project_id, req, res
+ * Output: If successful, {success: true, message : project_info}
+ * If not, {success: false, message: error_message}
+ * Possible errors are: User not found and networking issues
+*/
 exports.getProjectById = function(project_id, req, res) {
     Project.findOne({
          '_id':req.params.id
@@ -38,11 +40,12 @@ exports.getProjectById = function(project_id, req, res) {
     });
 }
 
-// Updates information for given Project id
-// @params: project_id, req, res
-// Output: If successful, {success: true}
-// If not, {success: false, message: error_message}
-// Possible errors are attempting to modify the project_id, is_verified, or the associated company and deleting a required element
+/** Updates information for given Project id
+ * @params: project_id, req, res
+ * Output: If successful, {success: true}
+ * If not, {success: false, message: error_message}
+ * Possible errors are attempting to modify the project_id, is_verified, or the associated company and deleting a required element
+*/
 exports.updateProjectById = function(project_id, req, res) {
     Project.findOne({
         '_id':req.params.id
@@ -71,10 +74,11 @@ exports.updateProjectById = function(project_id, req, res) {
     });
 }
 
-// Gets all projects
-// @params: req, res
-// Output: If successful, {success: true, message: list_of_projects}
-// If not, {success: false, message: error_message}
+/** Gets all projects
+ * @params: req, res
+ * Output: If successful, {success: true, message: list_of_projects}
+ * If not, {success: false, message: error_message}
+*/
 exports.getAllProjects = function(req, res) {
     
     Project.find(function(err, projects){

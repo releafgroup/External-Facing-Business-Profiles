@@ -1,8 +1,9 @@
 var Company = require('../models/company.js');
 
-// Function for user error handling in saving company info
-// @params: error from saving a company
-// Output: parsed error message
+/** Function for user error handling in saving company info
+ * @params: error from saving a company
+ * Output: parsed error message
+*/
 function handleCompanySaveError(err) {
     // Check if business name already exists
     if (err.code == 11000) {
@@ -29,11 +30,12 @@ function handleCompanySaveError(err) {
 var exports = module.exports = {};
 
 
-// Gets information for given Company id
-// @params: company_id, req, res
-// Output: If successful, {success: true, message : company_info}
-// If not, {success: false, message: error_message}
-// Possible errors are: User not found and networking issues
+/** Gets information for given Company id
+ * @params: company_id, req, res
+ * Output: If successful, {success: true, message : company_info}
+ * If not, {success: false, message: error_message}
+ * Possible errors are: User not found and networking issues
+*/
 exports.getCompanyById = function(company_id, req, res) {
     Company.findOne({
          '_id':company_id
@@ -44,11 +46,12 @@ exports.getCompanyById = function(company_id, req, res) {
     });
 }
 
-// Updates information for given Company id
-// @params: company_id, req, res
-// Output: If successful, {success: true}
-// If not, {success: false, message: error_message}
-// Possible errors are attempting to modify the business name or company_id and deleting a required element
+/** Updates information for given Company id
+ * @params: company_id, req, res
+ * Output: If successful, {success: true}
+ * If not, {success: false, message: error_message}
+ * Possible errors are attempting to modify the business name or company_id and deleting a required element
+*/
 exports.updateCompanyById = function(company_id, req, res) {
    Company.findOne({
         '_id':company_id
@@ -76,10 +79,11 @@ exports.updateCompanyById = function(company_id, req, res) {
     });
 }
 
-// Gets all Companies
-// @params: req, res
-// Output: If successful, {success: true, message: list_of_companies}
-// If not, {success: false, message: error_message}
+/** Gets all Companies
+ * @params: req, res
+ * Output: If successful, {success: true, message: list_of_companies}
+ * If not, {success: false, message: error_message}
+*/
 exports.getAllCompanies = function(req, res) {
     
     Company.find(function(err, companies){
