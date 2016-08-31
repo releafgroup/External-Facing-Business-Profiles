@@ -65,16 +65,24 @@ router.route('/users/projects/:id/favorite')
         var user = user_functions.getUserById(req.session.passport.user, req, res);
         if (user.favorite == 'undefined') {
             user.favorite = proj.id;
+            user.save();
             proj.favorite_count++;
         } else {
             if (user.favorite == proj.id) {
                 user.favorite == 'undefined';
+                user.save();
                 proj.favorite_count--;
             } else if (user.favorite != proj.id) {
                 // Throw error that one cannot like another project
             }
         }
-        if (proj.save()) return res.json({success: true, message : 'Project'});
+
+        if (!err) {
+            proj.save();
+            if (!err) {
+                return res.json({success: true, message : 'Project'})
+            }
+        }
     });
 })
 
