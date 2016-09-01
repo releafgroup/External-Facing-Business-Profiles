@@ -50,41 +50,38 @@ router.get('/auth/facebook/login/callback',  passport.authenticate('facebook',
 ));
 
 
-/** Route: /users
- * GET: Gets all information for the signed in user
- * No inputs
- * See getUserById for more info
- * POST: Updates information for the signed in user
- * Input: User object
- * See updateUserById for more info
-*/
-router.route('/users/projects/:id/favorite')
-.put(function(req, res) {
-    
-    Project.findOne({ id: req.id }, function (err, proj){
-        var user = user_functions.getUserById(req.session.passport.user, req, res);
-        if (user.favorite == 'undefined') {
-            user.favorite = proj.id;
-            user.save();
-            proj.favorite_count++;
-        } else {
-            if (user.favorite == proj.id) {
-                user.favorite == 'undefined';
-                user.save();
-                proj.favorite_count--;
-            } else if (user.favorite != proj.id) {
-                // Throw error that one cannot like another project
-            }
-        }
+router.route('/projects/favorite/:id')
+.put(isLoggedIn, function(req, res) {
+    if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
+    Project.findOne({ '_id': req.params.id }, function (err, proj){
+        if (err) return res.json({success: false, message : err.message});
+        if (!proj) return res.json({sucess: false, message : "no project"});
 
-        if (!err) {
-            proj.save();
-            if (!err) {
-                return res.json({success: true, message : 'Project'})
+        User.findOne({
+         '_id':req.session.passport.user
+        }, function(err2, user){
+            if(err2) return res.json({ success : false , message : err2.message}); 
+            if(!user) return res.json({success: false, message: "no user"});
+            
+            if (user.favorite == proj._id) {
+                proj.favorite_count--;
+                user.favorite = undefined;
+            } else {
+                proj.favorite_count++;
+                user.favorite = proj._id;
             }
-        }
+            console.log(user);
+            console.log(proj);
+            user.save(function(user_err, succ) {
+                if (user_err) return res.json({success: false, message: "error occurred saving"});
+                proj.save(function(proj_err, succ2) {
+                    if (proj_err) return res.json({success: false, message: "error occurred saving"});
+                    return res.json({success: true});
+                });
+            });
+        });
     });
-})
+});
 
 router.route('/')
 .get(isLoggedIn, function(req, res){

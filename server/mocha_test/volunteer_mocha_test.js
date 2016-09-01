@@ -57,7 +57,7 @@ var user2 = {
 }
 var user2_id = -1;
 
-var project = {
+var project1 = {
     "project_description" : "test_second",
     "core_skill_1" : "App Development",
     "core_skill_2" : "Growth Strategy",
@@ -69,7 +69,28 @@ var project = {
     "favorite_count": 0
 }
 
-var project_id = -1;
+var proj1_id = -1;
+
+
+var comp1_id = -1;
+var company1 = {
+    "business_name" : "business_first",
+    "primary_contact_name" : "emmmmmmmmmm o",
+    "primary_contact_phone" : "123-7045195845",
+    "password" : "eightdigitsboy",
+                
+    "company_purpose" : "the purpose is to test if the creation works",
+    "company_size" :  "1 Partner",
+    "company_industry_1" : "Processing",
+    "company_industry_2" : "Transport",
+    "company_industry_3" : "Storage",
+    "value_hoped_for" : "we hope to get a lot of value",
+    "short_term_obj" : "short term objective",
+    "long_term_obj" : "long term objective", 
+    "pressing_problems" : "talent and capital", 
+    "best_medium" : "Email",
+    "internet_access" : "Work Hours"
+}
 
 // TODO: add test cases for user permissions i.e. companies can't access this shit, users can't access other users shit, etc.
 
@@ -298,16 +319,40 @@ describe('Routing', function() {
 
     });
 
-    describe('tests favoriting a project', function() {
-        it('should increase project favorite count', function(done){
+    describe('tests user-project interaction', function() {
+
+        it('creates a company', function(done) {
+            request(url)
+                .post('/companies')
+                .send(company1)
+                .expect(200) //Status code
+                .end(function(err, res) {
+                    comp1_id = res.body.id;
+                    res.body.success.should.equal(true);
+                    done();
+                });
+        });
+
+        it('creates project 1', function(done) {
+            project1['_company'] = comp1_id;
+            request(url)
+                .post('/projects')
+                .send(project1)
+                .expect(200) //Status code
+                .end(function(err, res) {
+                    proj1_id = res.body.id;
+                    res.body.success.should.equal(true);
+                    done();
+                });
+        });
+
+        it('should cause project 1 to be favorited by user 1', function(done){
             super_agent
-                .put('/users/projects/'+ project_id + '/favorite/')
-                .send(user1)
+                .put('/users/projects/favorite/'+ proj1_id)
                 .expect(200)
-                .end(function(err2, res2) {
-                    console.log(super_agent);
-                    console.log(res2.body);
-                    res2.body.success.should.equal(true);
+                .end(function(err, res) {
+                    console.log(res.body);
+                    res.body.success.should.equal(true);
                     done();
                 });
              
