@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
 
 // create a schema for massage
 var MessageSchema = new Schema({
-  username: {type: String, required: true},
+  username: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
   room: {type: String, required: true},
   content: {type: String},
   type: {type: String, default: "group", enum: ['group', 'private']},

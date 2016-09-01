@@ -77,7 +77,6 @@ module.exports = function (io) {
             });
           });
   //file sharing done
-
   router.route('/groups')
           //gets all saved active groups
           //will filter later on
@@ -91,25 +90,33 @@ module.exports = function (io) {
             });
 //           
           })
+          ;
+
+  router.route('/admin/groups')
+          //gets all saved active groups
+          //will filter later on
+          //FILTER THERE IN INNER FUNC
+          .get(function (req, res) {
+            debug(' got groups request ', req.query)
+            getGroups({admin: true}, function (err, groups) {
+              if (err)
+                return res.json({success: false, message: err.message});
+              res.json({success: true, groups: groups});
+            });
+//           
+          })
           //add new group//with members//
           .post(function (req, res) {
-            var user = "57b6fda08edf43040d2c9574"; //req.session.passport.user;
+            console.log('Data:', req.body);
+            //return res.json(req.body)
+            var user = req.session.passport.user;//"57b6fda08edf43040d2c9574";
 
             debug('groups post request ', user)
             var members = JSON.parse(req.body.members);
             debug('members ', members)
-            if (req.body.type == 'private') {
 
-              debug('private  ', user + "_private_" + members[0])
-              var query = {"$in": [
-                  user + "_private_" + members[0],
-                  members[0] + "_private_" + user
-                ]}
-              debug(' query ', query)
-              var private = true;
-            } else {
-              var query = req.body.name;
-            }
+            var query = req.body.name;
+
             //debug('query ', query)
             Groups.findOne({
               'name': query
@@ -126,16 +133,14 @@ module.exports = function (io) {
 
 
               var owner = user; //for now we keep it blank//this should be req.session.passport.user
-              members.unshift(user);
+              // members.unshift(user);
               var groupData = {
                 name: req.body.name, //uniq
                 owner: owner,
-                members: members
+                members: members,
+                photo: req.body.photo
               };
-              if (private) {
-                groupData.name = members.join('_private_');
-                groupData.type = req.body.type;
-              }
+
               // Populate Information to group instance
               var group = new Groups(groupData);
               group.save(function (err, group) {
@@ -213,6 +218,65 @@ module.exports = function (io) {
 
 
 ///==================================== general functtions====================================//
+
+  var updateGroup = function (option, cb) {
+    Groups.findOne({name: option.name}).exec(function (err, doc) {
+      if (err) {
+        return cb({success: false, message: err.message});
+      }
+      if (!doc) {
+        return cb({success: false, message: "Group not found!"});
+      }
+      for (var a in option.data) {
+        doc[a] = option.data[a];
+      }
+      doc.save(function (err, affected) {
+        if (err)
+          return cb({success: false, message: err.message});
+        cb({success: true});
+      });
+    });
+  }
+  var createNewGroup = function (option, cb) {
+    //debug('query ', query)
+    Groups.findOne({
+      'name': option.data.name
+    }).exec(function (err, group) {
+      if (err) {
+        return cb({success: false, message: handleGroupSaveError(err)});
+      }
+      if (group) {
+        //send error that this group name is taken already
+        return cb({success: false, message: handleGroupSaveError({code: 11000})});
+      }
+      debug(' not found ')
+
+
+
+      var owner = username; //for now we keep it blank//this should be req.session.passport.user
+      // members.unshift(user);
+      var groupData = {
+        name: option.data.name, //uniq
+        owner: owner,
+        members: option.data.members
+      };
+      if (option.data.photo && option.data.photo.length > 100) {
+        groupData.photo = option.data.photo;
+      }
+
+      // Populate Information to group instance
+      var group = new Groups(groupData);
+      group.save(function (err, group) {
+        if (err) {
+          return cb({success: false, message: handleGroupSaveError(err)});
+        }
+        Groups.findOne({name: group.name}).populate('members').exec(function (err, group2) {
+          return cb({id: group.id, group: group2, success: true}); // Returns company id
+        });
+
+      });
+    })
+  }
   function fetchMessages(option, cb) {
     var query = {};
 
@@ -244,7 +308,7 @@ module.exports = function (io) {
   }
   function getGroups(option, cb) {
 //     Find
-    var query = {status: true};
+    var query = {};
     if (typeof option == 'function') {
       cb = option;
     } else {
@@ -252,6 +316,9 @@ module.exports = function (io) {
       if (option.username) {
         query.members = option.username;
       }
+    }
+    if (!option.admin) {
+      query.status = true;
     }
     // "57b6fda08edf43040d2c9574",//to get only that users saved groups
     debug('Query in getGroups:', query);
@@ -360,7 +427,7 @@ module.exports = function (io) {
       //option here
     });
   })
-  
+
   j.cancel();
 
 
@@ -476,9 +543,9 @@ module.exports = function (io) {
         socket.emit('fetch:message', {messages: msgs, option: option});
       });
     });
-    
-    
-    
+
+
+
 //Listens for switch room
     socket.on('join:room', function (data) {
       //Handles joining and leaving rooms
@@ -496,7 +563,7 @@ module.exports = function (io) {
         return socket.emit('error', {success: false, message: 'not logged in'});
       ;
       var msgNew = {
-        username: username,
+        username: data.username,
         content: data.content,
         room: data.room.toLowerCase()
       };
@@ -506,7 +573,7 @@ module.exports = function (io) {
       if (data.to) {
         msgNew.to = data.to;
       }
-      if(data.createdAt){
+      if (data.createdAt) {
         msgNew.createdAt = data.createdAt;
       }
       debug('on message event with ', msgNew);
@@ -537,6 +604,27 @@ module.exports = function (io) {
         });
       }, 0);
     });
+
+
+    //admin
+    socket.on('admin:new:group', function (data) {
+      console.log('data:', data);
+      createNewGroup({data: data}, function (result) {
+        socket.emit('admin:new:group', result);
+        if (result.success)
+          io.emit('groupManager:new:group', result);
+      });
+    });
+
+    socket.on('admin:update:group', function (data) {
+      console.log('data:', data);
+      updateGroup(data, function (result) {
+        socket.emit('admin:update:group', result);
+        if (result.success)
+          io.emit('groupManager:update:group', result);
+      });
+    });
+
   });
   //end of socket server implementation
 
