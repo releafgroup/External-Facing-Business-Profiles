@@ -17,8 +17,8 @@ var admin1 = {
 var super_agent1 = request.agent(url);
 var user1_id = -1;
 var user1 = {
-    "first_name" : "test_first",
-    "last_name" : "test_last",
+    "local.first_name" : "test_first",
+    "local.last_name" : "test_last",
     "local.password" : "eightdigits",
     "local.email" : "test1@gmail.com",
     "primary_institution": "stanny",
