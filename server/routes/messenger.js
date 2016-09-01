@@ -115,17 +115,17 @@ module.exports = function (io) {
             var members = JSON.parse(req.body.members);
             debug('members ', members)
 
-            var query = req.body.name;
+            var query = req.body.id;
 
             //debug('query ', query)
-            Groups.findOne({
-              'name': query
+            Groups.find({
+              '_id': query
             }).exec(function (err, group) {
               if (err) {
                 return res.json({success: false, message: handleGroupSaveError(err)});
               }
               if (group) {
-                //send error that this group name is taken already
+                //send error that this group , is taken already
                 return res.json({success: false, message: handleGroupSaveError({code: 11000})});
               }
               debug(' not found ')
@@ -220,7 +220,7 @@ module.exports = function (io) {
 ///==================================== general functtions====================================//
 
   var updateGroup = function (option, cb) {
-    Groups.findOne({name: option.name}).exec(function (err, doc) {
+    Groups.findOne({_id: option.id}).exec(function (err, doc) {
       if (err) {
         return cb({success: false, message: err.message});
       }
@@ -270,8 +270,8 @@ module.exports = function (io) {
         if (err) {
           return cb({success: false, message: handleGroupSaveError(err)});
         }
-        Groups.findOne({name: group.name}).populate('members').exec(function (err, group2) {
-          return cb({id: group.id, group: group2, success: true}); // Returns company id
+        Groups.findOne({_id: group._id}).populate('members').exec(function (err, group2) {
+          return cb({_id: group._id, group: group2, success: true}); // Returns company id
         });
 
       });
@@ -281,9 +281,9 @@ module.exports = function (io) {
     var query = {};
 
     if (option.type == 'private') {
-      query.room = {$in: [option.room, '@' + username]};
+      query.room = {$in: [option.room, '@' + option.username]};
     } else {
-      query.room = option.room.toLowerCase();
+      query.room = option.room;
     }
 
     var skip = 0;
@@ -447,9 +447,9 @@ module.exports = function (io) {
       }
       ;
       var msgNew = {
-        username: username,
+        username: data.username,
         content: data.content,
-        room: data.room.toLowerCase(),
+        room: data.room,
         file: {
           name: file.name,
           data: file.buffer,
@@ -513,7 +513,7 @@ module.exports = function (io) {
         usersOnline.push(data.username);
       }
 
-      username = data.username;
+       username = data.username;
 
       //userSockets.mustak = sockID
       userSockets[username] = socket;
@@ -525,7 +525,7 @@ module.exports = function (io) {
       //New user joins the default room
       socket.join(data.room);
 
-      getGroups({
+      getGroups({ 
         username: username
       }, function (err, groups) {
         socket.emit('init', {username: username, room: data.room, usersOnline: usersOnline, groups: groups});
@@ -559,13 +559,13 @@ module.exports = function (io) {
     socket.on('send:message', function (data) {
 
       //Create message
-      if (!username)
+      if (!data.username)
         return socket.emit('error', {success: false, message: 'not logged in'});
       ;
       var msgNew = {
         username: data.username,
         content: data.content,
-        room: data.room.toLowerCase()
+        room: data.room
       };
       if (data.type) {
         msgNew.type = data.type;
