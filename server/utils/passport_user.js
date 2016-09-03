@@ -101,7 +101,7 @@ var AdminLoginStrategy = require('./passport_admin');
                             newUser.setItem(a, req.body[a]);
                         } else if (a === "local.password") {
                            if (req.body[a].length < 8 || req.body[a].length > 64) {
-                                return res.json({success: false, message: "Password not valid"}); // TODO: move to user.js
+                                return done(null, false, {success: false, message: "password not valid"});
                            }
                            newUser.setItem(a, newUser.generateHash(req.body[a]));
                         } else {

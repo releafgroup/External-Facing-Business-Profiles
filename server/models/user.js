@@ -89,8 +89,6 @@ var UserSchema = new Schema(
     }
 ); 
 
-UserSchema.index({email: 1}, {unique: true}); // TODO: figure out why this doesn't work
-
 UserSchema.path('skills').validate(function(arr){
     if (this.fullUserFormSumitted || this.signupType === 'local') {
         return skills_validation(arr);
