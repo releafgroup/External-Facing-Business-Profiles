@@ -220,7 +220,7 @@ module.exports = function (io) {
 ///==================================== general functtions====================================//
 
   var updateGroup = function (option, cb) {
-    Groups.findOne({_id: option.id}).exec(function (err, doc) {
+    Groups.findOne({_id: option._id}).exec(function (err, doc) {
       if (err) {
         return cb({success: false, message: err.message});
       }
@@ -233,7 +233,9 @@ module.exports = function (io) {
       doc.save(function (err, affected) {
         if (err)
           return cb({success: false, message: err.message});
-        cb({success: true});
+        Groups.findOne({_id: option._id}).populate('members').exec(function (err, group2) {
+          return cb({_id: option._id, group: group2, success: true}); // Returns company id
+        });
       });
     });
   }
@@ -490,18 +492,18 @@ module.exports = function (io) {
     }
     function sendPrivateMessage(msg) {
       if (msg.type == 'private') {
-        debug('private-msg.to', msg.to);
+//        debug('private-msg.to', msg.to);
         if (!isOnline(msg.to)) {
-          debug('isOnline', isOnline);
+//          debug('isOnline', isOnline);
           if (msgQ.indexOf(msg.to) == -1)
             msgQ.push(msg.to);
         }
         //userSockets[msg.to] is the saved socket for the specific user
-        console.log();
+//        console.log();
         if (userSockets[msg.to]) {
           userSockets[msg.to].emit('send:message', msg);
         }
-        debug('userSockets:', userSockets);
+//        debug('userSockets:', userSockets);
       }
     }
 
@@ -511,9 +513,11 @@ module.exports = function (io) {
       debug('on new user event ', data);
       if (usersOnline.indexOf(data.username) == -1) {
         usersOnline.push(data.username);
+        if (msgQ.indexOf(data.username) !== -1)
+          msgQ.splice(msgQ.indexOf(data.username), 1);
       }
 
-       username = data.username;
+      username = data.username;
 
       //userSockets.mustak = sockID
       userSockets[username] = socket;
@@ -525,12 +529,12 @@ module.exports = function (io) {
       //New user joins the default room
       socket.join(data.room);
 
-      getGroups({ 
+      getGroups({
         username: username
       }, function (err, groups) {
         socket.emit('init', {username: username, room: data.room, usersOnline: usersOnline, groups: groups});
         //Tell all those in the room that a new user joined
-        io.emit('user:joined', data);
+        io.emit('user:online', data);
       });
     });
 
@@ -599,7 +603,7 @@ module.exports = function (io) {
       debug("disconnected client ", username); //If Verbose Debug
       setTimeout(function () {
         usersOnline.splice(usersOnline.indexOf(username), 1);
-        socket.broadcast.emit('user:left', {
+        socket.broadcast.emit('user:offline', {
           username: username
         });
       }, 0);
