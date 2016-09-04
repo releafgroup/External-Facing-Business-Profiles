@@ -385,7 +385,7 @@ describe('Routing', function() {
                     });
             });
 
-            it('should cause user 1 to have favorite column with proj_id', function(done){
+            it('should keep favorite if one refavorites', function(done){
                 super_agent
                     .put('/users/projects/favorite/'+ proj1_id)
                     .expect(200)
@@ -395,27 +395,13 @@ describe('Routing', function() {
                             .put('/users/projects/favorite/'+ proj1_id)
                             .expect(200, done)
                             .expect(function(res2) {
-                            }, done);
-                    });
-            });
-
-            it('should cause user to unfavorite proj 1', function(done){
-                super_agent
-                    .put('/users/projects/favorite/'+ proj1_id)
-                    .expect(200)
-                    .end(function(err, res) {
-                        res.body.message.should.equal(proj1_id);
-                        super_agent
-                            .put('/users/projects/favorite/'+ proj1_id)
-                            .expect(200, done)
-                            .expect(function(res2) {
-                                (res2.body.message === undefined).should.equal(true);
+                                res2.body.message.should.equal(proj1_id);
                             }, done);
                     });
                 
             });
 
-            it('should not allow favoriting when user has a favorite', function(done){
+            it('replaces an old favorite with a new one', function(done){
                 super_agent
                     .put('/users/projects/favorite/'+ proj1_id)
                     .expect(200)
@@ -426,7 +412,7 @@ describe('Routing', function() {
                             .expect(200, done)
                             .expect(function(res2) {
                                 console.log(res2.body, 'are you');
-                                res2.body.message.should.equal("can have only one favorite");
+                                res2.body.message.should.equal(proj2_id);
                             }, done);
                     });
             });

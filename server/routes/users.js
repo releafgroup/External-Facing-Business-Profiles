@@ -73,13 +73,7 @@ router.route('/projects/favorite/:id')
             if(!user) return res.json({success: false, message: "no user"});
             
             if (user.favorite) {
-                if (user.favorite.equals(proj._id))  {
-                    console.log('I got here');
-                    proj.favorite_count--;
-                    user.favorite = undefined;
-                } else {
-                    return res.json({success: false, message: "can have only one favorite"});
-                }
+                user.favorite = proj;
             } else {
                 proj.favorite_count++;
                 user.favorite = proj;
@@ -89,8 +83,8 @@ router.route('/projects/favorite/:id')
                 if (user_err) return res.json({success: false, message: "error occurred saving"});
                 proj.save(function(proj_err, succ2) {
                     if (proj_err) return res.json({success: false, message: "error occurred saving"});
-                });
-                return res.json({success: true, message: user.favorite});
+                    return res.json({success: true, message: user.favorite});
+                });   
             });
         });
     });
