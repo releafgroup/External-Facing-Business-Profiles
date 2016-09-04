@@ -1,6 +1,6 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
-    
+
 
 // create a schema for massage
 var MessageSchema = new Schema({

@@ -26,11 +26,16 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //TODO: Front end to have a form tag, with its action pointed to the express route. 
 //Fileupload handling will be taken care automatically and all file moved to ‘upload’ folder.
 
+var domain_allowed = 'https://releaf-frontend-app.herokuapp.com';
+if (app.get('env') == 'mocha_db' || app.get('env') == 'development') {
+    domain_allowed = 'http://localhost:3001';
+}
+
 // TODO: maybe switch to cors plugin
 app.use(function (req, res, next) {
 
     // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001'); //TODO: add in FE
+    res.setHeader('Access-Control-Allow-Origin', domain_allowed); //TODO: add in FE
 
     // Request methods you wish to allow
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
