@@ -8,8 +8,6 @@ var authFunc = require('../utils/authfunc.js');
 var bcrypt = require('bcryptjs');
 var user_functions = require('../utils/user_functions.js');
 var mongoose = require('mongoose');
-var ObjectId = require('mongodb').ObjectID;
-
 
 /** Route: /users/auth/signup
  * POST
@@ -57,14 +55,15 @@ router.get('/auth/facebook/login/callback',  passport.authenticate('facebook',
 router.route('/projects/favorite/:id')
 .put(isLoggedIn, function(req, res) {
     if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
-    Project.findOne(req.params.id, function (err, proj){
-        
+    Project.findOne({'_id': req.params.id}, function (err, proj){
+
         if (err) return res.json({success: false, message : err.message});
         if (!proj) return res.json({sucess: false, message : "no project"});
 
         User.findOne({
-         '_id':req.session.passport.user
+         '_id': req.session.passport.user.id
         }, function(err2, user){
+
             if(err2) return res.json({ success : false , message : err2.message}); 
             if(!user) return res.json({success: false, message: "no user"});
             

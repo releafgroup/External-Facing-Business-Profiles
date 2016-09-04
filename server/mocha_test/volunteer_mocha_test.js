@@ -74,6 +74,11 @@ var project1 = {
 
 var proj1_id = -1;
 
+var project2 = project1;
+
+var proj2_id = -1;
+
+
 
 var comp1_id = -1;
 var company1 = {
@@ -351,19 +356,20 @@ describe('Routing', function() {
                 });
         });
 
+        it('creates project 2', function(done) {
+            project2['_company'] = comp1_id;
+            request(url)
+                .post('/projects')
+                .send(project1)
+                .expect(200) //Status code
+                .end(function(err, res) {
+                    proj2_id = res.body.id;
+                    res.body.success.should.equal(true);
+                    done();
+                });
+        });
+
         describe('favoriting a project', function() {
-
-            xit('should cause project 1 to be favorited by user 1', function(done){
-                super_agent
-                    .put('/users/projects/favorite/'+ proj1_id)
-                    .expect(200)
-                    .end(function(err, res) {
-                        console.log(res.body);
-
-                        res.body.success.should.equal(true);
-                        done();
-                    });
-            });
 
             it('should cause user 1 to have favorite column with proj_id', function(done){
                 super_agent
@@ -377,25 +383,61 @@ describe('Routing', function() {
                 
             });
 
+            it('should cause project 1 to be favorited by user 1', function(done){
+                super_agent
+                    .put('/users/projects/favorite/'+ proj1_id)
+                    .expect(200)
+                    .end(function(err, res) {
+                        res.body.success.should.equal(true);
+                        done();
+                    });
+            });
+
+            it('should cause user 1 to have favorite column with proj_id', function(done){
+                super_agent
+                    .put('/users/projects/favorite/'+ proj1_id)
+                    .expect(200)
+                    .end(function(err, res) {
+                        res.body.message.favorite.should.equal(proj1_id);
+                        super_agent
+                            .put('/users/projects/favorite/'+ proj1_id)
+                            .expect(200, done)
+                            .expect(function(res2) {
+                            }, done);
+                    });
+            });
+
             it('should cause user to unfavorite proj 1', function(done){
                 super_agent
                     .put('/users/projects/favorite/'+ proj1_id)
                     .expect(200)
                     .end(function(err, res) {
-                        console.log(res.body, 'acess');
+                        res.body.message.favorite.should.equal(proj1_id);
                         super_agent
                             .put('/users/projects/favorite/'+ proj1_id)
                             .expect(200, done)
                             .expect(function(res2) {
-                                console.log(res2.body, 'body');
-                                res2.body = {
-                                    success: false,
-                                    message: " coulld not find message"
-                                }
-                                (res2.body.message.favorite.whatever === undefined).should.be.true;
+                                console.log(res2.body, 'are you');
+                                (res2.body.message.favorite === undefined).should.equal(true);
                             }, done);
                     });
                 
+            });
+
+            it('should not allow favoriting when user has a favorite', function(done){
+                super_agent
+                    .put('/users/projects/favorite/'+ proj1_id)
+                    .expect(200)
+                    .end(function(err, res) {
+                        res.body.message.favorite.should.equal(proj1_id);
+                        super_agent
+                            .put('/users/projects/favorite/' + proj2_id)
+                            .expect(200, done)
+                            .expect(function(res2) {
+                                console.log(res2.body, 'are you');
+                                res2.body.message.should.equal("can have only one favorite");
+                            }, done);
+                    });
             });
         });
     });
