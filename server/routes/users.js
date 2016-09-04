@@ -7,6 +7,9 @@ var Project = require('../models/project.js');
 var authFunc = require('../utils/authfunc.js'); 
 var bcrypt = require('bcryptjs');
 var user_functions = require('../utils/user_functions.js');
+var mongoose = require('mongoose');
+var ObjectId = require('mongodb').ObjectID;
+
 
 /** Route: /users/auth/signup
  * POST
@@ -54,7 +57,8 @@ router.get('/auth/facebook/login/callback',  passport.authenticate('facebook',
 router.route('/projects/favorite/:id')
 .put(isLoggedIn, function(req, res) {
     if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
-    Project.findOne({ '_id': req.params.id }, function (err, proj){
+    Project.findOne(req.params.id, function (err, proj){
+        
         if (err) return res.json({success: false, message : err.message});
         if (!proj) return res.json({sucess: false, message : "no project"});
 
@@ -64,7 +68,6 @@ router.route('/projects/favorite/:id')
             if(err2) return res.json({ success : false , message : err2.message}); 
             if(!user) return res.json({success: false, message: "no user"});
             
-            console.log(user.favorite);
             if (user.favorite) {
                 if (user.favorite.equals(proj._id))  {
                     proj.favorite_count--;
@@ -74,7 +77,7 @@ router.route('/projects/favorite/:id')
                 }
             } else {
                 proj.favorite_count++;
-                user.favorite = proj._id;
+                user.favorite = proj;
             }
 
             user.save(function(user_err, succ) {
