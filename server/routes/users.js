@@ -14,6 +14,7 @@ var user_functions = require('../utils/user_functions.js');
  * Input: User object
  * See 'local-signup' for more info
 */
+
 router.route('/auth/signup')
 .post(passport.authenticate('local-signup', {}), function(req, res) {return res.json({success: true, message: req.user._id});});
 
@@ -63,21 +64,25 @@ router.route('/projects/favorite/:id')
             if(err2) return res.json({ success : false , message : err2.message}); 
             if(!user) return res.json({success: false, message: "no user"});
             
-            if (user.favorite == proj._id) {
-                proj.favorite_count--;
-                user.favorite = undefined;
+            console.log(user.favorite);
+            if (user.favorite) {
+                if (user.favorite.equals(proj._id))  {
+                    proj.favorite_count--;
+                    user.favorite = undefined;
+                } else {
+                    return res.json({success: false, message: "can have only one favorite"});
+                }
             } else {
                 proj.favorite_count++;
                 user.favorite = proj._id;
             }
-            console.log(user);
-            console.log(proj);
+
             user.save(function(user_err, succ) {
                 if (user_err) return res.json({success: false, message: "error occurred saving"});
                 proj.save(function(proj_err, succ2) {
                     if (proj_err) return res.json({success: false, message: "error occurred saving"});
-                    return res.json({success: true});
                 });
+                return res.json({success: true, message: user});
             });
         });
     });
