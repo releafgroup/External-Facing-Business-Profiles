@@ -107,7 +107,7 @@ module.exports = function (io) {
           })
           //add new group//with members//
           .post(function (req, res) {
-            console.log('Data:', req.body);
+            debug('Data:', req.body);
             //return res.json(req.body)
             var user = req.session.passport.user;//"57b6fda08edf43040d2c9574";
 
@@ -404,7 +404,7 @@ module.exports = function (io) {
 
 ///here will run cron job acording to the string top
   var j = schedule.scheduleJob(cronString, function (y) {
-    console.log('The answer to life, the universe, and everything!', new Date());
+    debug.log('The answer to life, the universe, and everything!', new Date());
 
     getQueuedPrivateMsg(function (err, msgs) {
       //will get all messages for last 4 hours
@@ -482,7 +482,7 @@ module.exports = function (io) {
       });
     });
     delivery.on('receive.progress', function (file) {
-      console.log('in progress', file.name)
+      debug('in progress', file.name)
     });
 
     var validateReuest = function (data) {
@@ -596,23 +596,26 @@ module.exports = function (io) {
         msg.file.data = [];
         debug('sending message', msg.room);
         io.in(msg.room).emit('send:message', msg);
-        sendPrivateMessage(msg);
+        if (msg.type == 'private') {
+          socket.emit('send:message', msg);
+          sendPrivateMessage(msg);
+        }
       });
     });
     socket.on('disconnect', function () {
       debug("disconnected client ", username); //If Verbose Debug
-      setTimeout(function () {
-        usersOnline.splice(usersOnline.indexOf(username), 1);
-        socket.broadcast.emit('user:offline', {
-          username: username
-        });
-      }, 0);
+      //setTimeout(function () {
+      usersOnline.splice(usersOnline.indexOf(username), 1);
+      socket.broadcast.emit('user:offline', {
+        username: username
+      });
+      //  }, 0);
     });
 
 
     //admin
     socket.on('admin:new:group', function (data) {
-      console.log('data:', data);
+      debug('data:', data);
       createNewGroup({data: data}, function (result) {
         socket.emit('admin:new:group', result);
         if (result.success)
@@ -621,7 +624,7 @@ module.exports = function (io) {
     });
 
     socket.on('admin:update:group', function (data) {
-      console.log('data:', data);
+      debug('data:', data);
       updateGroup(data, function (result) {
         socket.emit('admin:update:group', result);
         if (result.success)
