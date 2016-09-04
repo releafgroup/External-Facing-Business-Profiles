@@ -12,9 +12,7 @@ var io = require('socket.io')();
 var user_passport = require('./utils/passport_user.js');
 var session = require('express-session');
 var multer = require('multer');
-var router = express.Router();
 var upload = multer({ dest: './users/upload' });//catch all multipart data, fileuploads automatically and stores the file to ‘upload/’ folder.
-
 var MongoStore = require('express-session-mongo');
 
 var app = express();
@@ -26,35 +24,36 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //TODO: Front end to have a form tag, with its action pointed to the express route.
 //Fileupload handling will be taken care automatically and all file moved to ‘upload’ folder.
 
-var domain_allowed = 'https://releaf-frontend-app.herokuapp.com';
-if (app.get('env') == 'mocha_db' || app.get('env') == 'development') {
-  domain_allowed = 'http://localhost:3001';
+var domain_allowed = 'http://localhost:3001';
+if (app.get('env') == 'production') {
+  domain_allowed = 'https://releaf-frontend-app.herokuapp.com';
 }
 
-// TODO: maybe switch to cors plugin
-app.use(function (req, res, next) {
-  // Website you wish to allow to connect
-  res.setHeader('Access-Control-Allow-Origin', domain_allowed); //TODO: add in FE
 
-  // Request methods you wish to allow
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-
-  // Request headers you wish to allow
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-
-  // Set to true if you need the website to include cookies in the requests sent
-  // to the API (e.g. in case you use sessions)
-  res.setHeader('Access-Control-Allow-Credentials', true);
-
-  // Pass to next layer of middleware
+app.use(function(req, res, next) {
+  console.log('1');
   next();
 });
-
-
 app.use(session({ secret: 'releaf4lyfe',  store: new MongoStore() })); // session secret
+app.use(function(req, res, next) {
+  console.log('2');
+  next();
+});
 app.use(user_passport.initialize());
+app.use(function(req, res, next) {
+  console.log('3');
+  next();
+});
 app.use(user_passport.session()); // persistent login sessions
+app.use(function(req, res, next) {
+  console.log('4');
+  next();
+});
 app.set('io', io);
+app.use(function(req, res, next) {
+  console.log('5');
+  next();
+});
 
 mongoose.Promise = global.Promise;
 if (app.get('env') == 'mocha_db') { // TODO: abstract away better/clean up code quality
@@ -62,14 +61,17 @@ if (app.get('env') == 'mocha_db') { // TODO: abstract away better/clean up code 
 } else {
     mongoose.connect(config.database);
 }
-
-//mongoose.connection.db.sessions.ensureIndex( { "lastAccess": 1 }, { expireAfterSeconds: 3600 } )
+app.use(function(req, res, next) {
+  return res.send({
+    'message' : 'i got here'
+  });
+});
 
 // import routes
 var routes = require('./routes/index');
 var users = require('./routes/users')(user_passport);
 var companies = require('./routes/companies');
-var admin = require('./routes/admin')(user_passport);
+var admin = require('./routes/admin');
 var projects = require('./routes/projects');
 var messenger = require('./routes/messenger')(app.get('io'));
 var upload = require('./routes/upload');
@@ -94,20 +96,20 @@ app.use(authfunc);
  * Development Settings
  */
 if (app.get('env') === 'development') {
-  // This will change in production since we'll be using the dist folder
-  app.use(express.static(path.join(__dirname, '../client')));
-  // This covers serving up the index page
-  app.use(express.static(path.join(__dirname, '../client/.tmp')));
-  app.use(express.static(path.join(__dirname, '../client/app')));
+    // This will change in production since we'll be using the dist folder
+    app.use(express.static(path.join(__dirname, '../client')));
+    // This covers serving up the index page
+    app.use(express.static(path.join(__dirname, '../client/.tmp')));
+    app.use(express.static(path.join(__dirname, '../client/app')));
 
-  // Error Handling
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: err
+    // Error Handling
+    app.use(function(err, req, res, next) {
+        res.status(err.status || 500);
+        res.render('error', {
+            message: err.message,
+            error: err
+        });
     });
-  });
 }
 
 /**
@@ -115,21 +117,20 @@ if (app.get('env') === 'development') {
  */
 if (app.get('env') === 'production') {
 
-  // changes it to use the optimized version for production
-  app.use(express.static(path.join(__dirname, '/dist')));
+    // changes it to use the optimized version for production
+    app.use(express.static(path.join(__dirname, '/dist')));
 
-  // production error handler
-  // no stacktraces leaked to user
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: {}
+    // production error handler
+    // no stacktraces leaked to user
+    app.use(function(err, req, res, next) {
+        res.status(err.status || 500);
+        res.render('error', {
+            message: err.message,
+            error: {}
+        });
     });
-  });
 }
 
 
 
-module.exports = router;
 module.exports = app;
