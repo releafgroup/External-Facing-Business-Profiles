@@ -1,9 +1,9 @@
-var should = require('should'); 
+var should = require('should');
 var assert = require('assert');
-var request = require('supertest');  
+var request = require('supertest');
 var mongoose = require('mongoose');
 var config = require('../config.js');
-var secret = require('../../secret');
+var secret = require('../secret');
 var Browser = require('zombie');
 var path = require('path');
 var HOST_DOMAIN = process.env.HOST_DOMAIN || 'http://localhost:3000';

@@ -1,5 +1,5 @@
 var FacebookStrategy = require('passport-facebook').Strategy;
-var secret = require('../../secret');
+var secret = require('../secret');
 var User = require('../models/user');
 var path = require('path');
 var HOST_DOMAIN = process.env.HOST_DOMAIN || 'http://localhost:3000' ;
@@ -36,7 +36,7 @@ module.exports = new FacebookStrategy({
             newUser.save(function(err) {
                 if (err) { console.log(err); return done({success: false, message: err.message}); }
                 return done(null, newUser);
-            }); 
+            });
         });
     });
   }
