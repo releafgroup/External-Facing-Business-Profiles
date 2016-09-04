@@ -178,7 +178,6 @@ describe('Routing', function() {
                         .get('/users/')
                         .end(function(err, res) {
                             res.body.success.should.equal(true);
-                            console.log(user1._id)
                             done();
                         });
                 });
@@ -191,7 +190,6 @@ describe('Routing', function() {
                 .put('/users/')
                 .send(user_update_info)
                 .end(function(err2, res2) {
-                    console.log(res2.body);
                     res2.body.success.should.equal(true);
                     done();
                 });
@@ -267,7 +265,6 @@ describe('Routing', function() {
                 .put('/users/')
                 .send(user_update_id_bad)
                 .end(function(err2, res2) {
-                    console.log(res2.body);
                     res2.body.success.should.not.equal(true);
                     done();
                 });
@@ -280,7 +277,6 @@ describe('Routing', function() {
                 .put('/users/')
                 .send(user_update_email_bad)
                 .end(function(err2, res2) {
-                    console.log(res2.body);
                     res2.body.success.should.not.equal(true);
                     done();
                 });
@@ -295,7 +291,6 @@ describe('Routing', function() {
             request(url)
                 .get('/users/')
                 .end(function(err, res) {
-                    console.log(res.body);
                     res.body.success.should.not.equal(true);
                     done();
                 });
@@ -309,7 +304,6 @@ describe('Routing', function() {
                 .get('/users/email')
                 .send({'email': 'test1@gmail.com'})
                 .end(function(err, res) {
-                    console.log(res.body);
                     res.body.success.should.equal(true);
                     done();
                 });
@@ -320,7 +314,6 @@ describe('Routing', function() {
                 .get('/users/email')
                 .send({'email': 'hey@gmail.com'})
                 .end(function(err, res) {
-                    console.log(res.body);
                     res.body.success.should.not.equal(true);
                     done();
                 });
@@ -336,7 +329,6 @@ describe('Routing', function() {
                 .send(company1)
                 .expect(200) //Status code
                 .end(function(err, res) {
-                    console.log(res.body, 'response body');
                     comp1_id = res.body.id;
                     res.body.success.should.equal(true);
                     done();
@@ -398,7 +390,7 @@ describe('Routing', function() {
                     .put('/users/projects/favorite/'+ proj1_id)
                     .expect(200)
                     .end(function(err, res) {
-                        res.body.message.favorite.should.equal(proj1_id);
+                        res.body.message.should.equal(proj1_id);
                         super_agent
                             .put('/users/projects/favorite/'+ proj1_id)
                             .expect(200, done)
@@ -412,13 +404,12 @@ describe('Routing', function() {
                     .put('/users/projects/favorite/'+ proj1_id)
                     .expect(200)
                     .end(function(err, res) {
-                        res.body.message.favorite.should.equal(proj1_id);
+                        res.body.message.should.equal(proj1_id);
                         super_agent
                             .put('/users/projects/favorite/'+ proj1_id)
                             .expect(200, done)
                             .expect(function(res2) {
-                                console.log(res2.body, 'are you');
-                                (res2.body.message.favorite === undefined).should.equal(true);
+                                (res2.body.message === undefined).should.equal(true);
                             }, done);
                     });
                 
@@ -429,7 +420,7 @@ describe('Routing', function() {
                     .put('/users/projects/favorite/'+ proj1_id)
                     .expect(200)
                     .end(function(err, res) {
-                        res.body.message.favorite.should.equal(proj1_id);
+                        res.body.message.should.equal(proj1_id);
                         super_agent
                             .put('/users/projects/favorite/' + proj2_id)
                             .expect(200, done)

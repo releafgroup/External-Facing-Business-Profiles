@@ -51,7 +51,12 @@ router.get('/auth/facebook/login/callback',  passport.authenticate('facebook',
         }
 ));
 
-
+/** Route: /users/projects/favorite/:id
+ * PUT
+ * favorites a project
+ * Input: Project
+ * If success: {success: true, message: user.favorite}
+*/
 router.route('/projects/favorite/:id')
 .put(isLoggedIn, function(req, res) {
     if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
@@ -69,6 +74,7 @@ router.route('/projects/favorite/:id')
             
             if (user.favorite) {
                 if (user.favorite.equals(proj._id))  {
+                    console.log('I got here');
                     proj.favorite_count--;
                     user.favorite = undefined;
                 } else {
@@ -84,7 +90,7 @@ router.route('/projects/favorite/:id')
                 proj.save(function(proj_err, succ2) {
                     if (proj_err) return res.json({success: false, message: "error occurred saving"});
                 });
-                return res.json({success: true, message: user});
+                return res.json({success: true, message: user.favorite});
             });
         });
     });
@@ -125,7 +131,6 @@ function isLoggedIn(req, res, next) {
 
 // Checks that a session is defined and the signed in user is type volunteer
 function checkUserProfilePermission(req, res) {
-    console.log(req.session.passport.user);
     if( typeof req.session.passport.user === 'undefined' || req.session.passport.user === null || req.session.passport.user.type != "volunteer" ) return false;
     return true;
 }
