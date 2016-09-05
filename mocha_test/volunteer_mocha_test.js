@@ -13,7 +13,7 @@ var user1_id = -1;
 var user1 = {
     "local.first_name" : "test_first",
     "local.last_name" : "test_last",
-    "local.password" : "eightdigits",
+    "local.password" : "eightdigits1M",
     "local.email" : "test1@gmail.com",
     "primary_institution": "stanny",
     "secondary_institution": "odododdo",
@@ -28,7 +28,7 @@ user_bad_email['local.email'] = "odddddd.com";
 var user_update_info = JSON.parse(JSON.stringify(user1));
 user_update_info = { "local.first_name" : "ififififif",
                 "local.last_name" : "testee",
-                "local.password" : "eightdigitsboy",
+                "local.password" : "eightdigits1M",
                 "local.email" : "test1@gmail.com",
                 "primary_institution": "nahhhhh",
                 "secondary_institution": "okayyyyyyyy",
@@ -45,7 +45,7 @@ user_update_email_bad['local.email'] = "odddddd.com";
 var user2 = {
     "local.first_name" : "test_sec",
     "local.last_name" : "test_last_sec",
-    "local.password" : "eightdigits",
+    "local.password" : "eightdigits1M",
     "local.email" : "test2@gmail.com",
     "primary_institution": "stanny",
     "secondary_institution": "odododdo",
@@ -90,6 +90,7 @@ describe('Routing', function() {
                 .expect(200) //Status code
                 .end(function(err, res) {
                     user1_id = res.body.message;
+                    console.log(res.body);
                     res.body.success.should.equal(true);
                     done();
                 });
@@ -195,7 +196,7 @@ describe('Routing', function() {
                 "last_name" : "test_last",
                 "email" : "test1@gmail.com",
                 "primary_institution": "stanny",
-                "password": "nahdudedd",
+                "password": "eightdigits1M",
                 "secondary_institution": "odododdo",
                 "skill_1": "s",
                 "skill_2": "f",
