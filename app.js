@@ -13,7 +13,8 @@ var user_passport = require('./utils/passport_user.js');
 var session = require('express-session');
 var multer = require('multer');
 var upload = multer({ dest: './users/upload' });//catch all multipart data, fileuploads automatically and stores the file to ‘upload/’ folder.
-var MongoStore = require('express-session-mongo');
+
+var MongoStore = require('connect-mongo')(session);
 
 var app = express();
 app.use(logger('dev'));
@@ -24,36 +25,35 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //TODO: Front end to have a form tag, with its action pointed to the express route.
 //Fileupload handling will be taken care automatically and all file moved to ‘upload’ folder.
 
-var domain_allowed = 'http://localhost:3001';
-if (app.get('env') == 'production') {
-  domain_allowed = 'https://releaf-frontend-app.herokuapp.com';
+var domain_allowed = 'https://releaf-frontend-app.herokuapp.com';
+if (app.get('env') == 'mocha_db' || app.get('env') == 'development') {
+    domain_allowed = 'http://localhost:3001';
 }
 
+// TODO: maybe switch to cors plugin
+app.use(function (req, res, next) {
 
-app.use(function(req, res, next) {
-  console.log('1');
-  next();
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', domain_allowed); //TODO: add in FE
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    // Pass to next layer of middleware
+    next();
 });
-app.use(session({ secret: 'releaf4lyfe',  store: new MongoStore() })); // session secret
-app.use(function(req, res, next) {
-  console.log('2');
-  next();
-});
+
+
 app.use(user_passport.initialize());
-app.use(function(req, res, next) {
-  console.log('3');
-  next();
-});
 app.use(user_passport.session()); // persistent login sessions
-app.use(function(req, res, next) {
-  console.log('4');
-  next();
-});
 app.set('io', io);
-app.use(function(req, res, next) {
-  console.log('5');
-  next();
-});
 
 mongoose.Promise = global.Promise;
 if (app.get('env') == 'mocha_db') { // TODO: abstract away better/clean up code quality
@@ -61,17 +61,16 @@ if (app.get('env') == 'mocha_db') { // TODO: abstract away better/clean up code 
 } else {
     mongoose.connect(config.database);
 }
-app.use(function(req, res, next) {
-  return res.send({
-    'message' : 'i got here'
-  });
-});
+
+app.use(session({ secret: 'releaf4lyfe', store: new MongoStore({ mongooseConnection: mongoose.connection }) })); // session secret
+
+//mongoose.connection.db.sessions.ensureIndex( { "lastAccess": 1 }, { expireAfterSeconds: 3600 } )
 
 // import routes
 var routes = require('./routes/index');
 var users = require('./routes/users')(user_passport);
 var companies = require('./routes/companies');
-var admin = require('./routes/admin');
+var admin = require('./routes/admin')(user_passport);
 var projects = require('./routes/projects');
 var messenger = require('./routes/messenger')(app.get('io'));
 var upload = require('./routes/upload');
@@ -83,8 +82,6 @@ app.use('/projects', projects);
 app.use('/messenger', messenger);
 app.use('/upload',upload);
 app.use(authfunc);
-
-
 
 
 // view engine setup
@@ -130,7 +127,5 @@ if (app.get('env') === 'production') {
         });
     });
 }
-
-
 
 module.exports = app;
