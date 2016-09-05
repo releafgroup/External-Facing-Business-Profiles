@@ -51,10 +51,6 @@ app.use(function (req, res, next) {
 });
 
 
-app.use(user_passport.initialize());
-app.use(user_passport.session()); // persistent login sessions
-app.set('io', io);
-
 mongoose.Promise = global.Promise;
 if (app.get('env') == 'mocha_db') { // TODO: abstract away better/clean up code quality
     mongoose.connect(config.mocha_database);
@@ -63,6 +59,11 @@ if (app.get('env') == 'mocha_db') { // TODO: abstract away better/clean up code 
 }
 
 app.use(session({ secret: 'releaf4lyfe', store: new MongoStore({ mongooseConnection: mongoose.connection }) })); // session secret
+
+app.use(user_passport.initialize());
+app.use(user_passport.session()); // persistent login sessions
+app.set('io', io);
+
 
 //mongoose.connection.db.sessions.ensureIndex( { "lastAccess": 1 }, { expireAfterSeconds: 3600 } )
 
