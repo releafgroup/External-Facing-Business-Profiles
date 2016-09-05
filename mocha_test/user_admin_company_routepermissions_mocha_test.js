@@ -19,7 +19,7 @@ var user1_id = -1;
 var user1 = {
     "local.first_name" : "test_first",
     "local.last_name" : "test_last",
-    "local.password" : "eightdigits",
+    "local.password" : "eightdigits1M",
     "local.email" : "test1@gmail.com",
     "primary_institution": "stanny",
     "secondary_institution": "odododdo",

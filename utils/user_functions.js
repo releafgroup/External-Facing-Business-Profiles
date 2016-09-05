@@ -82,9 +82,7 @@ exports.updateUserById = function(user_id, req, res) {
             if(a !== "id" && a !== 'local.email' && a !== "_id" && a !== 'facebook.id'){
                 user[a]  = req.body[a];   
                 if(a === "local.password"){
-                    if ((req.body[a].length < 8 || req.body[a].length > 64)) {
-                        return res.json({success: false, message: "Password not valid"}); // TODO: move to user.js
-                    }
+                    if (!user.validatePassword(req.body[a])) return res.json({success: false, message: "Password not valid"});
                     user.setItem(a, user.generateHash(req.body[a]));
                 }
             } else if (a === 'local.email') {
