@@ -83,7 +83,7 @@ var AdminLoginStrategy = require('./passport_admin');
             //  Whether we're signing up or connecting an account, we'll need
             //  to know if the email address is in use.
             User.findOne({'local.email': email}, function(err, existingUser) {
-
+ 
                 // if there are any errors, return the error
                 if (err)
                     return done(null, false, {message: err.message});
@@ -100,10 +100,8 @@ var AdminLoginStrategy = require('./passport_admin');
                         if(a !== "local.password" && a !== "skills" && a !== "skill_ratings"){
                             newUser.setItem(a, req.body[a]);
                         } else if (a === "local.password") {
-                           if (req.body[a].length < 8 || req.body[a].length > 64) {
-                                return done(null, false, {success: false, message: "password not valid"});
-                           }
-                           newUser.setItem(a, newUser.generateHash(req.body[a]));
+                            if (!newUser.validatePassword(req.body[a])) return done(null, false, {success: false, message: "password not valid"});
+                            newUser.setItem(a, newUser.generateHash(req.body[a]));
                         } else {
                             var arr = [];
                             for (var prop in req.body[a]) {

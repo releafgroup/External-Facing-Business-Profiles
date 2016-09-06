@@ -107,6 +107,17 @@ UserSchema.methods.generateHash = function(password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 };
 
+/**
+ * Checks if a password is valid
+ * Use before setting the password attribute
+*/
+UserSchema.methods.validatePassword = function(password) {
+    // Check if > 8 characters, includes upper and lowercase, and contains number + letters
+    if (password.length < 8) return false;
+    if (password.toUpperCase() == password || password.toLowerCase() == password) return false;
+    return /^\w+$/.test(password);
+};
+
 UserSchema.methods.comparePassword = function(password){
     var user = this;
     return bcrypt.compareSync(password, user.local.password);
