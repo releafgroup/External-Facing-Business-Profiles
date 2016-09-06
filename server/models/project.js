@@ -40,7 +40,6 @@ var ProjectSchema = new Schema({
     industry_focus : {type : String, required : true, validate : industry_focus_validation},
     completion_time : {type : Number, required : true}, // TODO: figure out max and min
     number_staffed : {type : Number, required : true}, // TODO: add validation, also make sure to de-increment
-    favorite_count: {type: Number, default: 0}
 }, {
     timestamps: true
 });

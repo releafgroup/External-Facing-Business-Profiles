@@ -1,4 +1,5 @@
 var Project = require('../models/project.js');
+var Company = require('../models/company.js');
 
 /** Function for project error handling in saving project info
  * @params: error from saving a project
@@ -33,7 +34,7 @@ var exports = module.exports = {};
 exports.getProjectById = function(project_id, req, res) {
     Project.findOne({
          '_id':req.params.id
-    }, function(err, project){
+    }).populate('_company').exec(function(err, project){
         if(!project) return res.json({ success : false , message : 'Project not found'}); 
         if(err) return res.json({success: false, message: err.message});
         res.json({success: true, message: project});
@@ -81,10 +82,26 @@ exports.updateProjectById = function(project_id, req, res) {
 */
 exports.getAllProjects = function(req, res) {
     
-    Project.find(function(err, projects){
+    Project.find().populate('_company').exec(function(err, projects){
         if(err) return res.json({success: false, message: err.message}); 
         res.json({success: true, message: projects}); 
     });
 
 }
 
+
+/**
+ * Gets all projects for a given company id
+ * @params company_id, req, res
+ * Output: If successful, {success: true, message: list_of_projects}
+ * If not, {success: false, message: error_message}
+*/
+exports.getAllCompanyProjects = function(company_id, req, res) {
+   Company.findOne({
+        '_id':req.params.id
+    }).populate('projects').exec(function(err, company){
+        if(!company) return res.json({ success : false , message : 'company not found'});
+        if(err) return res.json({success: false, message: err.message}); 
+        return res.json({success: true, message: company.projects});
+    });
+}

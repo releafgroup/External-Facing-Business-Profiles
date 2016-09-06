@@ -74,9 +74,12 @@ var project1 = {
 
 var proj1_id = -1;
 
-var project2 = project1;
+var project2 = JSON.parse(JSON.stringify(project1));
 
 var proj2_id = -1;
+
+var project3 = JSON.parse(JSON.stringify(project1));
+var proj3_id = -1;
 
 
 
@@ -99,6 +102,10 @@ var company1 = {
     "best_medium" : "Email",
     "internet_access" : "Work Hours"
 }
+
+var comp2_id = -1;
+var company2 = JSON.parse(JSON.stringify(company1));
+
 
 // TODO: add test cases for user permissions i.e. companies can't access this shit, users can't access other users shit, etc.
 
@@ -323,7 +330,7 @@ describe('Routing', function() {
 
     describe('tests user-project interaction', function() {
 
-        it('creates a company', function(done) {
+        it('creates company 1', function(done) {
             request(url)
                 .post('/companies')
                 .send(company1)
@@ -334,6 +341,19 @@ describe('Routing', function() {
                     done();
                 });
         });
+
+        it('creates company 2', function(done) {
+            request(url)
+                .post('/companies')
+                .send(company2)
+                .expect(200) //Status code
+                .end(function(err, res) {
+                    comp2_id = res.body.id;
+                    res.body.success.should.equal(true);
+                    done();
+                });
+        });
+
 
         it('creates project 1', function(done) {
             project1['_company'] = comp1_id;
@@ -352,7 +372,7 @@ describe('Routing', function() {
             project2['_company'] = comp1_id;
             request(url)
                 .post('/projects')
-                .send(project1)
+                .send(project2)
                 .expect(200) //Status code
                 .end(function(err, res) {
                     proj2_id = res.body.id;
@@ -361,61 +381,111 @@ describe('Routing', function() {
                 });
         });
 
-        describe('favoriting a project', function() {
+        it('creates project 3', function(done) {
+            project3['_company'] = comp2_id;
+            request(url)
+                .post('/projects')
+                .send(project3)
+                .expect(200) //Status code
+                .end(function(err, res) {
+                    proj3_id = res.body.id;
+                    res.body.success.should.equal(true);
+                    done();
+                });
+        });
+    
+    describe('getting project info', function() {
+        it('checks retrieval of list of projects', function(done) {
+            super_agent
+                .get('/users/projects')
+                .end(function(err, res) {
+                    res.body.success.should.equal(true);
+                    res.body.message.length.should.equal(3);
+                    done();
+                });
+        });
+
+        it('checks retrieval of single project', function(done) {
+            super_agent
+                .get('/users/project/' + proj1_id)
+                .end(function(err, res) {
+                    res.body.success.should.equal(true);
+                    done();
+                });
+        });
+
+
+        it('checks retrieval of all of a companys projects', function(done) {
+            super_agent
+                .get('/users/company/' + comp1_id + '/projects')
+                .end(function(err, res) {
+                    res.body.success.should.equal(true);
+                    res.body.message.length.should.equal(2);
+                    done();
+                });
+
+
+        });
+
+    });
+
+    describe('favoriting a project', function() {
 
             it('should cause user 1 to have favorite column with proj_id', function(done){
                 super_agent
                     .put('/users/projects/favorite/'+ proj1_id)
                     .expect(200)
                     .end(function(err, res) {
-                        console.log(res.body, 'response');
-                        ((typeof res.body) === 'object').should.be.true;
-                        done();
+                        if (res.body.success) {
+                            super_agent
+                                .get('/users')
+                                .expect(200)
+                                .end(function(err2, res2) {
+                                    res2.body.message.favorite.should.equal(proj1_id);
+                                    res2.body.success.should.equal(true);
+                                    done();
+                                });
+                        }
                     });
                 
             });
 
-            it('should cause project 1 to be favorited by user 1', function(done){
+            it('should switch between favoriting project 2 instead of project 1', function(done){
                 super_agent
-                    .put('/users/projects/favorite/'+ proj1_id)
+                    .put('/users/projects/favorite/'+ proj2_id)
                     .expect(200)
                     .end(function(err, res) {
-                        res.body.success.should.equal(true);
-                        done();
-                    });
-            });
-
-            it('should keep favorite if one refavorites', function(done){
-                super_agent
-                    .put('/users/projects/favorite/'+ proj1_id)
-                    .expect(200)
-                    .end(function(err, res) {
-                        res.body.message.should.equal(proj1_id);
-                        super_agent
-                            .put('/users/projects/favorite/'+ proj1_id)
-                            .expect(200, done)
-                            .expect(function(res2) {
-                                res2.body.message.should.equal(proj1_id);
-                            }, done);
+                        if (res.body.success) {
+                            super_agent
+                                .get('/users')
+                                .expect(200)
+                                .end(function(err2, res2) {
+                                    res2.body.message.favorite.should.equal(proj2_id);
+                                    res2.body.success.should.equal(true);
+                                    done();
+                                });
+                        }
                     });
                 
             });
 
-            it('replaces an old favorite with a new one', function(done){
+            it('makes user de-favorite project 2', function(done){
                 super_agent
-                    .put('/users/projects/favorite/'+ proj1_id)
+                    .put('/users/projects/favorite/'+ proj2_id)
                     .expect(200)
                     .end(function(err, res) {
-                        res.body.message.should.equal(proj1_id);
-                        super_agent
-                            .put('/users/projects/favorite/' + proj2_id)
-                            .expect(200, done)
-                            .expect(function(res2) {
-                                console.log(res2.body, 'are you');
-                                res2.body.message.should.equal(proj2_id);
-                            }, done);
+                        if (res.body.success) {
+                            super_agent
+                                .get('/users')
+                                .expect(200)
+                                .end(function(err2, res2) {
+                                    if (res2.body.message.favorite == undefined) done();
+                                });
+                        }
                     });
+
             });
+
         });
     });
 

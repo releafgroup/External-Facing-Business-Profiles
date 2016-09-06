@@ -7,6 +7,7 @@ var Project = require('../models/project.js');
 var authFunc = require('../utils/authfunc.js'); 
 var bcrypt = require('bcryptjs');
 var user_functions = require('../utils/user_functions.js');
+var project_functions = require('../utils/project_functions.js');
 var mongoose = require('mongoose');
 
 /** Route: /users/auth/signup
@@ -51,43 +52,45 @@ router.get('/auth/facebook/login/callback',  passport.authenticate('facebook',
         }
 ));
 
+
+
+router.route('/project/:id')
+.get(isLoggedIn, function(req, res) {
+    if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
+    return project_functions.getProjectById(req.params.id, req, res);
+});
+
+
+router.route('/projects')
+.get(isLoggedIn, function(req, res) {
+    if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
+    return project_functions.getAllProjects(req, res);    
+});
+
+router.route('/company/:id/projects')
+.get(isLoggedIn, function(req, res) {
+    if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
+    return project_functions.getAllCompanyProjects(req.params.id, req, res);
+});
+
+router.route('/projects/favorite')
+.get(isLoggedIn, function(req, res) {
+    if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
+    
+});
+
+
+
 /** Route: /users/projects/favorite/:id
  * PUT
  * favorites a project
- * Input: Project
+ * :id refers to the projects id to be favorited/unfavorited
  * If success: {success: true, message: user.favorite}
 */
 router.route('/projects/favorite/:id')
 .put(isLoggedIn, function(req, res) {
     if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
-    Project.findOne({'_id': req.params.id}, function (err, proj){
-
-        if (err) return res.json({success: false, message : err.message});
-        if (!proj) return res.json({sucess: false, message : "no project"});
-
-        User.findOne({
-         '_id': req.session.passport.user.id
-        }, function(err2, user){
-
-            if(err2) return res.json({ success : false , message : err2.message}); 
-            if(!user) return res.json({success: false, message: "no user"});
-            
-            if (user.favorite) {
-                user.favorite = proj;
-            } else {
-                proj.favorite_count++;
-                user.favorite = proj;
-            }
-
-            user.save(function(user_err, succ) {
-                if (user_err) return res.json({success: false, message: "error occurred saving"});
-                proj.save(function(proj_err, succ2) {
-                    if (proj_err) return res.json({success: false, message: "error occurred saving"});
-                    return res.json({success: true, message: user.favorite});
-                });   
-            });
-        });
-    });
+    return user_functions.favoriteProjectById(req.params.id, req, res);
 });
 
 router.route('/')
