@@ -5,7 +5,6 @@ var mongoose = require('mongoose');
 var config = require('../config.js');
 var path = require('path');
 var url = process.env.HOST_DOMAIN || 'http://localhost:3000';
-var env = require('node-env-file');
 var User = require('./../models/user.js');
 
 
