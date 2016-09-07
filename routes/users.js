@@ -52,14 +52,20 @@ router.get('/auth/facebook/login/callback',  passport.authenticate('facebook',
         }
 ));
 
-
-
+/** Route: /users/project/:id
+ * Returns the project with the given project id
+ * Look at getProjectById for more info
+*/
 router.route('/project/:id')
 .get(isLoggedIn, function(req, res) {
     if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
     return project_functions.getProjectById(req.params.id, req, res);
 });
 
+/** Route: /users/projects
+ * Returns all projects
+ * Look at getAllProjects for more info
+*/
 
 router.route('/projects')
 .get(isLoggedIn, function(req, res) {
@@ -67,18 +73,16 @@ router.route('/projects')
     return project_functions.getAllProjects(req, res);    
 });
 
+/** Route: /users/company/:id/projects
+ * Returns all projects associated with the company with the given id
+ * Look at getAllCompanyProjects for more info
+*/
+
 router.route('/company/:id/projects')
 .get(isLoggedIn, function(req, res) {
     if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
     return project_functions.getAllCompanyProjects(req.params.id, req, res);
 });
-
-router.route('/projects/favorite')
-.get(isLoggedIn, function(req, res) {
-    if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
-    
-});
-
 
 
 /** Route: /users/projects/favorite/:id
@@ -131,3 +135,4 @@ function checkUserProfilePermission(req, res) {
     if( typeof req.session.passport.user === 'undefined' || req.session.passport.user === null || req.session.passport.user.type != "volunteer" ) return false;
     return true;
 }
+

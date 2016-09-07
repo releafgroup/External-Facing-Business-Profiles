@@ -97,11 +97,12 @@ exports.getAllProjects = function(req, res) {
  * If not, {success: false, message: error_message}
 */
 exports.getAllCompanyProjects = function(company_id, req, res) {
-   Company.findOne({
-        '_id':req.params.id
-    }).populate('projects').exec(function(err, company){
-        if(!company) return res.json({ success : false , message : 'company not found'});
+   Project.find({
+        '_company':company_id
+    }).populate('_company').exec(function(err, projects){
+        if(!projects) return res.json({ success : false , message : 'company not found'});
         if(err) return res.json({success: false, message: err.message}); 
-        return res.json({success: true, message: company.projects});
+        return res.json({success: true, message: projects});
     });
 }
+

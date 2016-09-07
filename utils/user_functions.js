@@ -83,7 +83,9 @@ exports.updateUserById = function(user_id, req, res) {
             if(a !== "id" && a !== 'local.email' && a !== "_id" && a !== 'facebook.id'){
                 user[a]  = req.body[a];   
                 if(a === "local.password"){
-                    if (!user.validatePassword(req.body[a])) return res.json({success: false, message: "Password not valid"});
+                    if ((req.body[a].length < 8 || req.body[a].length > 64)) {
+                        return res.json({success: false, message: "Password not valid"}); // TODO: move to user.js
+                    }
                     user.setItem(a, user.generateHash(req.body[a]));
                 }
             } else if (a === 'local.email') {
@@ -119,6 +121,13 @@ exports.getAllUsers = function(req, res) {
 
 }
 
+/** Toggles the favorite attribute for a given user
+ * @params: project_id, req, res
+ * If users favorite attribute is equal to project_id, then the user does not have a favorite anymore
+ * Else the favorite becomes project id
+ * Output: If successful, {success: true}
+ * If not, {success: false, message: error_message}
+*/
 exports.favoriteProjectById = function(project_id, req, res) {
 
     Project.findOne({'_id': project_id}, function (err, proj){
@@ -144,6 +153,21 @@ exports.favoriteProjectById = function(project_id, req, res) {
                 return res.json({success: true});
             });
         });
+    });
+}
+
+/** Returns a given user's favorited project
+ * @params: user_id, req, res
+ * Output: If successful, {success: true, message: user.favorite}
+ * If not, {success: false, message: error_message}
+*/
+exports.getUserFavoriteProject = function(user_id, req, res) {
+     User.findOne({
+         '_id':user_id
+    }).populate('favorite').exec(function(err, user){
+        if(!user) return res.json({ success : false , message : 'User not found'}); 
+        if(err) return res.json({success: false, message: err.message});
+        return res.json({success: true, message: user.favorite});
     });
 }
 
