@@ -2,10 +2,13 @@ module.exports = function(passport) {
 
 var express = require('express');
 var router = express.Router();
-var User = require('../models/user.js'); 
+var User = require('../models/user.js');
+var Project = require('../models/project.js'); 
 var authFunc = require('../utils/authfunc.js'); 
 var bcrypt = require('bcryptjs');
 var user_functions = require('../utils/user_functions.js');
+var project_functions = require('../utils/project_functions.js');
+var mongoose = require('mongoose');
 
 /** Route: /users/auth/signup
  * POST
@@ -13,6 +16,7 @@ var user_functions = require('../utils/user_functions.js');
  * Input: User object
  * See 'local-signup' for more info
 */
+
 router.route('/auth/signup')
 .post(passport.authenticate('local-signup', {}), function(req, res) {return res.json({success: true, message: req.user._id});});
 
@@ -48,14 +52,51 @@ router.get('/auth/facebook/login/callback',  passport.authenticate('facebook',
         }
 ));
 
-/** Route: /users
- * GET: Gets all information for the signed in user
- * No inputs
- * See getUserById for more info
- * POST: Updates information for the signed in user
- * Input: User object
- * See updateUserById for more info
+/** Route: /users/project/:id
+ * Returns the project with the given project id
+ * Look at getProjectById for more info
 */
+router.route('/project/:id')
+.get(isLoggedIn, function(req, res) {
+    if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
+    return project_functions.getProjectById(req.params.id, req, res);
+});
+
+/** Route: /users/projects
+ * Returns all projects
+ * Look at getAllProjects for more info
+*/
+
+router.route('/projects')
+.get(isLoggedIn, function(req, res) {
+    if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
+    return project_functions.getAllProjects(req, res);    
+});
+
+/** Route: /users/company/:id/projects
+ * Returns all projects associated with the company with the given id
+ * Look at getAllCompanyProjects for more info
+*/
+
+router.route('/company/:id/projects')
+.get(isLoggedIn, function(req, res) {
+    if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
+    return project_functions.getAllCompanyProjects(req.params.id, req, res);
+});
+
+
+/** Route: /users/projects/favorite/:id
+ * PUT
+ * favorites a project
+ * :id refers to the projects id to be favorited/unfavorited
+ * If success: {success: true, message: user.favorite}
+*/
+router.route('/projects/favorite/:id')
+.put(isLoggedIn, function(req, res) {
+    if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
+    return user_functions.favoriteProjectById(req.params.id, req, res);
+});
+
 router.route('/')
 .get(isLoggedIn, function(req, res){
     if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
@@ -91,7 +132,7 @@ function isLoggedIn(req, res, next) {
 
 // Checks that a session is defined and the signed in user is type volunteer
 function checkUserProfilePermission(req, res) {
-    console.log(req.session.passport.user);
     if( typeof req.session.passport.user === 'undefined' || req.session.passport.user === null || req.session.passport.user.type != "volunteer" ) return false;
     return true;
 }
+

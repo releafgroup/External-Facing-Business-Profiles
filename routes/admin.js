@@ -148,8 +148,13 @@ router.route('/projects/:id')
 .get(isLoggedIn, function(req, res){ // TODO: add in extracting info from company
     if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});    
     return project_functions.getProjectById(req.params.id, req, res);
-    
 })
+
+router.route('/company/:id/projects')
+.get(isLoggedIn, function(req, res) {
+    if (!checkUserProfilePermission(req, res)) return res.json({success: false, message : 'No permission'});
+    return project_functions.getAllCompanyProjects(req.params.id, req, res);
+});
 ///////////////////////////////////////////////////////////////////////
 
 

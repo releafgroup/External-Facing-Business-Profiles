@@ -39,7 +39,7 @@ var ProjectSchema = new Schema({
     core_skill_3 : {type : String, validate : core_skill_3_validation},
     industry_focus : {type : String, required : true, validate : industry_focus_validation},
     completion_time : {type : Number, required : true}, // TODO: figure out max and min
-    number_staffed : {type : Number, required : true} // TODO: add validation, also make sure to de-increment
+    number_staffed : {type : Number, required : true}, // TODO: add validation, also make sure to de-increment
 }, {
     timestamps: true
 });

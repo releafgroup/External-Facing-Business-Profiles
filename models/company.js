@@ -82,7 +82,7 @@ var CompanySchema = new Schema({
     best_medium : {type : String, required: true, validate: best_medium_validation},
     internet_access : {type : String, required: true, validate: internet_access_validation},
 
-    projects : [{ type: mongoose.Schema.Types.ObjectId, ref: 'Porject'}]
+    projects : [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project'}]
 
 }, {
     timestamps: true

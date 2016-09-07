@@ -1,6 +1,7 @@
 // File which handles all user related functions
 
 var User = require('../models/user.js');
+var Project = require('../models/project.js');
 
 
 /** Function for user error handling in saving user info
@@ -82,7 +83,9 @@ exports.updateUserById = function(user_id, req, res) {
             if(a !== "id" && a !== 'local.email' && a !== "_id" && a !== 'facebook.id'){
                 user[a]  = req.body[a];   
                 if(a === "local.password"){
-                    if (!user.validatePassword(req.body[a])) return res.json({success: false, message: "Password not valid"});
+                    if ((req.body[a].length < 8 || req.body[a].length > 64)) {
+                        return res.json({success: false, message: "Password not valid"}); // TODO: move to user.js
+                    }
                     user.setItem(a, user.generateHash(req.body[a]));
                 }
             } else if (a === 'local.email') {
@@ -118,4 +121,53 @@ exports.getAllUsers = function(req, res) {
 
 }
 
+/** Toggles the favorite attribute for a given user
+ * @params: project_id, req, res
+ * If users favorite attribute is equal to project_id, then the user does not have a favorite anymore
+ * Else the favorite becomes project id
+ * Output: If successful, {success: true}
+ * If not, {success: false, message: error_message}
+*/
+exports.favoriteProjectById = function(project_id, req, res) {
+
+    Project.findOne({'_id': project_id}, function (err, proj){
+
+        if (err) return res.json({success: false, message : err.message});
+        if (!proj) return res.json({sucess: false, message : "no project"});
+
+        User.findOne({
+         '_id': req.session.passport.user.id
+        }, function(err2, user){
+
+            if(err2) return res.json({ success : false , message : err2.message}); 
+            if(!user) return res.json({success: false, message: "no user"});
+            
+            if (user.favorite == project_id) { // Project is currently favored ... make it unfavorited
+                user.favorite = undefined;
+            } else {
+                user.favorite = proj;
+            }
+
+            user.save(function(user_err, succ) {
+                if (user_err) return res.json({success: false, message: "error occurred saving"});
+                return res.json({success: true});
+            });
+        });
+    });
+}
+
+/** Returns a given user's favorited project
+ * @params: user_id, req, res
+ * Output: If successful, {success: true, message: user.favorite}
+ * If not, {success: false, message: error_message}
+*/
+exports.getUserFavoriteProject = function(user_id, req, res) {
+     User.findOne({
+         '_id':user_id
+    }).populate('favorite').exec(function(err, user){
+        if(!user) return res.json({ success : false , message : 'User not found'}); 
+        if(err) return res.json({success: false, message: err.message});
+        return res.json({success: true, message: user.favorite});
+    });
+}
 
