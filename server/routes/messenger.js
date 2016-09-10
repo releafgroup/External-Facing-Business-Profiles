@@ -439,7 +439,8 @@ module.exports = function (io) {
 
   io.on('connection', function (socket) {
 
-    debug('new connection '); //socket.request
+    debug('new connection ', socket.handshake.headers.cookie); //socket.request
+    if(!socket.handshake.headers.cookie)return socket.disconnect();
     var defaultRoom = 'general';
     var delivery = dl.listen(socket);
     delivery.on('receive.success', function (file) {
