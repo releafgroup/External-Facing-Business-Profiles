@@ -36,6 +36,7 @@
   "devDependencies": {
     "debug": "~2.2.0",
     "supertest": "1.2.0",
-    "nodemon": "^1.8.1"
+    "nodemon": "^1.8.1",
+    "mocha": "~3.0.2"
   }
 }

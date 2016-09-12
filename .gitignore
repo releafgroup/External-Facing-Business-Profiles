@@ -60,3 +60,6 @@ dist/
 
 # just for ideas. You may keep one too if you like
 ideas
+
+# Jetbrains IDE files
+.idea/
