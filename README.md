@@ -108,6 +108,7 @@ For development purposes, there exists a second app named `Ikeora Dev` which alr
 3. If you want to actually use the BE with the FE, then you need to the following instead: `npm test`
   - You need to have this running the whole time you are using the website
   - The reason the command is different from 2 is because every time we run a test script we delete and re-create the database
+  - **NB - Windows users**: Instead of using `npm test`, run `SET NODE_ENV=development` and then `node bin/www`
 
 ## Contributing
 
