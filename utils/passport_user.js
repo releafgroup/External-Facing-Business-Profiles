@@ -57,9 +57,15 @@ passport.use('local-login', new LocalStrategy({
                 return done(err);
             // if no user is found, return the message
             if (!user)
-                return done(null, false, {message: 'No user found.'});
+                return done({
+                    message: 'No user found.',
+                    status: 404
+                }, false);
             if (!user.comparePassword(password))
-                return done(null, false, {message: 'Oops! Wrong password.'});
+                return done({
+                    message: 'Oops! Wrong password.',
+                    status: 400
+                }, false);
 
             // all is well, return user
             return done(null, user);
