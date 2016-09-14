@@ -17,20 +17,14 @@ module.exports = function (io) {
   var usersOnline = [];
   var msgQ = [];
   var userSockets = {};
-//var mongoose = require('mongoose'); //get collection mongoose.connections[0].collections;
   var debug = require('debug')('server:io');
   var router = express.Router();
   var Message = require('./../models/message.js');
-  //var authFunc = require('../utils/authfunc.js');
   var Groups = require('./../models/chat_groups.js');
 
   var nodemailer = require('./controller/nodeMailer.js');
   nodemailer.setupTransport(config.mailConfig.smtp);
-  //var db = mongoose.connection;
-  //console.log("Collections:", db.collection('messages'), db.messages);
-//This route produces a list of message as filterd by 'room' query
-//57b71e36d3a81910262fd7c5
-//57b9d53b3163c5dc321f2435
+
   router
           .get('/messages/:room', function (req, res) {
             debug(' got messages request ', req.params)
@@ -133,7 +127,6 @@ module.exports = function (io) {
 
 
               var owner = user; //for now we keep it blank//this should be req.session.passport.user
-              // members.unshift(user);
               var groupData = {
                 name: req.body.name, //uniq
                 owner: owner,
@@ -256,7 +249,6 @@ module.exports = function (io) {
 
 
       var owner = username; //for now we keep it blank//this should be req.session.passport.user
-      // members.unshift(user);
       var groupData = {
         name: option.data.name, //uniq
         owner: owner,
@@ -322,7 +314,7 @@ module.exports = function (io) {
     if (!option.admin) {
       query.status = true;
     }
-    // "57b6fda08edf43040d2c9574",//to get only that users saved groups
+    //to get only that users saved groups
     debug('Query in getGroups:', query);
     Groups.
             find(query).populate('members').exec(cb);
@@ -354,7 +346,6 @@ module.exports = function (io) {
   //get emails by user
   var getQueuedPrivateMsg = function (cb, options) {
     Message.find({
-//      'room': req.params.room.toLowerCase(),
       type: 'private',
 //      from: options.from,
 //      to: options.to,
@@ -369,7 +360,6 @@ module.exports = function (io) {
     }).exec(function (err, msgs) {
       //Send
       debug('Found saved messages for user ' + options.to + ' Count ' + msgs.length)
-//      res.json(msgs);
       cb(err, msgs);
     });
   }
@@ -557,8 +547,6 @@ module.exports = function (io) {
       debug("On switch room ", data);
 //      socket.leave(data.room);
       socket.join(data.room);
-//      io.in(data.room).emit('user left', data);
-//      io.in(data.newRoom).emit('user joined', data);
     });
     //Listens for a new chat message
     socket.on('send:message', function (data) {
