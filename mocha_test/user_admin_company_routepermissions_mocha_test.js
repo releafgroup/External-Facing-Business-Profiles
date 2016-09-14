@@ -86,7 +86,6 @@ describe('Routing', function () {
                 .send(user1)
                 .expect(409) //Status code
                 .end(function (err, res) {
-                    console.log(res.body);
                     res.body.success.should.equal(false);
                     done();
                 });
@@ -119,7 +118,6 @@ describe('Routing', function () {
                     super_agent1.get(userUrl)
                         .expect(200)
                         .end(function (newErr, newRes) {
-                            console.log(newRes.body);
                             newRes.body.message.local.first_name.should.equal(firstname);
                             newRes.body.message.local.last_name.should.equal(lastname);
                             done();
