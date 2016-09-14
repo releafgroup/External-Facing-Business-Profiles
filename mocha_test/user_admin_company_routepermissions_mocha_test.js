@@ -3,7 +3,7 @@ var assert = require('assert');
 var request = require('supertest');
 var mongoose = require('mongoose');
 var config = require('../config.js');
-
+var faker = require('faker');
 
 var url = 'http://localhost:3000';
 
@@ -105,9 +105,8 @@ describe('Routing', function () {
         });
 
         it('Success: Update firstname and lastname of user', function (done) {
-            //TODO Start using faker to mock data
-            var firstname = 'First';
-            var lastname = 'Last';
+            var firstname = faker.name.firstName();
+            var lastname = faker.name.lastName();
             var userUrl = '/users?token=' + token;
             super_agent1.put(userUrl)
                 .send({
@@ -116,11 +115,11 @@ describe('Routing', function () {
                 })
                 .expect(200)
                 .end(function (err, res) {
-                    console.log(res.body, userUrl);
                     res.body.success.should.equal(true);
                     super_agent1.get(userUrl)
                         .expect(200)
                         .end(function (newErr, newRes) {
+                            console.log(newRes.body);
                             newRes.body.message.local.first_name.should.equal(firstname);
                             newRes.body.message.local.last_name.should.equal(lastname);
                             done();
