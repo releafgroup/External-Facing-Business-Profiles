@@ -79,7 +79,17 @@ describe('Routing', function() {
                 });
         });
 
-
+        it('Fail Case: Create user with existing email', function(done) {
+            request.agent(url)
+                .post('/users/auth/signup')
+                .send(user1)
+                .expect(409) //Status code
+                .end(function(err, res) {
+                    console.log(res.body);
+                    res.body.success.should.equal(false);
+                    done();
+                });
+        });
     });
 
     describe('Checks Permissions', function() {

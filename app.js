@@ -12,7 +12,7 @@ var io = require('socket.io')();
 var user_passport = require('./utils/passport_user.js');
 var session = require('express-session');
 var multer = require('multer');
-var upload = multer({ dest: './users/upload' });//catch all multipart data, fileuploads automatically and stores the file to ‘upload/’ folder.
+var upload = multer({dest: './users/upload'});//catch all multipart data, fileuploads automatically and stores the file to ‘upload/’ folder.
 
 var MongoStore = require('connect-mongo')(session);
 
@@ -20,7 +20,7 @@ var app = express();
 app.use(logger('dev'));
 app.use(cookieParser());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 
 //TODO: Front end to have a form tag, with its action pointed to the express route.
 //Fileupload handling will be taken care automatically and all file moved to ‘upload’ folder.
@@ -32,7 +32,6 @@ if (app.get('env') == 'mocha_db' || app.get('env') == 'development') {
 
 // TODO: maybe switch to cors plugin
 app.use(function (req, res, next) {
-
     // Website you wish to allow to connect
     res.setHeader('Access-Control-Allow-Origin', domain_allowed); //TODO: add in FE
 
@@ -58,14 +57,11 @@ if (app.get('env') == 'mocha_db') { // TODO: abstract away better/clean up code 
     mongoose.connect(config.database);
 }
 
-app.use(session({ secret: 'releaf4lyfe', store: new MongoStore({ mongooseConnection: mongoose.connection }) })); // session secret
+app.use(session({secret: 'releaf4lyfe', store: new MongoStore({mongooseConnection: mongoose.connection})})); // session secret
 
 app.use(user_passport.initialize());
 app.use(user_passport.session()); // persistent login sessions
 app.set('io', io);
-
-
-//mongoose.connection.db.sessions.ensureIndex( { "lastAccess": 1 }, { expireAfterSeconds: 3600 } )
 
 // import routes
 var routes = require('./routes/index');
@@ -81,52 +77,36 @@ app.use('/companies', companies);
 app.use('/admin', admin);
 app.use('/projects', projects);
 app.use('/messenger', messenger);
-app.use('/upload',upload);
+app.use('/upload', upload);
 app.use(authfunc);
 
-
-// view engine setup
-
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+// Error Handling
+app.use(function (err, req, res, next) {
+    res.status(err.status || 500);
+    return res.json({
+        message: err.message,
+        success: false,
+        errors: err.errors
+    });
+});
 
 /**
  * Development Settings
  */
-if (app.get('env') === 'development') {
+if (app.get('env') === 'development' || app.get('env') == 'mocha_db') {
     // This will change in production since we'll be using the dist folder
     app.use(express.static(path.join(__dirname, '../client')));
     // This covers serving up the index page
     app.use(express.static(path.join(__dirname, '../client/.tmp')));
     app.use(express.static(path.join(__dirname, '../client/app')));
-
-    // Error Handling
-    app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err
-        });
-    });
 }
 
 /**
  * Production Settings
  */
 if (app.get('env') === 'production') {
-
     // changes it to use the optimized version for production
     app.use(express.static(path.join(__dirname, '/dist')));
-
-    // production error handler
-    // no stacktraces leaked to user
-    app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: {}
-        });
-    });
 }
 
 module.exports = app;
