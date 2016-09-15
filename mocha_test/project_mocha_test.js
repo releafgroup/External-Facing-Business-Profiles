@@ -115,6 +115,15 @@ describe('Projects Routes', function () {
                     done();
                 });
         });
+
+        it('Fail test>> get projects without skills', function (done) {
+            agent.get('/projects')
+                .expect(400)
+                .end(function (err, res) {
+                    res.body.success.should.equal(false);
+                    done();
+                });
+        });
     });
 
     describe('Project creation errors', function () {
