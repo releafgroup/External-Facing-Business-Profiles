@@ -43,15 +43,15 @@ router.route('/')
             if (!company) return responseHelper.sendError('Company not found', 400, res);
             if (err) return responseHelper.sendError(err.message, 500, res);
             // Next save project
-            project.save(function (err, project) {
-                if (err) {
-                    return responseHelper.sendError(handleProjectSaveError(err), 500, res);
+            project.save(function (projectErr, project) {
+                if (projectErr) {
+                    return responseHelper.sendError(handleProjectSaveError(projectErr), 500, res);
                 }
 
                 // Finally, add to company schema
                 company.projects.push(project);
                 company.save(function (finalErr, succ) {
-                    if (!finalErr) return responseHelper.sendSuccess({id: project.id, success: true}, res); // Returns project id
+                    if (!finalErr) return responseHelper.sendSuccessWithFullData({id: project.id}, res); // Returns project id
                     return responseHelper.sendError(finalErr.message, 500, res);
                 });
             });

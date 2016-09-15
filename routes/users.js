@@ -82,7 +82,7 @@ module.exports = function (passport) {
      */
 
     router.route('/company/:id/projects')
-        .get(permissionHelper.isLoggedIn, function (req, res) {
+        .get(isLoggedIn, function (req, res) {
             if (!checkUserProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
             return projectFunctions.getAllCompanyProjects(req.params.id, req, res);
         });

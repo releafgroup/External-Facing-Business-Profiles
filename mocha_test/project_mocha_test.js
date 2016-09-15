@@ -99,6 +99,7 @@ describe('Routing', function() {
                 .send(project1)
                 .expect(200) //Status code
                 .end(function(err, res) {
+                    console.log(res.body);
                     proj1_id = res.body.id;
                     res.body.success.should.equal(true);
                     done();
@@ -112,6 +113,7 @@ describe('Routing', function() {
                 .send(project2)
                 .expect(200) //Status code
                 .end(function(err, res) {
+                    console.log(res.body);
                     proj2_id = res.body.id;
                     res.body.success.should.equal(true);
                     done();
