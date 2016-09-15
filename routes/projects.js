@@ -85,6 +85,9 @@ router.route('/').get(utils.isLoggedIn, function (req, res) {
         return responseHelper.sendError('No permission', 403, res);
     }
     var skills = req.query.skills;
+    if(!skills) {
+        return responseHelper.sendError('Skills is required', 400, res);
+    }
     skills = skills.split(',');
     return projectFunctions.getProjectsBySkills(skills, req, res);
 });
