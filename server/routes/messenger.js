@@ -22,7 +22,7 @@ module.exports = function (io) {
   var Message = require('./../models/message.js');
   var Groups = require('./../models/chat_groups.js');
 
-  var nodemailer = require('./controller/nodeMailer.js');
+  var nodemailer = require('./nodeMailer');
   nodemailer.setupTransport(config.mailConfig.smtp);
 
   router
