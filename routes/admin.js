@@ -6,15 +6,15 @@ module.exports = function(passport) {
 
 var express = require('express');
 var router = express.Router();
-var Company = require('../models/company.js'); 
-var User = require('../models/user.js');
-var Project = require('../models/project.js');
-var Admin = require('../models/admin.js');
-var VolunteerAssignment = require('../models/volunteer_assignment.js'); 
+var Company = require('../models/company');
+var User = require('../models/user');
+var Project = require('../models/project');
+var Admin = require('../models/admin');
+var VolunteerAssignment = require('../models/volunteer_assignment');
 var bcrypt = require('bcryptjs'); 
-var user_functions = require('../utils/user_functions.js');
-var company_functions = require('../utils/company_functions.js');
-var project_functions = require('../utils/project_functions.js');
+var user_functions = require('../utils/user_functions');
+var company_functions = require('../utils/company_functions');
+var project_functions = require('../utils/project_functions');
 var path = require('path');
 
 

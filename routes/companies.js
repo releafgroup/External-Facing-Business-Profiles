@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
-var Company = require('../models/company.js'); 
+var Company = require('../models/company');
 var bcrypt = require('bcryptjs');
-var company_functions = require('../utils/company_functions.js');
+var company_functions = require('../utils/company_functions');
 
 
 // Function for company error handling in saving company info

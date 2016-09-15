@@ -2,8 +2,8 @@ module.exports = function (passport) {
 
     var express = require('express');
     var router = express.Router();
-    var userFunctions = require('../utils/user_functions.js');
-    var projectFunctions = require('../utils/project_functions.js');
+    var userFunctions = require('../utils/user_functions');
+    var projectFunctions = require('../utils/project_functions');
     var mongoose = require('mongoose');
     var permissionHelper = require('../helpers/permission');
 
