@@ -3,6 +3,8 @@
  */
 var exports = module.exports = {};
 
+exports.url = 'http://localhost:3000';
+
 exports.project1 = {
     "project_description": "test_first",
     "core_skill_1": "App Development",
