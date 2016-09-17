@@ -5,55 +5,58 @@ var mongoose = require('mongoose'),
 var express = require('express');
 var app = express();
 
-// Validation error messages
-var generic_error = "There was an error saving the volunteer";
-var val_messages = {
-    'gender': {'mocha_db': "Gender must be Male or Female", 'development': generic_error, 'production': generic_error},
-    'email': {'mocha_db': "Invalid email format", 'development': generic_error, 'production': generic_error},
+
+/**
+ * Validation error messages
+ */
+var genericError = "There was an error saving the volunteer";
+var validationMessages = {
+    'gender': {'mocha_db': "Gender must be Male or Female", 'development': genericError, 'production': genericError},
+    'email': {'mocha_db': "Invalid email format", 'development': genericError, 'production': genericError},
     'skills': {
         'mocha_db': "Skills are required and must all be different",
-        'development': generic_error,
-        'production': generic_error
+        'development': genericError,
+        'production': genericError
     },
     'skill_ratings': {
         'mocha_db': "Skill Ratings are required and must be between 1 and 5",
-        'development': generic_error,
-        'production': generic_error
+        'development': genericError,
+        'production': genericError
     },
-    'dob': {'mocha_db': "Date must be in the past", 'development': generic_error, 'production': generic_error},
+    'dob': {'mocha_db': "Date must be in the past", 'development': genericError, 'production': genericError},
     'primary_institution': {
         'mocha_db': "Primary institution must be different than secondary",
-        'development': generic_error,
-        'production': generic_error
+        'development': genericError,
+        'production': genericError
     },
     'secondary_institution': {
         'mocha_db': "Secondary institution must be different than primary",
-        'development': generic_error,
-        'production': generic_error
+        'development': genericError,
+        'production': genericError
     }
 };
 
 // Create custom validators
-var current_date = new Date();
-current_date.setDate(current_date.getDate() - 1);
-dob_validation = {
+var currentDate = new Date();
+currentDate.setDate(currentDate.getDate() - 1);
+dobValidation = {
     validator: function (r) {
-        return r < current_date;
-    }, message: val_messages['dob'][app.get('env')]
+        return r < currentDate;
+    }, message: validationMessages['dob'][app.get('env')]
 };
 
-primary_institution_validation = {
+primaryInstitutionValidation = {
     validator: function (r) {
         return r != this.secondary_institution;
-    }, message: val_messages['primary_institution'][app.get('env')]
+    }, message: validationMessages['primary_institution'][app.get('env')]
 };
-secondary_institution_validation = {
+secondaryInstitutionValidation = {
     validator: function (r) {
         return r != this.primary_institution;
-    }, message: val_messages['secondary_institution'][app.get('env')]
+    }, message: validationMessages['secondary_institution'][app.get('env')]
 };
 
-function skills_validation(arr) {
+function skillsValidation(arr) {
     if (!arr) return false;
     if (arr.length === 0) return false;
     var counts = {};
@@ -66,7 +69,7 @@ function skills_validation(arr) {
     return true;
 }
 
-function ratings_validation(arr) {
+function ratingsValidation(arr) {
     if (!arr) return false;
     if (arr.length === 0) return false;
     for (var i = 0; i < arr.length; i++) {
@@ -75,27 +78,28 @@ function ratings_validation(arr) {
     return true;
 }
 
-gender_validation = {
+var genderValidation = {
     validator: function (r) {
         return r == "Male" || r == "Female";
-    }, message: val_messages['gender'][app.get('env')]
+    }, message: validationMessages['gender'][app.get('env')]
 }; // TODO: make all lowercase or uppercase
 
-var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex outside for better performance
-email_validation = {
+var emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex outside for better performance
+var emailValidation = {
     validator: function (email) {
-        return re.test(email);
-    }, message: val_messages['email'][app.get('env')]
+        return emailRegex.test(email);
+    }, message: validationMessages['email'][app.get('env')]
 };
 
-// Create Volunteer Schema
-// _id serves as username
+/**
+ * Volunteer Schema
+ * _id serves as username
+ */
 var UserSchema = new Schema(
     {
         signupType: {type: String, default: 'local'},
         fullUserFormSumitted: {type: Boolean, default: false}, // to ensure that required fields are filled up even with
                                                                // social media users
-
         local: {
             password: {type: String, required: this.signupType === 'local', select: false},
             first_name: {type: String, required: this.signupType === 'local'},
@@ -103,10 +107,9 @@ var UserSchema = new Schema(
             email: {
                 type: String,
                 required: this.fullUserFormSumitted || this.signupType === 'local',
-                validate: email_validation
+                validate: emailValidation
             }
         },
-
         facebook: {
             id: {type: String, required: this.signupType === 'facebook'},
             email: String,
@@ -115,25 +118,24 @@ var UserSchema = new Schema(
             first_name: {type: String},
             full_name: {type: String}
         },
-
         primary_institution: {
             type: String,
             required: this.fullUserFormSumitted || this.signupType === 'local',
-            validate: primary_institution_validation
+            validate: primaryInstitutionValidation
         },
         secondary_institution: {
             type: String,
             required: this.fullUserFormSumitted || this.signupType === 'local',
-            validate: secondary_institution_validation
+            validate: secondaryInstitutionValidation
         },
         skills: [{type: String}],
         skill_ratings: [{type: String}],
         gender: {
             type: String,
-            validate: gender_validation,
+            validate: genderValidation,
             required: this.fullUserFormSumitted || this.signupType === 'local'
         },
-        dob: {type: Date, required: this.fullUserFormSumitted || this.signupType === 'local', validate: dob_validation},
+        dob: {type: Date, required: this.fullUserFormSumitted || this.signupType === 'local', validate: dobValidation},
         favorite: {type: ObjectId, ref: 'ProjectSchema'}
     },
 
@@ -144,17 +146,17 @@ var UserSchema = new Schema(
 
 UserSchema.path('skills').validate(function (arr) {
     if (this.fullUserFormSumitted || this.signupType === 'local') {
-        return skills_validation(arr);
+        return skillsValidation(arr);
     }
     return true;
-}, val_messages['skills'][app.get('env')]);
+}, validationMessages['skills'][app.get('env')]);
 
 UserSchema.path('skill_ratings').validate(function (arr) {
     if (this.fullUserFormSumitted || this.signupType === 'local') {
-        return ratings_validation(arr);
+        return ratingsValidation(arr);
     }
     return true;
-}, val_messages['skill_ratings'][app.get('env')]);
+}, validationMessages['skill_ratings'][app.get('env')]);
 
 UserSchema.methods.generateHash = function (password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
@@ -179,10 +181,9 @@ UserSchema.methods.comparePassword = function (password) {
 /**
  * Since local/facebook introduces a level of indexing,
  * this function takes care of the added layer
- * @param obj a User
+ * Side Effects: Mutates obj
  * @param key eg local.password or skills
  * @param value
- * Side Effects: Mutates obj
  */
 UserSchema.methods.setItem = function (key, value) {
     var user = this;
