@@ -2,13 +2,13 @@ module.exports = function (passport) {
 
     var express = require('express');
     var router = express.Router();
-    var User = require('../models/user.js');
-    var Project = require('../models/project.js');
-    var authFunc = require('../utils/authfunc.js');
-    var bcrypt = require('bcryptjs');
-    var user_functions = require('../utils/user_functions.js');
-    var project_functions = require('../utils/project_functions.js');
+    var userFunctions = require('../utils/user_functions');
+    var projectFunctions = require('../utils/project_functions');
     var mongoose = require('mongoose');
+    var permissionHelper = require('../helpers/permission');
+
+    var isLoggedIn = permissionHelper.isLoggedIn;
+    var checkUserProfilePermission = permissionHelper.checkUserProfilePermission;
 
     /** Route: /users/auth/signup
      * POST
@@ -62,7 +62,7 @@ module.exports = function (passport) {
     router.route('/project/:id')
         .get(isLoggedIn, function (req, res) {
             if (!checkUserProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
-            return project_functions.getProjectById(req.params.id, req, res);
+            return projectFunctions.getProjectById(req.params.id, req, res);
         });
 
     /** Route: /users/projects
@@ -73,7 +73,7 @@ module.exports = function (passport) {
     router.route('/projects')
         .get(isLoggedIn, function (req, res) {
             if (!checkUserProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
-            return project_functions.getAllProjects(req, res);
+            return projectFunctions.getAllProjects(req, res);
         });
 
     /** Route: /users/company/:id/projects
@@ -84,7 +84,7 @@ module.exports = function (passport) {
     router.route('/company/:id/projects')
         .get(isLoggedIn, function (req, res) {
             if (!checkUserProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
-            return project_functions.getAllCompanyProjects(req.params.id, req, res);
+            return projectFunctions.getAllCompanyProjects(req.params.id, req, res);
         });
 
 
@@ -97,17 +97,17 @@ module.exports = function (passport) {
     router.route('/projects/favorite/:id')
         .put(isLoggedIn, function (req, res) {
             if (!checkUserProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
-            return user_functions.favoriteProjectById(req.params.id, req, res);
+            return userFunctions.favoriteProjectById(req.params.id, req, res);
         });
 
     router.route('/')
         .get(isLoggedIn, function (req, res) {
             if (!checkUserProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
-            return user_functions.getUserById(req.session.passport.user.id, req, res);
+            return userFunctions.getUserById(req.session.passport.user.id, req, res);
         })
         .put(isLoggedIn, function (req, res) {
             if (!checkUserProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
-            return user_functions.updateUserById(req.session.passport.user.id, req, res);
+            return userFunctions.updateUserById(req.session.passport.user.id, req, res);
         });
 
 
@@ -118,24 +118,9 @@ module.exports = function (passport) {
      */
     router.route('/email')
         .get(function (req, res) {
-            return user_functions.checkIfEmailExists(req.body.email, req, res);
+            return userFunctions.checkIfEmailExists(req.body.email, req, res);
         });
 
     return router;
-
 };
-
-// route middleware to ensure user is logged in
-function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated())
-        return next();
-    return res.json({success: false, message: "Not logged in"});
-}
-
-
-// Checks that a session is defined and the signed in user is type volunteer
-function checkUserProfilePermission(req, res) {
-    if (typeof req.session.passport.user === 'undefined' || req.session.passport.user === null || req.session.passport.user.type != "volunteer") return false;
-    return true;
-}
 
