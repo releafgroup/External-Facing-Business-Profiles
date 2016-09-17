@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Project = require('../models/project');
 var Company = require('../models/company');
-var projectFunctions = require('../utils/project_functions');
+var projectFunctions = require('../utils/project');
 var utils = require('../helpers/permission');
 var responseHelper = require('../helpers/response');
 

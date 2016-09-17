@@ -4,7 +4,7 @@ var passport = require('passport');
 var User = require('../models/user');
 var Admin = require('../models/admin');
 var bcrypt = require('bcryptjs');
-var FacebookStrategy = require('./passport_fb');
+var FacebookStrategy = require('./passport_facebook');
 var AdminLoginStrategy = require('./passport_admin');
 
 /* References: http://stackoverflow.com/questions/27637609/understanding-passport-serialize-deserialize

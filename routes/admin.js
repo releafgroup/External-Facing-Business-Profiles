@@ -13,9 +13,9 @@ module.exports = function (passport) {
     var Admin = require('../models/admin');
     var VolunteerAssignment = require('../models/volunteer_assignment');
     var bcrypt = require('bcryptjs');
-    var user_functions = require('../utils/user_functions');
-    var company_functions = require('../utils/company_functions');
-    var project_functions = require('../utils/project_functions');
+    var user_functions = require('../utils/user');
+    var company_functions = require('../utils/company');
+    var project_functions = require('../utils/project');
     var path = require('path');
 
     /**
