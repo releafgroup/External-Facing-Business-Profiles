@@ -51,7 +51,8 @@ router.route('/')
                 // Finally, add to company schema
                 company.projects.push(project);
                 company.save(function (finalErr, succ) {
-                    if (!finalErr) return responseHelper.sendSuccessWithFullData({id: project.id}, res); // Returns project id
+                    if (!finalErr) return responseHelper.sendSuccessWithFullData({id: project.id}, res);
+                    // Returns project id
                     return responseHelper.sendError(finalErr.message, 500, res);
                 });
             });

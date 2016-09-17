@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Company = require('../models/company');
 var bcrypt = require('bcryptjs');
-var company_functions = require('../utils/company_functions');
+var companyFunctions = require('../utils/company_functions');
 
 
 // Function for company error handling in saving company info
@@ -55,10 +55,10 @@ router.route('/')
 
 router.route('/:id')
 .get(function(req, res){
-    return company_functions.getCompanyById(req.params.id, req, res);    
+    return companyFunctions.getCompanyById(req.params.id, req, res);
 })
 .put(function(req,res){
-    return company_functions.updateCompanyById(req.params.id, req, res);         
+    return companyFunctions.updateCompanyById(req.params.id, req, res);
 });
 
 
