@@ -100,6 +100,19 @@ exports.user2 = {
     "dob": "2016-06-07"
 };
 
+exports.userUpdateInfo = {
+    "local.first_name": "ififififif",
+    "local.last_name": "testee",
+    "local.password": "eightdigits1M",
+    "local.email": "test1@gmail.com",
+    "primary_institution": "nahhhhh",
+    "secondary_institution": "okayyyyyyyy",
+    "skills": ["c", "l", "t"],
+    "skill_ratings": [2, 3, 4],
+    "gender": "Male",
+    "dob": "2016-08-03"
+};
+
 exports.admin1 = {
     'name': 'admin1@gmail.com',
     'password': 'admin1'

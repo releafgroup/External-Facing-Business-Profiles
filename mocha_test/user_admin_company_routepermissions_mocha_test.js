@@ -6,7 +6,7 @@ var config = require('../config.js');
 var faker = require('faker');
 var testHelpers = require('../helpers/test');
 
-var url = 'http://localhost:3000';
+var url = testHelpers.url;
 
 var admin1Id = -1;
 var superAgentAdmin = (require('supertest')).agent(url);

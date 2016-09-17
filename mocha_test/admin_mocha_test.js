@@ -11,7 +11,7 @@ var testHelpers = require('../helpers/test');
  * SUPER IMPORTANT NOTE: throughout the test cases we may modify these variables,
  * the modifications persist across all of the test cases after any modification
  */
-var url = 'http://localhost:3000';
+var url = testHelpers.url;
 
 var admin1Id = -1;
 var superAgentAdmin = (require('supertest')).agent(url);
