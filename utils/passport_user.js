@@ -51,7 +51,7 @@ passport.use('local-login', new LocalStrategy({
 }, function (req, email, password, done) {
     // asynchronous
     process.nextTick(function () {
-        User.findOne({'local.email': email}, function (err, user) {
+        User.findOne({'local.email': email}, '+local.password', function (err, user) {
             // if there are any errors, return the error
             if (err)
                 return done(err);

@@ -4,30 +4,20 @@ var request = require('supertest');
 var mongoose = require('mongoose');
 var config = require('../config.js');
 var faker = require('faker');
+var testHelpers = require('../helpers/test');
 
 var url = 'http://localhost:3000';
 
-var admin1_id = -1;
-var super_agent_admin = (require('supertest')).agent(url);
+var admin1Id = -1;
+var superAgentAdmin = (require('supertest')).agent(url);
 var admin1 = {
     'name': 'admin1@gmail.com',
     'password': 'admin1'
 };
 
-var super_agent1 = request.agent(url);
-var user1_id = -1;
-var user1 = {
-    "local.first_name": "test_first",
-    "local.last_name": "test_last",
-    "local.password": "eightdigits1M",
-    "local.email": "test1@gmail.com",
-    "primary_institution": "stanny",
-    "secondary_institution": "odododdo",
-    "skills": ["s", "f", "o"],
-    "skill_ratings": [1, 2, 3],
-    "gender": "Female",
-    "dob": "2016-06-07"
-};
+var superAgent = request.agent(url);
+var user1Id = -1;
+var user1 = testHelpers.user1;
 var token = null;
 
 describe('Routing', function () {
@@ -42,13 +32,13 @@ describe('Routing', function () {
 
     describe('Creates admin + regular user', function () {
         it('creates admin 1', function (done) {
-            super_agent_admin
+            superAgentAdmin
                 .post('/admin')
                 .send(admin1)
                 .expect(200)
                 .end(function (err, res) {
                     console.log(res.body);
-                    admin1_id = res.body.message;
+                    admin1Id = res.body.message;
                     res.body.success.should.equal(true);
                     done();
                 });
@@ -56,7 +46,7 @@ describe('Routing', function () {
         });
 
         it('tries to login admin 1', function (done) {
-            super_agent_admin
+            superAgentAdmin
                 .post('/admin/auth/login')
                 .send(admin1)
                 .end(function (err, res) {
@@ -68,13 +58,13 @@ describe('Routing', function () {
         });
 
         it('creates user 1', function (done) {
-            super_agent1
+            superAgent
                 .post('/users/auth/signup')
                 .send(user1)
                 .expect(200) //Status code
                 .end(function (err, res) {
                     console.log(res.body);
-                    user1_id = res.body.message;
+                    user1Id = res.body.message;
                     res.body.success.should.equal(true);
                     done();
                 });
@@ -92,7 +82,7 @@ describe('Routing', function () {
         });
 
         it('Success: User 1 login', function (done) {
-            super_agent1
+            superAgent
                 .post('/users/auth/login')
                 .send(user1)
                 .expect(200) //Status code
@@ -103,11 +93,21 @@ describe('Routing', function () {
                 });
         });
 
+        it('Success: Password is not in user object', function (done) {
+            superAgent
+                .get('/users')
+                .expect(200) //Status code
+                .end(function (err, res) {
+                    should.not.exist(res.body.message.local.password);
+                    done();
+                });
+        });
+
         it('Success: Update firstname and lastname of user', function (done) {
             var firstname = faker.name.firstName();
             var lastname = faker.name.lastName();
             var userUrl = '/users?token=' + token;
-            super_agent1.put(userUrl)
+            superAgent.put(userUrl)
                 .send({
                     'local.first_name': firstname,
                     'local.last_name': lastname
@@ -115,7 +115,7 @@ describe('Routing', function () {
                 .expect(200)
                 .end(function (err, res) {
                     res.body.success.should.equal(true);
-                    super_agent1.get(userUrl)
+                    superAgent.get(userUrl)
                         .expect(200)
                         .end(function (newErr, newRes) {
                             newRes.body.message.local.first_name.should.equal(firstname);
@@ -128,7 +128,7 @@ describe('Routing', function () {
 
     describe('Checks Permissions', function () {
         it('checks that user 1 cannot access admin 1 routes', function (done) {
-            super_agent1
+            superAgent
                 .get('/admin/volunteers')
                 .end(function (err, res) {
                     console.log(res.body);
@@ -139,7 +139,7 @@ describe('Routing', function () {
         });
 
         it('checks that admin 1 cannot access user 1 routes', function (done) {
-            super_agent_admin
+            superAgentAdmin
                 .get('/users')
                 .end(function (err, res) {
                     console.log(res.body);
