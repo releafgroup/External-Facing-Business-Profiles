@@ -97,7 +97,7 @@ var UserSchema = new Schema(
                                                                // social media users
 
         local: {
-            password: {type: String, required: this.signupType === 'local'},
+            password: {type: String, required: this.signupType === 'local', select: false},
             first_name: {type: String, required: this.signupType === 'local'},
             last_name: {type: String, required: this.signupType === 'local'},
             email: {
