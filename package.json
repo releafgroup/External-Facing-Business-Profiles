@@ -1,0 +1,49 @@
+{
+  "name": "ikeora-backend",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "prestart": "npm install",
+    "start": "node ./bin/www",
+    "pretest": "npm install",
+    "test": "nodemon ./bin/www",
+    "mocha_test": "NODE_ENV=mocha_db nodemon ./bin/www"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.3.0",
+    "body-parser": "~1.13.2",
+    "connect-mongo": "^1.3.2",
+    "cookie-parser": "~1.3.5",
+    "debug": "~2.2.0",
+    "delivery": "0.0.4",
+    "express": "~4.13.1",
+    "express-session": "~1.0.0",
+    "faker": "^3.1.0",
+    "jade": "~1.11.0",
+    "jsonwebtoken": "^7.0.1",
+    "moment": "^2.14.1",
+    "mongoose": "^4.5.3",
+    "mongoose-timestamps": "0.0.1",
+    "morgan": "~1.6.1",
+    "node-schedule": "^1.1.1",
+    "nodemailer": "^2.5.0",
+    "nodemailer-smtp-transport": "^2.6.0",
+    "multer": "^1.2.0",
+    "node-env-file": "~0.1.8",
+    "passport": "~0.1.17",
+    "passport-facebook": "~2.0.0",
+    "passport-local": "~0.1.6",
+    "serve-favicon": "~2.3.0",
+    "should": "10.0.0",
+    "socket.io": "^1.4.8",
+    "socket.io-client": "^1.4.8",
+    "underscore": "^1.8.3",
+    "zombie": "^4.2.1"
+  },
+  "devDependencies": {
+    "debug": "~2.2.0",
+    "supertest": "1.2.0",
+    "nodemon": "^1.8.1",
+    "mocha": "~3.0.2"
+  }
+}

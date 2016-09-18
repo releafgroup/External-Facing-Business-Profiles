@@ -1,0 +1,68 @@
+/**
+ * Holds methods, variables and data used during tests.
+ */
+var exports = module.exports = {};
+
+exports.project1 = {
+    "project_description": "test_first",
+    "core_skill_1": "App Development",
+    "core_skill_2": "Growth Strategy",
+    "core_skill_3": "Business Plan",
+    "industry_focus": "Storage",
+    "completion_time": 10,
+    "number_staffed": 5,
+    "is_verified": false
+};
+
+exports.project2 = {
+    "project_description": "test_second",
+    "core_skill_1": "App Development",
+    "core_skill_2": "Growth Strategy",
+    "core_skill_3": "Data Analytics",
+    "industry_focus": "Storage",
+    "completion_time": 10,
+    "number_staffed": 5,
+    "is_verified": false
+};
+
+exports.project3 = {
+    "project_description": "test_second",
+    "core_skill_1": "App Development",
+    "core_skill_2": "Growth Strategy",
+    "core_skill_3": "Social Media",
+    "industry_focus": "Storage",
+    "completion_time": 10,
+    "number_staffed": 5,
+    "is_verified": true
+};
+
+exports.company1 = {
+    "business_name": "business_first",
+    "primary_contact_name": "emmmmmmmmmm o",
+    "primary_contact_phone": "123-7045195845",
+    "password": "eightdigitsboy",
+    "company_purpose": "the purpose is to test if the creation works",
+    "company_size": "1 Partner",
+    "company_industry_1": "Processing",
+    "company_industry_2": "Transport",
+    "company_industry_3": "Storage",
+    "value_hoped_for": "we hope to get a lot of value",
+    "short_term_obj": "short term objective",
+    "long_term_obj": "long term objective",
+    "pressing_problems": "talent and capital",
+    "best_medium": "Email",
+    "internet_access": "Work Hours"
+};
+
+exports.user1 = {
+    "local.first_name": "test_first",
+    "local.last_name": "test_last",
+    "local.password": "eightdigits1M",
+    "local.email": "test1@gmail.com",
+    "primary_institution": "stanny",
+    "secondary_institution": "odododdo",
+    "skills": ["s", "f", "o"],
+    "skill_ratings": [1, 2, 3],
+    "gender": "Female",
+    "dob": "2016-06-07"
+};

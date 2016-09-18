@@ -57,3 +57,9 @@ dist/
 # Grunt usually preprocesses files such as coffeescript, compass... inside the .tmp directory
 .tmp/
 /server/nbproject/
+
+# just for ideas. You may keep one too if you like
+ideas
+
+# Jetbrains IDE files
+.idea/
