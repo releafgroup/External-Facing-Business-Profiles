@@ -5,7 +5,7 @@ module.exports = function (io) {
   var debug = require('debug')('server:io');
   var router = express.Router();
   var Message = require('../models/message.js');
-  var authFunc = require('../utils/authfunc.js');
+  var authFunc = require('../utils/authentication.js');
 
 
 //This route produces a list of message as filterd by 'room' query
