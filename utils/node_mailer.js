@@ -1,4 +1,3 @@
-
 var nodemailer = require('nodemailer');
 var smtpTransport = require('nodemailer-smtp-transport');
 // create reusable transporter object using SMTP transport
@@ -6,7 +5,7 @@ var smtpTransport = require('nodemailer-smtp-transport');
 var transporter;
 exports.setupTransport = function(mailConfig) {
     transporter = nodemailer.createTransport(mailConfig);
-}
+};
 
 function setHeaders(mailOptions) {
     mailOptions.headers = {
@@ -31,6 +30,6 @@ var sendMail = function(mailOptions) {
         }
         transporter.close();
     });
-}
+};
 exports.sendMail = sendMail;
         

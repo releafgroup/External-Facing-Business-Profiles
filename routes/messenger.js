@@ -1,11 +1,8 @@
-
 module.exports = function (io) {
     var username = '';
     var moment = require('moment');
 
     var config = require('./../config');
-
-
     var schedule = require('node-schedule');
 
     var express = require('express');
@@ -19,32 +16,30 @@ module.exports = function (io) {
     var userSockets = {};
     var debug = require('debug')('server:io');
     var router = express.Router();
-    var Message = require('./../models/message.js');
-    var Groups = require('./../models/chat_groups.js');
+    var Message = require('./../models/message');
+    var Groups = require('./../models/chat_groups');
 
-    var user_functions = require('../utils/user_functions');
-    var nodemailer = require('./nodeMailer');
+    var user_functions = require('../utils/user');
+    var nodemailer = require('./../utils/node_mailer');
     nodemailer.setupTransport(config.mailConfig.smtp);
 
-    router
-        .get('/messages/:room', function (req, res) {
-            debug(' got messages request ', req.params)
-            //Find
-            Message.find({
-                'room': req.params.room.toLowerCase()
-            }, null, {
-                skip: 0, // Starting Row
-                limit: 100, // Ending Row
-                sort: {
-                    createdAt: -1 //Sort by Date Added DESC
-                }
-            }).exec(function (err, msgs) {
-                //Send
-                debug('Found saved messages for room ' + req.params.room.toLowerCase(), " Count" + msgs.length)
-                res.json(msgs);
-            });
-        })
-
+    router.get('/messages/:room', function (req, res) {
+        debug(' got messages request ', req.params);
+        //Find
+        Message.find({
+            'room': req.params.room.toLowerCase()
+        }, null, {
+            skip: 0, // Starting Row
+            limit: 100, // Ending Row
+            sort: {
+                createdAt: -1 //Sort by Date Added DESC
+            }
+        }).exec(function (err, msgs) {
+            //Send
+            debug('Found saved messages for room ' + req.params.room.toLowerCase(), " Count" + msgs.length);
+            res.json(msgs);
+        });
+    });
 
     /** Route: /volunteers
      * GET
@@ -54,132 +49,127 @@ module.exports = function (io) {
      * If failure: {success: false, ...}
      * See getAllUsers for more info
      */
-    router.route('/volunteers')
-        .get(function(req, res){
+    router.route('/volunteers').get(function (req, res) {
+        return user_functions.getAllUsers(req, res);
+    });
 
-            return user_functions.getAllUsers(req, res);
-
-        });
-
-
-//OK:100% //need to protect it by auth
-//
-// @id is the message _id
-//this will send the file to download on request
-    router.route('/messages/file/:id')
-        .get(function (req, res) {
-            debug(' got file download request ', req.params)
-            //Find
-            Message.findOne({
-                '_id': req.params.id
-            }).exec(function (err, msg) {
-                if (err) {
-                    return res.status(500).end('No file found!');
-                }
-                if (!msg || !msg.file || !msg.file.data) {
-                    return res.status(404).end('No file found!');
-                }
-                //Send
-                debug('Found saved message by id', msg.file)
-                res.writeHead(200, {'Content-Type': 'application/force-download', 'Content-disposition': 'attachment; filename=' + msg.file.name});
-                res.end(msg.file.data);
+    /**
+     * OK:100% //need to protect it by auth
+     *  @id is the message _id
+     *  this will send the file to download on request
+     */
+    router.route('/messages/file/:id').get(function (req, res) {
+        debug(' got file download request ', req.params);
+        //Find
+        Message.findOne({
+            '_id': req.params.id
+        }).exec(function (err, msg) {
+            if (err) {
+                return res.status(500).end('No file found!');
+            }
+            if (!msg || !msg.file || !msg.file.data) {
+                return res.status(404).end('No file found!');
+            }
+            //Send
+            debug('Found saved message by id', msg.file);
+            res.writeHead(200, {
+                'Content-Type': 'application/force-download',
+                'Content-disposition': 'attachment; filename=' + msg.file.name
             });
+            res.end(msg.file.data);
         });
-    //file sharing done
+    });
+
+    /**
+     * gets all saved active groups
+     * will filter later on
+     * FILTER THERE IN INNER FUNC
+     */
     router.route('/groups')
-    //gets all saved active groups
-    //will filter later on
-    //FILTER THERE IN INNER FUNC
         .get(function (req, res) {
-            debug(' got groups request ', req.query)
+            debug(' got groups request ', req.query);
             getGroups(function (err, groups) {
                 if (err)
                     return res.json({success: false, message: err.message});
                 res.json({success: true, groups: groups});
             });
-//
         })
     ;
 
-    router.route('/admin/groups')
-    //gets all saved active groups
-    //will filter later on
-    //FILTER THERE IN INNER FUNC
-        .get(function (req, res) {
-            debug(' got groups request ', req.query)
-            getGroups({admin: true}, function (err, groups) {
-                if (err)
-                    return res.json({success: false, message: err.message});
-                res.json({success: true, groups: groups});
-            });
-//
-        })
-        //add new group//with members//
-        .post(function (req, res) {
-            debug('Data:', req.body);
-            //return res.json(req.body)
-            var user = req.session.passport.user;//"57b6fda08edf43040d2c9574";
+    /**
+     * GET - gets all saved active groups, will filter later on | FILTER THERE IN INNER FUNC
+     * POST -add new group//with members//
+     */
+    router.route('/admin/groups').get(function (req, res) {
+        debug(' got groups request ', req.query);
+        getGroups({admin: true}, function (err, groups) {
+            if (err)
+                return res.json({success: false, message: err.message});
+            res.json({success: true, groups: groups});
+        });
+    }).post(function (req, res) {
+        debug('Data:', req.body);
+        var user = req.session.passport.user;
 
-            debug('groups post request ', user)
-            var members = JSON.parse(req.body.members);
-            debug('members ', members)
+        debug('groups post request ', user);
+        var members = JSON.parse(req.body.members);
+        debug('members ', members);
 
-            var query = req.body.id;
+        var query = req.body.id;
 
-            //debug('query ', query)
-            Groups.find({
-                '_id': query
-            }).exec(function (err, group) {
+        Groups.find({
+            '_id': query
+        }).exec(function (err, group) {
+            if (err) {
+                return res.json({success: false, message: handleGroupSaveError(err)});
+            }
+            if (group) {
+                //send error that this group , is taken already
+                return res.json({success: false, message: handleGroupSaveError({code: 11000})});
+            }
+            debug(' not found ');
+
+            var owner = user; //for now we keep it blank//this should be req.session.passport.user
+            var groupData = {
+                name: req.body.name, //uniq
+                owner: owner,
+                members: members,
+                photo: req.body.photo
+            };
+
+            // Populate Information to group instance
+            var group = new Groups(groupData);
+            group.save(function (err, group) {
                 if (err) {
                     return res.json({success: false, message: handleGroupSaveError(err)});
                 }
-                if (group) {
-                    //send error that this group , is taken already
-                    return res.json({success: false, message: handleGroupSaveError({code: 11000})});
-                }
-                debug(' not found ')
-
-
-
-                var owner = user; //for now we keep it blank//this should be req.session.passport.user
-                var groupData = {
-                    name: req.body.name, //uniq
-                    owner: owner,
-                    members: members,
-                    photo: req.body.photo
-                };
-
-                // Populate Information to group instance
-                var group = new Groups(groupData);
-                group.save(function (err, group) {
-                    if (err) {
-                        return res.json({success: false, message: handleGroupSaveError(err)});
-                    }
-                    return res.json({id: group.id, success: true}); // Returns company id
-                });
-            })
-        });
-    router.route('/groups/:name')
-    //make inactive a group
-
-        .put(function (req, res) {
-            debug('groups put request ', req.params)
-            Groups.findOne({name: req.params.name}).exec(function (err, doc) {
-                if (err) {
-                    return res.json({success: false, message: err.message});
-                }
-                if (!doc) {
-                    return res.json({success: false, message: "Group not found!"});
-                }
-                doc.status = true;
-                doc.save(function (err, affected) {
-                    if (err)
-                        return res.json({success: false, message: err.message});
-                    res.json({success: true});
-                });
+                return res.json({id: group.id, success: true}); // Returns company id
             });
-        }).delete(function (req, res) {
-        debug('groups delete request ', req.params)
+        })
+    });
+
+
+    /**
+     * PUT - make inactive a group
+     */
+    router.route('/groups/:name').put(function (req, res) {
+        debug('groups put request ', req.params);
+        Groups.findOne({name: req.params.name}).exec(function (err, doc) {
+            if (err) {
+                return res.json({success: false, message: err.message});
+            }
+            if (!doc) {
+                return res.json({success: false, message: "Group not found!"});
+            }
+            doc.status = true;
+            doc.save(function (err, affected) {
+                if (err)
+                    return res.json({success: false, message: err.message});
+                res.json({success: true});
+            });
+        });
+    }).delete(function (req, res) {
+        debug('groups delete request ', req.params);
         Groups.findOne({name: req.params.name}).exec(function (err, doc) {
             if (err) {
                 return res.json({success: false, message: err.message});
@@ -195,38 +185,36 @@ module.exports = function (io) {
             });
         });
     });
-    //add remove group members any time
-    router
-        .route('/groups/:name/member/:id')//id===username/email
-        .post(function (req, res) {
 
-            Groups.update(
-                {name: req.params.name},
-                {$push: {'members': req.params.id}}
-                , function (err, updatedRes) {
-                    if (err)
-                        return res.json({success: false, message: err.message});
-                    res.json({success: true, d: updatedRes});
-                });
-        })
-        .delete(function (req, res) {
-            // TODO: delete associated
-            Groups.update(
-                {name: req.params.name},
-                {$pull: {'members': req.params.id}}
-                , function (err, delRes) {
-                    if (err)
-                        return res.json({success: false, message: err.message});
-//              console.log()
-                    res.json({success: true, d: delRes});
-                });
-        });
-
+    /**
+     * add remove group members any time
+     * id === username/email
+     */
+    router.route('/groups/:name/member/:id').post(function (req, res) {
+        Groups.update(
+            {name: req.params.name},
+            {$push: {'members': req.params.id}}
+            , function (err, updatedRes) {
+                if (err)
+                    return res.json({success: false, message: err.message});
+                res.json({success: true, d: updatedRes});
+            });
+    }).delete(function (req, res) {
+        // TODO: delete associated
+        Groups.update(
+            {name: req.params.name},
+            {$pull: {'members': req.params.id}}
+            , function (err, delRes) {
+                if (err)
+                    return res.json({success: false, message: err.message});
+                res.json({success: true, d: delRes});
+            });
+    });
 
 
-
-///==================================== general functtions====================================//
-
+    /**
+     * General Functions
+     */
     var updateGroup = function (option, cb) {
         Groups.findOne({_id: option._id}).exec(function (err, doc) {
             if (err) {
@@ -246,9 +234,9 @@ module.exports = function (io) {
                 });
             });
         });
-    }
+    };
+
     var createNewGroup = function (option, cb) {
-        //debug('query ', query)
         Groups.findOne({
             'name': option.data.name
         }).exec(function (err, group) {
@@ -259,9 +247,7 @@ module.exports = function (io) {
                 //send error that this group name is taken already
                 return cb({success: false, message: handleGroupSaveError({code: 11000})});
             }
-            debug(' not found ')
-
-
+            debug(' not found ');
 
             var owner = username; //for now we keep it blank//this should be req.session.passport.user
             var groupData = {
@@ -285,7 +271,8 @@ module.exports = function (io) {
 
             });
         })
-    }
+    };
+
     function fetchMessages(option, cb) {
         var query = {};
 
@@ -315,13 +302,13 @@ module.exports = function (io) {
                 }
             }).exec(cb);
     }
+
     function getGroups(option, cb) {
-//     Find
+        // Find
         var query = {};
         if (typeof option == 'function') {
             cb = option;
         } else {
-//      option.username = "57b6fda08edf43040d2c9574";
             if (option.username) {
                 query.members = option.username;
             }
@@ -331,9 +318,9 @@ module.exports = function (io) {
         }
         //to get only that users saved groups
         debug('Query in getGroups:', query);
-        Groups.
-        find(query).populate('members').exec(cb);
+        Groups.find(query).populate('members').exec(cb);
     }
+
     function handleGroupSaveError(err) {
         // Check if business name already exists
         if (err.code == 11000) {
@@ -355,9 +342,11 @@ module.exports = function (io) {
         }
         return err.message;
     }
+
     var isOnline = function (userId) {
         return usersOnline.indexOf(userId) != -1;
-    }
+    };
+
     //get emails by user
     var getQueuedPrivateMsg = function (cb, options) {
         Message.find({
@@ -365,7 +354,6 @@ module.exports = function (io) {
 //      from: options.from,
 //      to: options.to,
             createdAt: {$gt: new Date() - (spanHours * 60 * 60 * 1000) - 10 * 1000}//-10 second rewind
-
         }, null, {
             skip: 0, // Starting Row
             limit: 2,
@@ -373,22 +361,25 @@ module.exports = function (io) {
                 createdAt: 1 //Sort by Date Added DESC
             }
         }).exec(function (err, msgs) {
-            //Send
-            debug('Found saved messages for user ' + options.to + ' Count ' + msgs.length)
+            debug('Found saved messages for user ' + options.to + ' Count ' + msgs.length);
             cb(err, msgs);
         });
-    }
-    ///
+    };
+
     function formatTime(dateStr) {
         return moment(dateStr).format('LT');
     }
+
     function formatMessage(msg) {
         return "<br>At: " + formatTime(msg.createdAt) + " <br> " + msg.content + " <br><br>";
     }
-    //will get the array of the queue and get all messages for each users to send and get the email of the user
-    //then send emails
 
-
+    /**
+     * will get the array of the queue and get all messages for each users to send and get the email of the user
+     * then send emails
+     * @param msgs
+     * @returns {{}}
+     */
     function filterByUser(msgs) {
         var d = {};
 
@@ -406,11 +397,8 @@ module.exports = function (io) {
         return d;
     }
 
-
-///here will run cron job acording to the string top
-    var j = schedule.scheduleJob(cronString, function (y) {
-        debug.log('The answer to life, the universe, and everything!', new Date());
-
+    // here will run cron job acording to the string top
+    var job = schedule.scheduleJob(cronString, function (y) {
         getQueuedPrivateMsg(function (err, msgs) {
             //will get all messages for last 4 hours
             //now will filter by user and send emails
@@ -433,19 +421,16 @@ module.exports = function (io) {
         }, {
             //option here
         });
-    })
+    });
+    job.cancel();
 
-    j.cancel();
-
-
-
-    /*|||||||||||||||| SOCKET CONNECTION for messenger |||||||||||||||||||||||*/
-//Listen for connection socket
-
+    /**
+     * SOCKET CONNECTION for messenger
+     */
+    // Listen for connection socket
     io.on('connection', function (socket) {
-
-        debug('new connection ', socket.handshake.headers.cookie); //socket.request
-        if(!socket.handshake.headers.cookie)return socket.disconnect();
+        debug('new connection ', socket.handshake.headers.cookie);
+        if (!socket.handshake.headers.cookie)return socket.disconnect();
         var defaultRoom = 'general';
         var delivery = dl.listen(socket);
         delivery.on('receive.success', function (file) {
@@ -453,7 +438,6 @@ module.exports = function (io) {
             if (!validateReuest(data)) {
                 return socket.emit('error', {success: false, message: 'Missing data on request!'});
             }
-            ;
             var msgNew = {
                 username: data.username,
                 content: data.content,
@@ -477,7 +461,6 @@ module.exports = function (io) {
                 if (err) {
                     debug('Error saving message', err);
                     return socket.emit('error', {success: false, message: err.message});
-                    // return ;
                 }
                 debug('File saved in DB:', msg);
                 debug('sending message', msg.room);
@@ -495,24 +478,20 @@ module.exports = function (io) {
             if (!data.username || !username)
                 return false;
             return true;
-        }
+        };
+
         function sendPrivateMessage(msg) {
             if (msg.type == 'private') {
-//        debug('private-msg.to', msg.to);
                 if (!isOnline(msg.to)) {
-//          debug('isOnline', isOnline);
                     if (msgQ.indexOf(msg.to) == -1)
                         msgQ.push(msg.to);
                 }
                 //userSockets[msg.to] is the saved socket for the specific user
-//        console.log();
                 if (userSockets[msg.to]) {
                     userSockets[msg.to].emit('send:message', msg);
                 }
-//        debug('userSockets:', userSockets);
             }
         }
-
 
         //Listens for new user
         socket.on('user:new', function (data) {
@@ -525,7 +504,6 @@ module.exports = function (io) {
 
             username = data.username;
 
-            //userSockets.mustak = sockID
             userSockets[username] = socket;
             socket.join(defaultRoom);
             if (!data.romm)
@@ -555,12 +533,10 @@ module.exports = function (io) {
         });
 
 
-
-//Listens for switch room
+        // Listens for switch room
         socket.on('join:room', function (data) {
             //Handles joining and leaving rooms
             debug("On switch room ", data);
-//      socket.leave(data.room);
             socket.join(data.room);
         });
         //Listens for a new chat message
@@ -569,7 +545,6 @@ module.exports = function (io) {
             //Create message
             if (!data.username)
                 return socket.emit('error', {success: false, message: 'not logged in'});
-            ;
             var msgNew = {
                 username: data.username,
                 content: data.content,
@@ -591,7 +566,6 @@ module.exports = function (io) {
                 if (err) {
                     debug('Error saving message', err);
                     return socket.emit('error', {success: false, message: err.message});
-                    // return ;
                 }
 
                 //Send message to those connected in the room
@@ -607,15 +581,12 @@ module.exports = function (io) {
             });
         });
         socket.on('disconnect', function () {
-            debug("disconnected client ", username); //If Verbose Debug
-            //setTimeout(function () {
+            debug("disconnected client ", username);
             usersOnline.splice(usersOnline.indexOf(username), 1);
             socket.broadcast.emit('user:offline', {
                 username: username
             });
-            //  }, 0);
         });
-
 
         //admin
         socket.on('admin:new:group', function (data) {
@@ -637,7 +608,5 @@ module.exports = function (io) {
         });
 
     });
-    //end of socket server implementation
-
     return router;
-}
+};

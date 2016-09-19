@@ -2,8 +2,6 @@ var should = require('should');
 var io = require('socket.io-client');
 var request = require('supertest');
 
-
-
 var socketURL = 'http://localhost:3000';
 
 var options = {
