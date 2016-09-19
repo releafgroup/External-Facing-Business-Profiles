@@ -4,7 +4,7 @@ var passport = require('passport');
 var User = require('../models/user');
 var Admin = require('../models/admin');
 var bcrypt = require('bcryptjs');
-var FacebookStrategy = require('./passport_fb');
+var FacebookStrategy = require('./passport_facebook');
 var AdminLoginStrategy = require('./passport_admin');
 
 /* References: http://stackoverflow.com/questions/27637609/understanding-passport-serialize-deserialize
@@ -28,7 +28,6 @@ passport.serializeUser(function (user, done) {
 
 // used to deserialize the user
 passport.deserializeUser(function (session_info, done) {
-    console.log(session_info);
     if (session_info.type == 'volunteer') {
         User.findById(session_info.id, function (err, user) {
             done(err, user);

@@ -46,7 +46,6 @@ describe("Messenger Socket Server", function () {
 
     var checkMessage = function (client) {
       client.on('message', function (msg) {
-//        console.log(msg)
         message.message.should.equal(msg.content);
         client.disconnect();
         messages++;
@@ -61,7 +60,6 @@ describe("Messenger Socket Server", function () {
 
     client1.on('connect', function (data) {
       client2 = io.connect(socketURL, options);
-//      console.log("Connected client1")
       client1.emit('new user', user1);
       checkMessage(client2);
 

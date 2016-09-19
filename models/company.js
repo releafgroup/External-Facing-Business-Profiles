@@ -1,92 +1,208 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    bcrypt = require('bcryptjs'); 
+    bcrypt = require('bcryptjs');
 
 var express = require('express');
 var app = express();
 
 
 // Constants and field enums
-var company_size_options = ['Sole Proprietor', '1 Partner', '2 - 10 Employees', '11 - 50 Employees', '51 - 100 Employees', '100 - 500 Employees', '500+ Employees'];
-var company_industry_options = ['Producer/Farmer', 'Processing', 'Transport', 'Storage', 'Manufacturing', 'Trade', 'Distributor/Consumer'];
-var best_medium_options = ['Email', 'Whatsapp', 'Text message', 'Phone Call'];
-var internet_access_options = ['Constant', 'Work Hours', 'Daily', 'Weekly', 'Monthly', 'Less than Monthly'];
+var companySizeOptions = ['Sole Proprietor', '1 Partner', '2 - 10 Employees', '11 - 50 Employees',
+    '51 - 100 Employees', '100 - 500 Employees', '500+ Employees'];
+var companyIndustryOptions = ['Producer/Farmer', 'Processing', 'Transport', 'Storage',
+    'Manufacturing', 'Trade', 'Distributor/Consumer'];
+var bestMediumOptions = ['Email', 'Whatsapp', 'Text message', 'Phone Call'];
+var internetAccessOptions = ['Constant', 'Work Hours', 'Daily', 'Weekly', 'Monthly', 'Less than Monthly'];
 
 
 // TODO: figure out what we want character limits to be and don't hardcode them into validators
 // Validation messages
-var generic_error_message = "An error occurred saving the company";
-var err_messages = {
-    'business_name' : {'mocha_db' : 'Business name must be at most 200 characters', 'development' : generic_error_message, 'production' :  generic_error_message},
-    'primary_contact_name' : {'mocha_db' : 'Contact name must be at most 200 characters', 'development' : generic_error_message, 'production' :  generic_error_message},
-    'email' : {'mocha_db' : 'Email is not in a valid format', 'development' : generic_error_message, 'production' :  generic_error_message},
-    'company_purpose' : {'mocha_db' : 'Company purposes must be at most 1000 characters', 'development' : generic_error_message, 'production' :  generic_error_message},
-    'company_size' : {'mocha_db' : 'This is not a valid company size', 'development' : generic_error_message, 'production' :  generic_error_message},
-    'company_industry_1' : {'mocha_db' : 'This must be a valid industry and cannot be the same as the other industries', 'development' : generic_error_message, 'production' :  generic_error_message},
-    'company_industry_2' : {'mocha_db' : 'This must be a valid industry and cannot be the same as the other industries', 'development' : generic_error_message, 'production' :  generic_error_message},
-    'company_industry_3' : {'mocha_db' : 'This must be a valid industry and cannot be the same as the other industries', 'development' : generic_error_message, 'production' :  generic_error_message},
-    'value_hoped_for' : {'mocha_db' : 'Value hoped for must be at most 1000 characters', 'development' : generic_error_message, 'production' :  generic_error_message},
-    'short_term_obj' : {'mocha_db' : 'Short term obj must be at most 1000 characters', 'development' : generic_error_message, 'production' :  generic_error_message},
-    'long_term_obj' : {'mocha_db' : 'Long term obj must be at most 1000 characters', 'development' : generic_error_message, 'production' :  generic_error_message},
-    'pressing_problems' : {'mocha_db' : 'Pressing problems must be at most 1000 characters', 'development' : generic_error_message, 'production' :  generic_error_message},
-    'best_medium' : {'mocha_db' : 'This is not a valid medium', 'development' : generic_error_message, 'production' :  generic_error_message},
-    'internet_access' : {'mocha_db' : 'This is not an internet access option', 'development' : generic_error_message, 'production' :  generic_error_message},
+var genericErrorMessage = "An error occurred saving the company";
+var errorMessages = {
+    'business_name': {
+        'mocha_db': 'Business name must be at most 200 characters',
+        'development': genericErrorMessage,
+        'production': genericErrorMessage
+    },
+    'primary_contact_name': {
+        'mocha_db': 'Contact name must be at most 200 characters',
+        'development': genericErrorMessage,
+        'production': genericErrorMessage
+    },
+    'email': {
+        'mocha_db': 'Email is not in a valid format',
+        'development': genericErrorMessage,
+        'production': genericErrorMessage
+    },
+    'company_purpose': {
+        'mocha_db': 'Company purposes must be at most 1000 characters',
+        'development': genericErrorMessage,
+        'production': genericErrorMessage
+    },
+    'company_size': {
+        'mocha_db': 'This is not a valid company size',
+        'development': genericErrorMessage,
+        'production': genericErrorMessage
+    },
+    'company_industry_1': {
+        'mocha_db': 'This must be a valid industry and cannot be the same as the other industries',
+        'development': genericErrorMessage,
+        'production': genericErrorMessage
+    },
+    'company_industry_2': {
+        'mocha_db': 'This must be a valid industry and cannot be the same as the other industries',
+        'development': genericErrorMessage,
+        'production': genericErrorMessage
+    },
+    'company_industry_3': {
+        'mocha_db': 'This must be a valid industry and cannot be the same as the other industries',
+        'development': genericErrorMessage,
+        'production': genericErrorMessage
+    },
+    'value_hoped_for': {
+        'mocha_db': 'Value hoped for must be at most 1000 characters',
+        'development': genericErrorMessage,
+        'production': genericErrorMessage
+    },
+    'short_term_obj': {
+        'mocha_db': 'Short term obj must be at most 1000 characters',
+        'development': genericErrorMessage,
+        'production': genericErrorMessage
+    },
+    'long_term_obj': {
+        'mocha_db': 'Long term obj must be at most 1000 characters',
+        'development': genericErrorMessage,
+        'production': genericErrorMessage
+    },
+    'pressing_problems': {
+        'mocha_db': 'Pressing problems must be at most 1000 characters',
+        'development': genericErrorMessage,
+        'production': genericErrorMessage
+    },
+    'best_medium': {
+        'mocha_db': 'This is not a valid medium',
+        'development': genericErrorMessage,
+        'production': genericErrorMessage
+    },
+    'internet_access': {
+        'mocha_db': 'This is not an internet access option',
+        'development': genericErrorMessage,
+        'production': genericErrorMessage
+    }
 };
 
 // Create custom validators
-business_name_validation = {validator: function(r) { return r.length <= 200; }, message: err_messages['business_name'][app.get('env')]};
-primary_name_validation = {validator: function(r) { return r.length <= 200; }, message: err_messages['primary_contact_name'][app.get('env')]};
+var businessNameValidation = {
+    validator: function (r) {
+        return r.length <= 200;
+    }, message: errorMessages['business_name'][app.get('env')]
+};
+var primaryNameValidation = {
+    validator: function (r) {
+        return r.length <= 200;
+    }, message: errorMessages['primary_contact_name'][app.get('env')]
+};
 
 var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex outside for better performance
-email_validation = {validator: function(email) { return re.test(email); }, message: err_messages['email'][app.get('env')]};
+var emailValidation = {
+    validator: function (email) {
+        return re.test(email);
+    }, message: errorMessages['email'][app.get('env')]
+};
 
-company_purpose_validation = {validator: function(r) { return r.length <= 1000; }, message: err_messages['company_purpose'][app.get('env')]};
+var companyPurposeValidation = {
+    validator: function (r) {
+        return r.length <= 1000;
+    }, message: errorMessages['company_purpose'][app.get('env')]
+};
 
-company_size_validation = {validator: function(r) { return company_size_options.indexOf(r) >= 0; }, message: err_messages['company_size'][app.get('env')]};
-company_industry_1_validation = {validator: function(r) { return company_industry_options.indexOf(r) >= 0 && r != this.company_industry_2 && r != this.company_industry_3; }, message: err_messages['company_industry_1'][app.get('env')]};
-company_industry_2_validation = {validator: function(r) { return company_industry_options.indexOf(r) >= 0 && r != this.company_industry_1 && r != this.company_industry_3; }, message: err_messages['company_industry_2'][app.get('env')]};
-company_industry_3_validation = {validator: function(r) { return company_industry_options.indexOf(r) >= 0 && r != this.company_industry_1 && r != this.company_industry_2; }, message: err_messages['company_industry_3'][app.get('env')]};
+var companySizeValidation = {
+    validator: function (r) {
+        return companySizeOptions.indexOf(r) >= 0;
+    }, message: errorMessages['company_size'][app.get('env')]
+};
+var companyIndustry1Validation = {
+    validator: function (r) {
+        return companyIndustryOptions.indexOf(r) >= 0 && r != this.company_industry_2 && r != this.company_industry_3;
+    }, message: errorMessages['company_industry_1'][app.get('env')]
+};
+var companyIndustry2Validation = {
+    validator: function (r) {
+        return companyIndustryOptions.indexOf(r) >= 0 && r != this.company_industry_1 && r != this.company_industry_3;
+    }, message: errorMessages['company_industry_2'][app.get('env')]
+};
+var companyIndustry3Validation = {
+    validator: function (r) {
+        return companyIndustryOptions.indexOf(r) >= 0 && r != this.company_industry_1 && r != this.company_industry_2;
+    }, message: errorMessages['company_industry_3'][app.get('env')]
+};
 
-value_hoped_for_validation = {validator: function(r) { return r.length <= 1000; }, message: err_messages['value_hoped_for'][app.get('env')]};
-short_term_obj_validation = {validator: function(r) { return r.length <= 1000; }, message: err_messages['short_term_obj'][app.get('env')]};
-long_term_obj_validation = {validator: function(r) { return r.length <= 1000; }, message: err_messages['long_term_obj'][app.get('env')]};
-pressing_problems_validation = {validator: function(r) { return r.length <= 1000; }, message: err_messages['pressing_problems'][app.get('env')]};
+var valueHopedForValidation = {
+    validator: function (r) {
+        return r.length <= 1000;
+    }, message: errorMessages['value_hoped_for'][app.get('env')]
+};
+var shortTermObjectiveValidation = {
+    validator: function (r) {
+        return r.length <= 1000;
+    }, message: errorMessages['short_term_obj'][app.get('env')]
+};
+var longTermObjectiveValidation = {
+    validator: function (r) {
+        return r.length <= 1000;
+    }, message: errorMessages['long_term_obj'][app.get('env')]
+};
+var pressingProblemsValidation = {
+    validator: function (r) {
+        return r.length <= 1000;
+    }, message: errorMessages['pressing_problems'][app.get('env')]
+};
 
-best_medium_validation = {validator: function(r) { return best_medium_options.indexOf(r) >= 0; }, message: err_messages['best_medium'][app.get('env')]};
-internet_access_validation = {validator: function(r) { return internet_access_options.indexOf(r) >= 0; }, message: err_messages['internet_access'][app.get('env')]};
+var bestMediumValidation = {
+    validator: function (r) {
+        return bestMediumOptions.indexOf(r) >= 0;
+    }, message: errorMessages['best_medium'][app.get('env')]
+};
+var internetAccessValidation = {
+    validator: function (r) {
+        return internetAccessOptions.indexOf(r) >= 0;
+    }, message: errorMessages['internet_access'][app.get('env')]
+};
 
 
 // Create Volunteer Schema
 // _id serves as username
+
+// TODO: figure out why unique business_name does not work
 var CompanySchema = new Schema({
-    business_name : {type : String, required: true, unique: true, validate: business_name_validation}, // TODO: figure out why unique this does not work
-    primary_contact_name : {type : String, required: true, validate: primary_name_validation},
-    primary_contact_phone : {type : String, required: true}, // TODO: Format/validate somehow
-    password : {type : String, required: true}, // Validation done through routes bc of hashing
-    
-    email : {type: String, validate: email_validation},
-    state : {type: String}, // TODO: ensure within certain list or have some form of validation
-    lca : {type: String}, // TODO: ensure within certain list or have some form of validation
+    business_name: {type: String, required: true, unique: true, validate: businessNameValidation},
+    primary_contact_name: {type: String, required: true, validate: primaryNameValidation},
+    primary_contact_phone: {type: String, required: true}, // TODO: Format/validate somehow
+    password: {type: String, required: true}, // Validation done through routes bc of hashing
 
-    company_purpose : {type: String, required: true, validate: company_purpose_validation},
-    company_size : {type : String, required: true, validate: company_size_validation},
-    company_industry_1 : {type : String, required: true, validate: company_industry_1_validation},
-    company_industry_2 : {type : String, validate: company_industry_2_validation},
-    company_industry_3 : {type : String, validate: company_industry_3_validation},
-    value_hoped_for : {type : String, required: true, validate: value_hoped_for_validation},
+    email: {type: String, validate: emailValidation},
+    state: {type: String}, // TODO: ensure within certain list or have some form of validation
+    lca: {type: String}, // TODO: ensure within certain list or have some form of validation
 
-    short_term_obj : {type : String, required: true, validate: short_term_obj_validation},
-    long_term_obj : {type : String, required: true, validate: long_term_obj_validation},
-    pressing_problems : {type : String, required: true, validate: pressing_problems_validation},
+    company_purpose: {type: String, required: true, validate: companyPurposeValidation},
+    company_size: {type: String, required: true, validate: companySizeValidation},
+    company_industry_1: {type: String, required: true, validate: companyIndustry1Validation},
+    company_industry_2: {type: String, validate: companyIndustry2Validation},
+    company_industry_3: {type: String, validate: companyIndustry3Validation},
+    value_hoped_for: {type: String, required: true, validate: valueHopedForValidation},
 
-    best_medium : {type : String, required: true, validate: best_medium_validation},
-    internet_access : {type : String, required: true, validate: internet_access_validation},
+    short_term_obj: {type: String, required: true, validate: shortTermObjectiveValidation},
+    long_term_obj: {type: String, required: true, validate: longTermObjectiveValidation},
+    pressing_problems: {type: String, required: true, validate: pressingProblemsValidation},
 
-    projects : [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project'}]
+    best_medium: {type: String, required: true, validate: bestMediumValidation},
+    internet_access: {type: String, required: true, validate: internetAccessValidation},
+
+    projects: [{type: mongoose.Schema.Types.ObjectId, ref: 'Project'}]
 
 }, {
     timestamps: true
-}); 
+});
 
 module.exports = mongoose.model('Company', CompanySchema);
 
