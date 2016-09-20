@@ -7,6 +7,11 @@ var app = express();
 // Validation error messages
 var genericError = "There was an error saving the project";
 var errorMessages = {
+    'project_name': {
+        'mocha_db': 'Business name must be at most 200 characters',
+        'development': genericError,
+        'production': genericError
+    },
     'project_description': {
         'mocha_db': "project description must be less than 1000 characters",
         'development': genericError,
@@ -27,16 +32,20 @@ var errorMessages = {
         'development': genericError,
         'production': genericError
     },
-    'industry_focus': {'mocha_db': "Not a valid focus", 'development': genericError, 'production': genericError},
+    'industry_focus': {'mocha_db': "Not a valid focus", 'development': genericError, 'production': genericError}
 };
 
+var projectNameValidation = {
+    validator: function (r) {
+        return r.length <= 200;
+    }, message: errorMessages['project_name'][app.get('env')]
+};
 var companyIndustryOptions = ['Producer/Farmer', 'Processing', 'Transport', 'Storage', 'Manufacturing',
     'Trade', 'Distributor/Consumer'];
 var skillOptions = ['Data Analytics', 'Marketing', 'Web Development', 'App Development', 'Growth Strategy',
     'Raising Capital', 'Business Plan', 'SWOT Analysis', 'Competitive Analysis', 'New Market Entry',
     'Operations Improvement'];
 
-// Create custom validators
 var projectDescriptionValidation = {
     validator: function (r) {
         return r.length <= 1000;
@@ -64,11 +73,12 @@ var industryFocusValidation = {
 };
 
 
-// Schema to handle assigning voluneers to project
+// Schema to handle assigning volunteers to project
 // Stores references to ids of the volunteer and project
 var ProjectSchema = new Schema({
     _company: {type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true},
     is_verified: {type: Boolean, required: true},
+    project_name: {type: String, required: true, validate: projectNameValidation},
     project_description: {type: String, required: true, validate: projectDescriptionValidation},
     core_skill_1: {type: String, required: true, validate: coreSkill1Validation},
     core_skill_2: {type: String, validate: coreSkill2Validation},
