@@ -69,7 +69,6 @@ exports.updateProjectById = function (project_id, req, res) {
     }, function (err, project) {
         if (!project) return res.json({success: false, message: 'Project not found'});
         if (err) return res.json({success: false, message: err.message});
-        console.log(req.body);
         for (a in req.body) {
             if (a != "id" && a != "_company" && a != "_id" && a != "is_verified") {
                 project[a] = req.body[a];

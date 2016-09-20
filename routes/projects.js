@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Project = require('../models/project');
 var Company = require('../models/company');
-var projectFunctions = require('../utils/project_functions');
+var projectFunctions = require('../utils/project');
 var utils = require('../helpers/permission');
 var responseHelper = require('../helpers/response');
 
@@ -51,7 +51,8 @@ router.route('/')
                 // Finally, add to company schema
                 company.projects.push(project);
                 company.save(function (finalErr, succ) {
-                    if (!finalErr) return responseHelper.sendSuccessWithFullData({id: project.id}, res); // Returns project id
+                    if (!finalErr) return responseHelper.sendSuccessWithFullData({id: project.id}, res);
+                    // Returns project id
                     return responseHelper.sendError(finalErr.message, 500, res);
                 });
             });

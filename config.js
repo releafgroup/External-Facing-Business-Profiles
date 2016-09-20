@@ -1,4 +1,3 @@
-
 var database = process.env.MONGODB_URI || 'mongodb://localhost/first_test_db';
 
 var superSecret = '';
@@ -7,7 +6,6 @@ module.exports = {"database":database, "superSecret": superSecret, "mocha_databa
 
 module.exports.mailConfig = {
     smtp: {
-  
        // host: 'smtp.gmail.com',
        // secureConnection: true,
        // pool:true,
@@ -18,5 +16,4 @@ module.exports.mailConfig = {
             pass: 'TesterMustak0715'
         }
     }
-   
-}
+};

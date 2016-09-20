@@ -34,7 +34,7 @@ module.exports = new FacebookStrategy({
             });
 
             newUser.save(function(err) {
-                if (err) { console.log(err); return done({success: false, message: err.message}); }
+                if (err) { return done({success: false, message: err.message}); }
                 return done(null, newUser);
             });
         });
