@@ -17,18 +17,8 @@ var errorMessages = {
         'development': genericError,
         'production': genericError
     },
-    'core_skill_1': {
-        'mocha_db': "Not a valid skill and/or must be different from 2 and 3",
-        'development': genericError,
-        'production': genericError
-    },
-    'core_skill_2': {
-        'mocha_db': "Not a valid skill and/or must be different from 1 and 3",
-        'development': genericError,
-        'production': genericError
-    },
-    'core_skill_3': {
-        'mocha_db': "Not a valid skill and/or must be different from 1 and 2",
+    'core_skills': {
+        'mocha_db': "Core skills must be unique",
         'development': genericError,
         'production': genericError
     },
@@ -51,20 +41,19 @@ var projectDescriptionValidation = {
         return r.length <= 1000;
     }, message: errorMessages['project_description'][app.get('env')]
 };
-var coreSkill1Validation = {
-    validator: function (r) {
-        return skillOptions.indexOf(r) >= 0 && r != this.core_skill_2 && r != this.core_skill_3;
-    }, message: errorMessages['core_skill_1'][app.get('env')]
-};
-var coreSkill2Validation = {
-    validator: function (r) {
-        return skillOptions.indexOf(r) >= 0 && r != this.core_skill_1 && r != this.core_skill_3;
-    }, message: errorMessages['core_skill_2'][app.get('env')]
-};
-var coreSkill3Validation = {
-    validator: function (r) {
-        return skillOptions.indexOf(r) >= 0 && r != this.core_skill_1 && r != this.core_skill_2;
-    }, message: errorMessages['core_skill_3'][app.get('env')]
+
+var coreSkillsValidation = {
+    validator: function (skills) {
+        var skillsCache = [];
+        skills.forEach(function (skill) {
+            if (skill in skills) {
+                return false;
+            }
+            skillsCache.push(skill);
+        });
+        return true;
+    },
+    message: errorMessages['core_skills'][app.get('env')]
 };
 var industryFocusValidation = {
     validator: function (r) {
@@ -80,9 +69,7 @@ var ProjectSchema = new Schema({
     is_verified: {type: Boolean, required: true},
     project_name: {type: String, required: true, validate: projectNameValidation},
     project_description: {type: String, required: true, validate: projectDescriptionValidation},
-    core_skill_1: {type: String, required: true, validate: coreSkill1Validation},
-    core_skill_2: {type: String, validate: coreSkill2Validation},
-    core_skill_3: {type: String, validate: coreSkill3Validation},
+    core_skills: {type: [String], validate: coreSkillsValidation},
     industry_focus: {type: String, required: true, validate: industryFocusValidation},
     completion_time: {type: Number, required: true}, // TODO: figure out max and min
     number_staffed: {type: Number, required: true} // TODO: add validation, also make sure to de-increment

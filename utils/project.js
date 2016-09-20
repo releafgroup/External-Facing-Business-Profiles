@@ -137,8 +137,7 @@ exports.getProjectsBySkills = function (skills, req, res) {
     if (!(skills instanceof Array)) {
         return responseHelper.sendError('Skills should be a an array', 400, res);
     }
-    var coreSkillsConditions = buildCoreSkillsConditions(3, skills);
-    Project.find().or(coreSkillsConditions).exec(function (err, projects) {
+    Project.find().or({core_skills: {$in: skills}}).populate('_company').exec(function (err, projects) {
         if (err) {
             return responseHelper.sendError(err.message, 500, res);
         }
