@@ -169,10 +169,6 @@ var internetAccessValidation = {
     }, message: errorMessages['internet_access'][app.get('env')]
 };
 
-
-// Create Volunteer Schema
-// _id serves as username
-
 // TODO: figure out why unique business_name does not work
 var CompanySchema = new Schema({
     business_name: {type: String, required: true, unique: true, validate: businessNameValidation},
@@ -190,16 +186,13 @@ var CompanySchema = new Schema({
     company_industry_2: {type: String, validate: companyIndustry2Validation},
     company_industry_3: {type: String, validate: companyIndustry3Validation},
     value_hoped_for: {type: String, required: true, validate: valueHopedForValidation},
-
     short_term_obj: {type: String, required: true, validate: shortTermObjectiveValidation},
     long_term_obj: {type: String, required: true, validate: longTermObjectiveValidation},
     pressing_problems: {type: String, required: true, validate: pressingProblemsValidation},
-
     best_medium: {type: String, required: true, validate: bestMediumValidation},
     internet_access: {type: String, required: true, validate: internetAccessValidation},
-
-    projects: [{type: mongoose.Schema.Types.ObjectId, ref: 'Project'}]
-
+    projects: [{type: mongoose.Schema.Types.ObjectId, ref: 'Project'}],
+    dummy_data: {type: Boolean, default: false}
 }, {
     timestamps: true
 });
