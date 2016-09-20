@@ -242,8 +242,7 @@ describe('Routing', function () {
     describe('Tests check email route', function () {
         it('tests that can determine email is actually in system', function (done) {
             request(url)
-                .get('/users/email')
-                .send({'email': 'test1@gmail.com'})
+                .get('/users/email?email=' + user1['local.email'])
                 .end(function (err, res) {
                     res.body.success.should.equal(true);
                     done();
@@ -252,8 +251,7 @@ describe('Routing', function () {
 
         it('tests that can determine email is not in system', function (done) {
             request(url)
-                .get('/users/email')
-                .send({'email': 'hey@gmail.com'})
+                .get('/users/email?email=' + 'missing@gmail.com')
                 .end(function (err, res) {
                     res.body.success.should.not.equal(true);
                     done();

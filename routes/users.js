@@ -118,7 +118,7 @@ module.exports = function (passport) {
      */
     router.route('/email')
         .get(function (req, res) {
-            return userFunctions.checkIfEmailExists(req.body.email, req, res);
+            return userFunctions.checkIfEmailExists(req.query.email, req, res);
         });
 
     return router;
