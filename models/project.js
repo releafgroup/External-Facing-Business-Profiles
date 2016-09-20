@@ -18,7 +18,7 @@ var errorMessages = {
         'production': genericError
     },
     'core_skills': {
-        'mocha_db': "Core skills must be unique",
+        'mocha_db': "Core skills must be part of allowed options and unique",
         'development': genericError,
         'production': genericError
     },
@@ -46,7 +46,7 @@ var coreSkillsValidation = {
     validator: function (skills) {
         var skillsCache = [];
         skills.forEach(function (skill) {
-            if (skill in skills) {
+            if (skill in skills || !(skill in skillOptions)) {
                 return false;
             }
             skillsCache.push(skill);
@@ -69,7 +69,7 @@ var ProjectSchema = new Schema({
     is_verified: {type: Boolean, required: true},
     project_name: {type: String, required: true, validate: projectNameValidation},
     project_description: {type: String, required: true, validate: projectDescriptionValidation},
-    core_skills: {type: [String], validate: coreSkillsValidation},
+    core_skills: {type: [String], validate: coreSkillsValidation, index: true},
     industry_focus: {type: String, required: true, validate: industryFocusValidation},
     completion_time: {type: Number, required: true}, // TODO: figure out max and min
     number_staffed: {type: Number, required: true} // TODO: add validation, also make sure to de-increment
