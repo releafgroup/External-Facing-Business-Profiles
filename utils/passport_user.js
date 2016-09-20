@@ -28,7 +28,6 @@ passport.serializeUser(function (user, done) {
 
 // used to deserialize the user
 passport.deserializeUser(function (session_info, done) {
-    console.log(session_info);
     if (session_info.type == 'volunteer') {
         User.findById(session_info.id, function (err, user) {
             done(err, user);

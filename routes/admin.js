@@ -55,7 +55,6 @@ module.exports = function (passport) {
                 var newAdmin = new Admin();
                 newAdmin['password'] = newAdmin.generateHash(req.body['password']);
                 newAdmin['name'] = req.body['name'];
-                console.log(newAdmin);
                 newAdmin.save(function (err) {
                     if (err) {
                         return res.json({success: false, message: err.message});
@@ -219,7 +218,6 @@ module.exports = function (passport) {
 
             volunteer_assignment.save(function (err, volunteer_assignment) {
                 if (err) {
-                    console.log(err);
                     return res.json({success: false, message: err.message});
                 }
                 return res.json({success: true});

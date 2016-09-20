@@ -25,7 +25,6 @@ describe('Projects Routes', function () {
         agent.post('/users/auth/signup')
             .send(testHelpers.user1)
             .end(function (err, res) {
-                console.log(res.body);
             });
         // Insert user into database
         done();
@@ -54,7 +53,7 @@ describe('Projects Routes', function () {
                 .send(project1)
                 .expect(200) //Status code
                 .end(function (err, res) {
-                    console.log(res.body);
+
                     projectId1 = res.body.id;
                     res.body.success.should.equal(true);
                     done();
@@ -68,7 +67,7 @@ describe('Projects Routes', function () {
                 .send(project2)
                 .expect(200) //Status code
                 .end(function (err, res) {
-                    console.log(res.body);
+
                     projectId2 = res.body.id;
                     res.body.success.should.equal(true);
                     done();
@@ -133,7 +132,6 @@ describe('Projects Routes', function () {
                 .post('/projects')
                 .send(project3)
                 .end(function (err, res) {
-                    console.log(res.body.message);
                     res.body.success.should.not.equal(true);
                     done();
                 });
@@ -148,7 +146,6 @@ describe('Projects Routes', function () {
                 .put('/projects/' + projectId1)
                 .send(project1_new)
                 .end(function (err, res) {
-                    console.log(res.body.message);
                     res.body.success.should.not.equal(true);
                     done();
                 });
@@ -162,7 +159,6 @@ describe('Projects Routes', function () {
                 .put('/projects/' + projectId1)
                 .send(project1_new)
                 .end(function (err, res) {
-                    console.log(res.body.message);
                     res.body.success.should.not.equal(true);
                     done();
                 });
@@ -174,7 +170,6 @@ describe('Projects Routes', function () {
                 .put('/projects/' + projectId2)
                 .send(project2)
                 .end(function (err, res) {
-                    console.log(res.body.message);
                     res.body.success.should.not.equal(true);
                     done();
                 });

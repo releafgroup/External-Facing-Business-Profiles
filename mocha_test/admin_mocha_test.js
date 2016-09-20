@@ -54,7 +54,6 @@ describe('Routing', function () {
                 .send(admin1)
                 .expect(200)
                 .end(function (err, res) {
-                    console.log(res.body);
                     admin1Id = res.body.message;
                     res.body.success.should.equal(true);
                     done();
@@ -67,7 +66,6 @@ describe('Routing', function () {
                 .post('/admin/auth/login')
                 .send(admin1)
                 .end(function (err, res) {
-                    console.log(res.body);
                     res.body.success.should.equal(true);
                     done();
                 });
@@ -84,7 +82,6 @@ describe('Routing', function () {
                 .send(user1)
                 .expect(200) //Status code
                 .end(function (err, res) {
-                    console.log(res.body);
                     user1Id = res.body.message;
                     res.body.success.should.equal(true);
                     done();
@@ -97,7 +94,6 @@ describe('Routing', function () {
                 .send(user2)
                 .expect(200) //Status code
                 .end(function (err, res) {
-                    console.log(res.body);
                     user2Id = res.body.message;
                     res.body.success.should.equal(true);
                     done();
@@ -153,7 +149,6 @@ describe('Routing', function () {
                 .get('/admin/volunteers')
                 .expect(200) //Status code
                 .end(function (err, res) {
-                    console.log(res.body);
                     if (!err) {
                         res.body.success.should.equal(true);
                         done();
@@ -167,7 +162,6 @@ describe('Routing', function () {
                 .get('/admin/companies')
                 .expect(200) //Status code
                 .end(function (err, res) {
-                    console.log(res.body);
                     if (!err) {
                         res.body.success.should.equal(true);
                         done();
@@ -182,7 +176,6 @@ describe('Routing', function () {
                 .get('/admin/projects')
                 .expect(200) //Status code
                 .end(function (err, res) {
-                    console.log(res.body);
                     if (!err) {
                         res.body.success.should.equal(true);
                         done();
@@ -196,7 +189,6 @@ describe('Routing', function () {
                 .get('/admin/volunteers/' + user1Id)
                 .expect(200) //Status code
                 .end(function (err, res) {
-                    console.log(res.body);
                     if (!err) {
                         res.body.success.should.equal(true);
                         done();
@@ -209,7 +201,6 @@ describe('Routing', function () {
                 .get('/admin/companies/' + company1Id)
                 .expect(200) //Status code
                 .end(function (err, res) {
-                    console.log(res.body);
                     if (!err) {
                         res.body.success.should.equal(true);
                         done();
@@ -222,7 +213,6 @@ describe('Routing', function () {
                 .get('/admin/projects/' + project1Id)
                 .expect(200) //Status code
                 .end(function (err, res) {
-                    console.log(res.body);
                     if (!err) {
                         res.body.success.should.equal(true);
                         done();

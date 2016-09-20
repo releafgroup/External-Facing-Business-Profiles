@@ -37,7 +37,6 @@ describe('Routing', function () {
                 .send(admin1)
                 .expect(200)
                 .end(function (err, res) {
-                    console.log(res.body);
                     admin1Id = res.body.message;
                     res.body.success.should.equal(true);
                     done();
@@ -50,7 +49,6 @@ describe('Routing', function () {
                 .post('/admin/auth/login')
                 .send(admin1)
                 .end(function (err, res) {
-                    console.log(res.body);
                     res.body.success.should.equal(true);
                     done();
                 });
@@ -63,7 +61,6 @@ describe('Routing', function () {
                 .send(user1)
                 .expect(200) //Status code
                 .end(function (err, res) {
-                    console.log(res.body);
                     user1Id = res.body.message;
                     res.body.success.should.equal(true);
                     done();
@@ -131,7 +128,6 @@ describe('Routing', function () {
             superAgent
                 .get('/admin/volunteers')
                 .end(function (err, res) {
-                    console.log(res.body);
                     res.body.success.should.not.equal(true);
                     done();
                 });
@@ -142,7 +138,6 @@ describe('Routing', function () {
             superAgentAdmin
                 .get('/users')
                 .end(function (err, res) {
-                    console.log(res.body);
                     res.body.success.should.not.equal(true);
                     done();
                 });
