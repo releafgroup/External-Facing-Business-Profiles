@@ -1,0 +1,4 @@
+test:
+  override:
+    - npm run-script mocha_test
+    - node ./node_modules/.bin/mocha  ./mocha_test
