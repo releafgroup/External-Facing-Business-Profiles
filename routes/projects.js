@@ -42,7 +42,6 @@ router.route('/')
 
             if (!company) return responseHelper.sendError('Company not found', 400, res);
             if (err) {
-                console.log(err);
                 return responseHelper.sendError(err.message, 500, res);
             }
             // Next save project

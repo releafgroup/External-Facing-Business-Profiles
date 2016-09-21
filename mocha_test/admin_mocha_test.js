@@ -116,14 +116,12 @@ describe('Routing', function () {
 
         it('creates project 1', function (done) {
             project1['_company'] = company1Id;
-            console.log(project1);
             request(url)
                 .post('/projects')
                 .send(project1)
                 .expect(200) //Status code
                 .end(function (err, res) {
                     project1Id = res.body.id;
-                    console.log(res.body);
                     res.body.success.should.equal(true);
                     done();
                 });
