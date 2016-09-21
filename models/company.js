@@ -173,7 +173,7 @@ var CompanySchema = new Schema({
     primary_contact_name: {type: String, required: true, validate: primaryNameValidation},
     primary_contact_phone: {type: String, required: true}, // TODO: Format/validate somehow
     password: {type: String, required: true, select: false}, // Validation done through routes bc of hashing
-    email: {type: String, required: true, validate: emailValidation},
+    email: {type: String, required: true, unique: true, validate: emailValidation},
     state: {type: String}, // TODO: ensure within certain list or have some form of validation
     lca: {type: String}, // TODO: ensure within certain list or have some form of validation
     company_purpose: {type: String, required: true, validate: companyPurposeValidation},
@@ -192,6 +192,19 @@ var CompanySchema = new Schema({
 }, {
     timestamps: true
 });
+
+/**
+ * Validates that business name is unique
+ */
+CompanySchema.path('business_name').validate(function(value, done) {
+    this.model('Company').count({ business_name: value }, function(err, count) {
+        if (err) {
+            return done(err);
+        }
+        // If `count` is greater than zero, "invalidate"
+        done(!count);
+    });
+}, 'Business with that name already exists');
 
 CompanySchema.methods.generateHash = function (password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
