@@ -18,7 +18,7 @@ var internetAccessOptions = ['Constant', 'Work Hours', 'Daily', 'Weekly', 'Month
 var genericErrorMessage = "An error occurred saving the company";
 var errorMessages = {
     'business_name': {
-        'mocha_db': 'Business name must be at most 200 characters and most not already exist',
+        'mocha_db': 'Business name must be at most 200 characters',
         'development': genericErrorMessage,
         'production': genericErrorMessage
     },
