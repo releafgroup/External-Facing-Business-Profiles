@@ -28,7 +28,6 @@ passport.serializeUser(function (model, done) {
     } else if (model instanceof Company) {
         type = TYPE_BUSINESS;
     }
-    console.log(model, type);
     done(null, {'id': model.id, 'type': type});
 });
 

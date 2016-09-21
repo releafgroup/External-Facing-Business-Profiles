@@ -2,6 +2,7 @@
  * Holds methods, variables and data used during tests.
  */
 var exports = module.exports = {};
+var faker = require('faker');
 
 exports.url = 'http://localhost:3000';
 
@@ -47,42 +48,46 @@ exports.project3 = {
     "is_verified": true
 };
 
-exports.company1 = {
-    "business_name": "business_first",
-    "primary_contact_name": "emmmmmmmmmm o",
-    "primary_contact_phone": "123-7045195845",
-    "email": "testcompany@mailinator.com",
-    "password": "Abc123456",
-    "company_purpose": "the purpose is to test if the creation works",
-    "company_size": "1 Partner",
-    "company_industry_1": "Processing",
-    "company_industry_2": "Transport",
-    "company_industry_3": "Storage",
-    "value_hoped_for": "we hope to get a lot of value",
-    "short_term_obj": "short term objective",
-    "long_term_obj": "long term objective",
-    "pressing_problems": "talent and capital",
-    "best_medium": "Email",
-    "internet_access": "Work Hours"
+exports.company1 = function () {
+    return {
+        "business_name": "business_first",
+        "primary_contact_name": "emmmmmmmmmm o",
+        "primary_contact_phone": "123-7045195845",
+        "email": faker.internet.email(),
+        "password": "Abc123456",
+        "company_purpose": "the purpose is to test if the creation works",
+        "company_size": "1 Partner",
+        "company_industry_1": "Processing",
+        "company_industry_2": "Transport",
+        "company_industry_3": "Storage",
+        "value_hoped_for": "we hope to get a lot of value",
+        "short_term_obj": "short term objective",
+        "long_term_obj": "long term objective",
+        "pressing_problems": "talent and capital",
+        "best_medium": "Email",
+        "internet_access": "Work Hours"
+    };
 };
 
-exports.company2 = {
-    "business_name": "business_second",
-    "primary_contact_name": "emmmmmmmmmm o",
-    "primary_contact_phone": "123-7045195845",
-    "email": "testcompany2@mailinator.com",
-    "password": "eightdigitsboy",
-    "company_purpose": "the purpose is to test if the creation works",
-    "company_size": "1 Partner",
-    "company_industry_1": "Processing",
-    "company_industry_2": "Transport",
-    "company_industry_3": "Storage",
-    "value_hoped_for": "we hope to get a lot of value",
-    "short_term_obj": "short term objective",
-    "long_term_obj": "long term objective",
-    "pressing_problems": "talent and capital",
-    "best_medium": "Email",
-    "internet_access": "Work Hours"
+exports.company2 = function () {
+    return {
+        "business_name": "business_second",
+        "primary_contact_name": "emmmmmmmmmm o",
+        "primary_contact_phone": "123-7045195845",
+        "email": faker.internet.email(),
+        "password": "eightdigitsboy",
+        "company_purpose": "the purpose is to test if the creation works",
+        "company_size": "1 Partner",
+        "company_industry_1": "Processing",
+        "company_industry_2": "Transport",
+        "company_industry_3": "Storage",
+        "value_hoped_for": "we hope to get a lot of value",
+        "short_term_obj": "short term objective",
+        "long_term_obj": "long term objective",
+        "pressing_problems": "talent and capital",
+        "best_medium": "Email",
+        "internet_access": "Work Hours"
+    };
 };
 
 exports.user1 = {

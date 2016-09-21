@@ -18,7 +18,7 @@ var internetAccessOptions = ['Constant', 'Work Hours', 'Daily', 'Weekly', 'Month
 var genericErrorMessage = "An error occurred saving the company";
 var errorMessages = {
     'business_name': {
-        'mocha_db': 'Business name must be at most 200 characters',
+        'mocha_db': 'Business name must be at most 200 characters and most not already exist',
         'development': genericErrorMessage,
         'production': genericErrorMessage
     },
@@ -168,6 +168,7 @@ var internetAccessValidation = {
 };
 
 // TODO: figure out why unique business_name does not work
+// TODO: Create endpoint to validate business name to ensure its unique
 var CompanySchema = new Schema({
     business_name: {type: String, required: true, unique: true, validate: businessNameValidation},
     primary_contact_name: {type: String, required: true, validate: primaryNameValidation},
@@ -192,19 +193,6 @@ var CompanySchema = new Schema({
 }, {
     timestamps: true
 });
-
-/**
- * Validates that business name is unique
- */
-CompanySchema.path('business_name').validate(function(value, done) {
-    this.model('Company').count({ business_name: value }, function(err, count) {
-        if (err) {
-            return done(err);
-        }
-        // If `count` is greater than zero, "invalidate"
-        done(!count);
-    });
-}, 'Business with that name already exists');
 
 CompanySchema.methods.generateHash = function (password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);

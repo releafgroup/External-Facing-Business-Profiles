@@ -6,9 +6,9 @@ var config = require('../config.js');
 var testHelpers = require('../helpers/test');
 var faker = require('faker');
 
-var company1 = testHelpers.company1;
+var company1 = testHelpers.company1();
 var company1Id = -1;
-var companyEmail = faker.internet.email();
+var companyEmail = company1.email;
 describe('Company routes', function () {
     var url = testHelpers.url;
     before(function (done) {
@@ -22,14 +22,12 @@ describe('Company routes', function () {
 
     describe('Business Sign Up and Login', function () {
         it('tests that business can signup', function (done) {
-            company1.email = companyEmail;
             request(url)
                 .post('/companies/auth/signup')
                 .send(company1)
                 .expect(200) //Status code
                 .end(function (err, res) {
-                    console.log(res.body);
-                    company1Id = res.body.id;
+                    company1Id = res.body.message;
                     res.body.success.should.equal(true);
                     done();
                 });
@@ -42,6 +40,15 @@ describe('Company routes', function () {
                 .end(function (err, res) {
                     res.body.success.should.equal(true);
                     res.body.message.should.equal(company1Id);
+                    done();
+                });
+        });
+
+        it('tests that business can logout', function (done) {
+            request(url).get('/companies/auth/logout')
+                .expect(200)
+                .end(function (err, res) {
+                    res.body.success.should.equal(true);
                     done();
                 });
         });

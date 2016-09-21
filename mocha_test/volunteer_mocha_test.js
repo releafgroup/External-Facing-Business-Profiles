@@ -39,7 +39,7 @@ var project3Id = -1;
 
 
 var company1Id = -1;
-var company1 = testHelpers.company1;
+var company1 = testHelpers.company1();
 
 var company2Id = -1;
 var company2 = JSON.parse(JSON.stringify(company1));

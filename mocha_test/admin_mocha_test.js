@@ -26,10 +26,10 @@ var user2Id = -1;
 var user2 = testHelpers.user2;
 
 var company1Id = -1;
-var company1 = testHelpers.company1;
+var company1 = testHelpers.company1();
 
 var comp2_id = -1;
-var company2 = testHelpers.company2;
+var company2 = testHelpers.company2();
 
 var project1Id = -1;
 var project1 = testHelpers.project1;
@@ -116,12 +116,14 @@ describe('Routing', function () {
 
         it('creates project 1', function (done) {
             project1['_company'] = company1Id;
+            console.log(project1);
             request(url)
                 .post('/projects')
                 .send(project1)
                 .expect(200) //Status code
                 .end(function (err, res) {
                     project1Id = res.body.id;
+                    console.log(res.body);
                     res.body.success.should.equal(true);
                     done();
                 });

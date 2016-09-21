@@ -41,7 +41,10 @@ router.route('/')
         }, function (err, company) {
 
             if (!company) return responseHelper.sendError('Company not found', 400, res);
-            if (err) return responseHelper.sendError(err.message, 500, res);
+            if (err) {
+                console.log(err);
+                return responseHelper.sendError(err.message, 500, res);
+            }
             // Next save project
             project.save(function (projectErr, project) {
                 if (projectErr) {
@@ -86,7 +89,7 @@ router.route('/').get(utils.isLoggedIn, function (req, res) {
         return responseHelper.sendError('No permission', 403, res);
     }
     var skills = req.query.skills;
-    if(!skills) {
+    if (!skills) {
         return responseHelper.sendError('Skills is required', 400, res);
     }
     skills = skills.split(',');
