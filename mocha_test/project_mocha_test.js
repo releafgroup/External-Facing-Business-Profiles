@@ -11,7 +11,7 @@ var testHelpers = require('../helpers/test');
 var project1 = testHelpers.project1,
     project2 = testHelpers.project2,
     project3 = testHelpers.project3,
-    company1 = testHelpers.company1,
+    company1 = testHelpers.company1(),
     url = testHelpers.url,
     agent = request.agent(url);
 
