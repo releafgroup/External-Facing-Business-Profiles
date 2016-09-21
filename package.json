@@ -7,8 +7,9 @@
     "start": "node ./bin/www",
     "pretest": "npm install",
     "test": "nodemon ./bin/www",
-    "mocha_test": "NODE_ENV=mocha_db node ./bin/www"
+    "mocha_test": "NODE_ENV=mocha_db mocha ./mocha_test"
   },
+  "bin": "./bin/www",
   "dependencies": {
     "bcryptjs": "^2.3.0",
     "body-parser": "~1.13.2",
