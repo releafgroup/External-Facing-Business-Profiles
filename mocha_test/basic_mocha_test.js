@@ -4,12 +4,16 @@ var request = require('supertest');
 var mongoose = require('mongoose');
 var config = require('../config.js');
 var testHelpers = require('../helpers/test');
+var server = require('../bin/www');
 
 describe('Routing', function () {
     var url = testHelpers.url;
     before(function (done) {
-        // In our tests we use the test db
-        mongoose.connect(config.database);
+        // Use mocha test db
+        mongoose.connect(config.mocha_database, function () {
+            /* Drop the DB */
+            mongoose.connection.db.dropDatabase();
+        });
         done();
     });
 

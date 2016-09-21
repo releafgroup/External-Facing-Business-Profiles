@@ -4,6 +4,7 @@ var request = require('supertest');
 var mongoose = require('mongoose');
 var config = require('../config.js');
 var testHelpers = require('../helpers/test');
+var server = require('../bin/www');
 
 /**
  * SUPER IMPORTANT NOTE: throughout the test cases we may modify these variables. the modifications persist across all of the test cases after any modification
@@ -176,6 +177,3 @@ describe('Projects Routes', function () {
         });
     });
 });
-
-
-

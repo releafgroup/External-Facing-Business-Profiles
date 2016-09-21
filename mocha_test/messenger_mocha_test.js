@@ -1,6 +1,7 @@
 var should = require('should');
 var io = require('socket.io-client');
 var request = require('supertest');
+var server = require('../bin/www');
 
 
 
@@ -29,7 +30,7 @@ describe("Messenger Socket Server", function () {
     client.on('user joined', function (data) {
       data.room.should.equal('general');
 
-      /* If this client doesn't disconnect it will interfere 
+      /* If this client doesn't disconnect it will interfere
        with the next test */
       client.disconnect();
       done();

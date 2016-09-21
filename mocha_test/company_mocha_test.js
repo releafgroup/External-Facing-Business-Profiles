@@ -4,6 +4,7 @@ var request = require('supertest');
 var mongoose = require('mongoose');
 var config = require('../config.js');
 var testHelpers = require('../helpers/test');
+var server = require('../bin/www');
 
 var company1Id = -1;
 var company1 = testHelpers.company1;
@@ -44,4 +45,3 @@ describe('Routing', function () {
 
     });
 });
-
