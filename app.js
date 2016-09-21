@@ -13,6 +13,7 @@ var user_passport = require('./utils/passport_user.js');
 var session = require('express-session');
 var multer = require('multer');
 var upload = multer({dest: './users/upload'});//catch all multipart data, fileuploads automatically and stores the file to ‘upload/’ folder.
+var dummyData = require('./helpers/dummy_data');
 
 var MongoStore = require('connect-mongo')(session);
 
@@ -79,6 +80,9 @@ app.use('/projects', projects);
 app.use('/messenger', messenger);
 app.use('/upload', upload);
 app.use(authfunc);
+
+// Adds dummy projects
+dummyData.addDummyProjects();
 
 // Error Handling
 app.use(function (err, req, res, next) {

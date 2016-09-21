@@ -6,10 +6,13 @@ var exports = module.exports = {};
 exports.url = 'http://localhost:3000';
 
 exports.project1 = {
+    "project_name": "First Project",
     "project_description": "test_first",
-    "core_skill_1": "App Development",
-    "core_skill_2": "Growth Strategy",
-    "core_skill_3": "Business Plan",
+    "core_skills": [
+        "App Development",
+        "Growth Strategy",
+        "Business Plan"
+    ],
     "industry_focus": "Storage",
     "completion_time": 10,
     "number_staffed": 5,
@@ -17,10 +20,13 @@ exports.project1 = {
 };
 
 exports.project2 = {
+    "project_name": "Second Project",
     "project_description": "test_second",
-    "core_skill_1": "App Development",
-    "core_skill_2": "Growth Strategy",
-    "core_skill_3": "Data Analytics",
+    "core_skills": [
+        "App Development",
+        "Growth Strategy",
+        "Data Analytics"
+    ],
     "industry_focus": "Storage",
     "completion_time": 10,
     "number_staffed": 5,
@@ -28,10 +34,13 @@ exports.project2 = {
 };
 
 exports.project3 = {
+    "project_name": "Third Project",
     "project_description": "test_second",
-    "core_skill_1": "App Development",
-    "core_skill_2": "Growth Strategy",
-    "core_skill_3": "Social Media",
+    "core_skills": [
+        "App Development",
+        "Growth Strategy",
+        "Social Media"
+    ],
     "industry_focus": "Storage",
     "completion_time": 10,
     "number_staffed": 5,
