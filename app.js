@@ -7,9 +7,9 @@ var bodyParser = require('body-parser');
 var config = require('./config.js');
 var mongoose = require('mongoose');
 var superSecret = config.superSecret;
-var authfunc = require('./utils/authentication.js');
+var authfunc = require('./utils/authentication');
 var io = require('socket.io')();
-var user_passport = require('./utils/passport_user.js');
+var passport = require('./utils/passport');
 var session = require('express-session');
 var multer = require('multer');
 var upload = multer({dest: './users/upload'});//catch all multipart data, fileuploads automatically and stores the file to ‘upload/’ folder.
@@ -60,15 +60,15 @@ if (app.get('env') == 'mocha_db') { // TODO: abstract away better/clean up code 
 
 app.use(session({secret: 'releaf4lyfe', store: new MongoStore({mongooseConnection: mongoose.connection})})); // session secret
 
-app.use(user_passport.initialize());
-app.use(user_passport.session()); // persistent login sessions
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
 app.set('io', io);
 
 // import routes
 var routes = require('./routes/index');
-var users = require('./routes/users')(user_passport);
-var companies = require('./routes/companies');
-var admin = require('./routes/admin')(user_passport);
+var users = require('./routes/users')(passport);
+var companies = require('./routes/companies')(passport);
+var admin = require('./routes/admin')(passport);
 var projects = require('./routes/projects');
 var messenger = require('./routes/messenger')(app.get('io'));
 var upload = require('./routes/upload');

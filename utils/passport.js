@@ -3,45 +3,54 @@ var passport = require('passport');
 // load up the user model
 var User = require('../models/user');
 var Admin = require('../models/admin');
+var Company = require('../models/company');
 var bcrypt = require('bcryptjs');
 var FacebookStrategy = require('./passport_facebook');
 var AdminLoginStrategy = require('./passport_admin');
+var companyPassport = require('./passport_company');
 
-/* References: http://stackoverflow.com/questions/27637609/understanding-passport-serialize-deserialize
- ** Read to understand how sessions work with multiple types of Schemas
+var TYPE_BUSINESS = 'business';
+var TYPE_ADMIN = 'admin';
+var TYPE_VOLUNTEER = 'volunteer';
+
+/**
+ * Passport session setup
+ * required for persistent login sessions
+ * passport needs ability to serialize and unserialize users out of session
+ *
+ * References: http://stackoverflow.com/questions/27637609/understanding-passport-serialize-deserialize
+ * Read to understand how sessions work with multiple types of Schemas
  */
-
-// =========================================================================
-// passport session setup ==================================================
-// =========================================================================
-// required for persistent login sessions
-// passport needs ability to serialize and unserialize users out of session
-
-// used to serialize the user for the session
-passport.serializeUser(function (user, done) {
-    type = 'volunteer';
-    if (user instanceof Admin) {
-        type = 'admin';
+passport.serializeUser(function (model, done) {
+    type = TYPE_VOLUNTEER;
+    if (model instanceof Admin) {
+        type = TYPE_ADMIN;
+    } else if (model instanceof Company) {
+        type = TYPE_BUSINESS;
     }
-    done(null, {'id': user.id, 'type': type});
+    console.log(model, type);
+    done(null, {'id': model.id, 'type': type});
 });
 
-// used to deserialize the user
-passport.deserializeUser(function (session_info, done) {
-    if (session_info.type == 'volunteer') {
-        User.findById(session_info.id, function (err, user) {
-            done(err, user);
+passport.deserializeUser(function (sessionInfo, done) {
+    if (sessionInfo.type == TYPE_ADMIN) {
+        Admin.findById(sessionInfo.id, function (err, admin) {
+            done(err, admin);
+        });
+    } else if (sessionInfo.type == TYPE_BUSINESS) {
+        Company.findById(sessionInfo.id, function (err, company) {
+            done(err, company);
         });
     } else {
-        Admin.findById(session_info.id, function (err, user) {
+        User.findById(sessionInfo.id, function (err, user) {
             done(err, user);
         });
     }
 });
 
-// =========================================================================
-// LOCAL LOGIN =============================================================
-// =========================================================================
+/**
+ * Local Login
+ */
 passport.use('local-login', new LocalStrategy({
     // by default, local strategy uses username and password, we will override with email
     usernameField: 'local.email',
@@ -73,9 +82,9 @@ passport.use('local-login', new LocalStrategy({
 
 }));
 
-// =========================================================================
-// LOCAL SIGNUP ============================================================
-// =========================================================================
+/**
+ * Local Signup
+ */
 passport.use('local-signup', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
         usernameField: 'local.email',
@@ -123,11 +132,11 @@ passport.use('local-signup', new LocalStrategy({
                     }
                     return done(null, newUser);
                 });
-
             });
         });
 
-    }));
+    })
+);
 
 // Facebook login
 passport.use('facebook', FacebookStrategy);
@@ -135,4 +144,9 @@ passport.use('facebook', FacebookStrategy);
 // Admin Login
 passport.use('admin-login', AdminLoginStrategy);
 
+// Company Signup
+passport.use('company-signup', companyPassport.CompanySignupStrategy);
+
+// Company Login
+passport.use('company-login', companyPassport.CompanyLoginStrategy);
 module.exports = passport;

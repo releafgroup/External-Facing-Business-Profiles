@@ -4,11 +4,12 @@ var request = require('supertest');
 var mongoose = require('mongoose');
 var config = require('../config.js');
 var testHelpers = require('../helpers/test');
+var faker = require('faker');
 
-var company1Id = -1;
 var company1 = testHelpers.company1;
-
-describe('Routing', function () {
+var company1Id = -1;
+var companyEmail = faker.internet.email();
+describe('Company routes', function () {
     var url = testHelpers.url;
     before(function (done) {
         // Use mocha test db
@@ -19,29 +20,30 @@ describe('Routing', function () {
         done();
     });
 
-    describe('Company Sign Up', function () {
-        it('creates company 1', function (done) {
+    describe('Business Sign Up and Login', function () {
+        it('tests that business can signup', function (done) {
+            company1.email = companyEmail;
             request(url)
-                .post('/companies')
+                .post('/companies/auth/signup')
                 .send(company1)
                 .expect(200) //Status code
                 .end(function (err, res) {
+                    console.log(res.body);
                     company1Id = res.body.id;
                     res.body.success.should.equal(true);
                     done();
                 });
         });
 
-        it('tests can get company 1 info', function (done) {
-            request(url)
-                .get('/companies/' + company1Id)
-                .expect(200) //Status code
+        it('tests that business can login', function (done) {
+            request(url).post('/companies/auth/login')
+                .send(company1)
+                .expect(200)
                 .end(function (err, res) {
                     res.body.success.should.equal(true);
+                    res.body.message.should.equal(company1Id);
                     done();
                 });
         });
-
     });
 });
-

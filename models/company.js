@@ -193,5 +193,24 @@ var CompanySchema = new Schema({
     timestamps: true
 });
 
+CompanySchema.methods.generateHash = function (password) {
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+};
+
+/**
+ * Checks if a password is valid
+ * Use before setting the password attribute
+ */
+CompanySchema.methods.validatePassword = function (password) {
+    // Check if > 8 characters, includes upper and lowercase, and contains number + letters
+    if (password.length < 8) return false;
+    if (password.toUpperCase() == password || password.toLowerCase() == password) return false;
+    return /^\w+$/.test(password);
+};
+
+CompanySchema.methods.comparePassword = function (password) {
+    return bcrypt.compareSync(password, this.password);
+};
+
 module.exports = mongoose.model('Company', CompanySchema);
 
