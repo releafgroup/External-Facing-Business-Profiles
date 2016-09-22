@@ -1,10 +1,8 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     bcrypt = require('bcryptjs');
-
 var express = require('express');
 var app = express();
-
 
 // Constants and field enums
 var companySizeOptions = ['Sole Proprietor', '1 Partner', '2 - 10 Employees', '11 - 50 Employees',
@@ -170,16 +168,15 @@ var internetAccessValidation = {
 };
 
 // TODO: figure out why unique business_name does not work
+// TODO: Create endpoint to validate business name to ensure its unique
 var CompanySchema = new Schema({
     business_name: {type: String, required: true, unique: true, validate: businessNameValidation},
     primary_contact_name: {type: String, required: true, validate: primaryNameValidation},
     primary_contact_phone: {type: String, required: true}, // TODO: Format/validate somehow
     password: {type: String, required: true, select: false}, // Validation done through routes bc of hashing
-
-    email: {type: String, validate: emailValidation},
+    email: {type: String, required: true, unique: true, validate: emailValidation},
     state: {type: String}, // TODO: ensure within certain list or have some form of validation
     lca: {type: String}, // TODO: ensure within certain list or have some form of validation
-
     company_purpose: {type: String, required: true, validate: companyPurposeValidation},
     company_size: {type: String, required: true, validate: companySizeValidation},
     company_industry_1: {type: String, required: true, validate: companyIndustry1Validation},
@@ -196,6 +193,25 @@ var CompanySchema = new Schema({
 }, {
     timestamps: true
 });
+
+CompanySchema.methods.generateHash = function (password) {
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+};
+
+/**
+ * Checks if a password is valid
+ * Use before setting the password attribute
+ */
+CompanySchema.methods.validatePassword = function (password) {
+    // Check if > 8 characters, includes upper and lowercase, and contains number + letters
+    if (password.length < 8) return false;
+    if (password.toUpperCase() == password || password.toLowerCase() == password) return false;
+    return /^\w+$/.test(password);
+};
+
+CompanySchema.methods.comparePassword = function (password) {
+    return bcrypt.compareSync(password, this.password);
+};
 
 module.exports = mongoose.model('Company', CompanySchema);
 

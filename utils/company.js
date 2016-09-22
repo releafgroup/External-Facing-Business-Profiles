@@ -26,7 +26,6 @@ function handleCompanySaveError(err) {
     return err.message;
 }
 
-
 var exports = module.exports = {};
 
 
@@ -44,7 +43,7 @@ exports.getCompanyById = function(company_id, req, res) {
         if(err) return res.json({success: false, message: err.message});
         return res.json({success: true, message: company});   
     });
-}
+};
 
 /** Updates information for given Company id
  * @params: company_id, req, res
@@ -77,7 +76,7 @@ exports.updateCompanyById = function(company_id, req, res) {
             return res.json({success: true});                                                  
         });         
     });
-}
+};
 
 /** Gets all Companies
  * @params: req, res
@@ -90,4 +89,4 @@ exports.getAllCompanies = function(req, res) {
         if(err) return res.json({success: false, message: err.message}); 
         res.json({success: true, message: companies}); 
     });
-}
+};

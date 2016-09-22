@@ -27,10 +27,10 @@ var user2Id = -1;
 var user2 = testHelpers.user2;
 
 var company1Id = -1;
-var company1 = testHelpers.company1;
+var company1 = testHelpers.company1();
 
 var comp2_id = -1;
-var company2 = testHelpers.company2;
+var company2 = testHelpers.company2();
 
 var project1Id = -1;
 var project1 = testHelpers.project1;
