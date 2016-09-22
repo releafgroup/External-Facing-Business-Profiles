@@ -8,6 +8,7 @@ var Browser = require('zombie');
 var path = require('path');
 var testHelpers = require('../helpers/test');
 var HOST_DOMAIN = process.env.HOST_DOMAIN || 'http://localhost:3000';
+var server = require('../bin/www');
 
 var url = HOST_DOMAIN;
 Browser.localhost(url, 2000);

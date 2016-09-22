@@ -28,6 +28,7 @@ var server = http.createServer(app);
 server.listen(port, function() {
   console.log('running on port, ', port);
 });
+
 server.on('error', onError);
 server.on('listening', onListening);
 

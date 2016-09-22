@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var config = require('../config.js');
 var faker = require('faker');
 var testHelpers = require('../helpers/test');
+var server = require('../bin/www');
 
 var url = testHelpers.url;
 
@@ -146,4 +147,3 @@ describe('Routing', function () {
 
     });
 });
-

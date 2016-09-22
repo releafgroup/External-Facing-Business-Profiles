@@ -7,6 +7,7 @@ var path = require('path');
 var url = process.env.HOST_DOMAIN || 'http://localhost:3000';
 var User = require('./../models/user.js');
 var testHelpers = require('../helpers/test');
+var server = require('../bin/www');
 
 
 var super_agent = request.agent(url);

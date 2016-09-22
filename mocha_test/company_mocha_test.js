@@ -4,6 +4,7 @@ var request = require('supertest');
 var mongoose = require('mongoose');
 var config = require('../config.js');
 var testHelpers = require('../helpers/test');
+var server = require('../bin/www');
 var faker = require('faker');
 
 var company1 = testHelpers.company1();
