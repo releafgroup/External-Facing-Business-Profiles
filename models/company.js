@@ -27,6 +27,11 @@ var errorMessages = {
         'development': genericErrorMessage,
         'production': genericErrorMessage
     },
+    'phone': {
+        'mocha_db': 'Phone number format is invalid',
+        'development': genericErrorMessage,
+        'production': genericErrorMessage
+    },
     'email': {
         'mocha_db': 'Email is not in a valid format',
         'development': genericErrorMessage,
@@ -108,6 +113,13 @@ var emailValidation = {
     }, message: errorMessages['email'][app.get('env')]
 };
 
+var phoneRegex = /^(\+)?(\d)+$/; // regex outside for better performance
+var phoneValidation = {
+    validator: function (phone) {
+        return phoneRegex.test(phone);
+    }, message: errorMessages['phone'][app.get('env')]
+};
+
 var companyPurposeValidation = {
     validator: function (r) {
         return r.length <= 1000;
@@ -172,7 +184,7 @@ var internetAccessValidation = {
 var CompanySchema = new Schema({
     business_name: {type: String, required: true, unique: true, validate: businessNameValidation},
     primary_contact_name: {type: String, required: true, validate: primaryNameValidation},
-    primary_contact_phone: {type: String, required: true}, // TODO: Format/validate somehow
+    primary_contact_phone: {type: String, required: true, validate: phoneValidation}, // TODO: Format/validate somehow
     password: {type: String, required: true, select: false}, // Validation done through routes bc of hashing
     email: {type: String, required: true, unique: true, validate: emailValidation},
     state: {type: String}, // TODO: ensure within certain list or have some form of validation

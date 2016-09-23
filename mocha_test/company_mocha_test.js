@@ -22,7 +22,20 @@ describe('Company routes', function () {
     });
 
     describe('Business Sign Up and Login', function () {
+        it('tests that business with invalid contact phone number cannot signup ', function (done) {
+            company1.primary_contact_phone = 'lorem ipsum';
+            request(url)
+                .post('/companies/auth/signup')
+                .send(company1)
+                .expect(400) //Status code
+                .end(function (err, res) {
+                    res.body.success.should.equal(false);
+                    done();
+                });
+        });
+
         it('tests that business can signup', function (done) {
+            company1 = testHelpers.company1();
             request(url)
                 .post('/companies/auth/signup')
                 .send(company1)
