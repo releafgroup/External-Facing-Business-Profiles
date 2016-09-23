@@ -4,6 +4,7 @@ var request = require('supertest');
 var mongoose = require('mongoose');
 var config = require('../config.js');
 var testHelpers = require('../helpers/test');
+var server = require('../bin/www');
 
 /**
  * Unit Tests to make sure Admin works
@@ -26,10 +27,10 @@ var user2Id = -1;
 var user2 = testHelpers.user2;
 
 var company1Id = -1;
-var company1 = testHelpers.company1;
+var company1 = testHelpers.company1();
 
 var comp2_id = -1;
-var company2 = testHelpers.company2;
+var company2 = testHelpers.company2();
 
 var project1Id = -1;
 var project1 = testHelpers.project1;
@@ -38,9 +39,10 @@ var project2Id = -1;
 var project2 = testHelpers.project2;
 
 describe('Routing', function () {
+
     before(function (done) {
         // Use mocha test db
-        mongoose.connect(config.mocha_database, function () {
+        mongoose.connection.once('connected', () => {
             /* Drop the DB */
             mongoose.connection.db.dropDatabase();
         });
@@ -222,5 +224,3 @@ describe('Routing', function () {
 
     });
 });
-
-

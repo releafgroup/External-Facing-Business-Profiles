@@ -7,6 +7,7 @@ var path = require('path');
 var url = process.env.HOST_DOMAIN || 'http://localhost:3000';
 var User = require('./../models/user.js');
 var testHelpers = require('../helpers/test');
+var server = require('../bin/www');
 
 
 var super_agent = request.agent(url);
@@ -39,7 +40,7 @@ var project3Id = -1;
 
 
 var company1Id = -1;
-var company1 = testHelpers.company1;
+var company1 = testHelpers.company1();
 
 var company2Id = -1;
 var company2 = JSON.parse(JSON.stringify(company1));

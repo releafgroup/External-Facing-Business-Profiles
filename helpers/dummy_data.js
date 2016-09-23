@@ -10,6 +10,7 @@ var companyData = {
     "business_name": faker.company.companyName(),
     "primary_contact_name": faker.name.findName(),
     "primary_contact_phone": faker.phone.phoneNumber(),
+    "email": 'testcompant@mailinator.com',
     "password": "12345678",
     "company_purpose": "Agriculture",
     "company_size": "1 Partner",
