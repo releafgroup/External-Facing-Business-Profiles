@@ -41,7 +41,6 @@ describe('Company routes', function () {
                 .send(company1)
                 .expect(200) //Status code
                 .end(function (err, res) {
-                    console.log(res.body);
                     company1Id = res.body.message;
                     res.body.success.should.equal(true);
                     done();
