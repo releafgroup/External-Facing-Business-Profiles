@@ -16,7 +16,7 @@ Browser.localhost(url, 2000);
 userUpdateInfo = testHelpers.userUpdateInfo;
 
 describe('Facebook Login', function(done) {
-     const TestBrowser = new Browser();
+     var TestBrowser = new Browser();
 
     before(function(done) {
         // Use mocha test db
@@ -30,7 +30,7 @@ describe('Facebook Login', function(done) {
     describe('logs into facebook', function() {
             this.timeout(20000);
             before(function() {
-                return Promise.resolve(TestBrowser.visit(url + '/users/auth/facebook/login')).then(() => {
+                return Promise.resolve(TestBrowser.visit(url + '/users/auth/facebook/login')).then(function() {
                     return TestBrowser.fill('email', secret.facebook.fbEmail)
                                     .fill('pass', secret.facebook.fbPassword)
                                     .pressButton('Log In');
