@@ -1,20 +1,13 @@
-var should = require('should');
-var assert = require('assert');
 var request = require('supertest');
 var mongoose = require('mongoose');
 var config = require('../config.js');
-var path = require('path');
 var url = process.env.HOST_DOMAIN || 'http://localhost:3000';
-var User = require('./../models/user.js');
 var testHelpers = require('../helpers/test');
-var server = require('../bin/www');
-
 
 var super_agent = request.agent(url);
-var super_agent2 = (require('supertest')).agent(url);
 
-var user1Id = -1;
 var user1 = testHelpers.user1;
+
 var userWithBadEmail = JSON.parse(JSON.stringify(user1));
 userWithBadEmail['local.email'] = "odddddd.com";
 
@@ -23,9 +16,6 @@ userUpdateInfo = testHelpers.userUpdateInfo;
 
 var userWithBadId = JSON.parse(JSON.stringify(user1));
 userWithBadId['id'] = '122222222';
-
-var user2 = testHelpers.user2;
-var user2Id = -1;
 
 var project1 = testHelpers.project1;
 
@@ -36,8 +26,6 @@ var project2 = JSON.parse(JSON.stringify(project1));
 var project2Id = -1;
 
 var project3 = JSON.parse(JSON.stringify(project1));
-var project3Id = -1;
-
 
 var company1Id = -1;
 var company1 = testHelpers.company1();
@@ -175,7 +163,7 @@ describe('Routing', function () {
         });
 
         it('tests that dob is within allowed range', function (done) {
-            userWithinAgeLimit = JSON.parse(JSON.stringify(user1));
+            var userWithinAgeLimit = JSON.parse(JSON.stringify(user1));
             userWithinAgeLimit['dob'] = '2001-09-22';
             userWithinAgeLimit['local.email'] = 'volunteer@rightage.com';
             super_agent
@@ -189,7 +177,7 @@ describe('Routing', function () {
         });
 
         it('tests that dob is not less than min age', function (done) {
-            userBelowMinAge = JSON.parse(JSON.stringify(user1));
+            var userBelowMinAge = JSON.parse(JSON.stringify(user1));
             var currentDate = new Date();
             userBelowMinAge['dob'] = new Date(
                 currentDate.getFullYear() - 15, currentDate.getMonth(), currentDate.getDate()
@@ -367,7 +355,6 @@ describe('Routing', function () {
                 .send(project3)
                 .expect(200) //Status code
                 .end(function (err, res) {
-                    project3Id = res.body.id;
                     res.body.success.should.equal(true);
                     done();
                 });

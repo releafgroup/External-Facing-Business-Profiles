@@ -1,19 +1,11 @@
-var should = require('should');
-var assert = require('assert');
-var request = require('supertest');
 var mongoose = require('mongoose');
 var config = require('../config.js');
 var secret = require('../secret');
 var Browser = require('zombie');
-var path = require('path');
-var testHelpers = require('../helpers/test');
 var HOST_DOMAIN = process.env.HOST_DOMAIN || 'http://localhost:3000';
-var server = require('../bin/www');
 
 var url = HOST_DOMAIN;
 Browser.localhost(url, 2000);
-
-userUpdateInfo = testHelpers.userUpdateInfo;
 
 describe('Facebook Login', function(done) {
      var TestBrowser = new Browser();
