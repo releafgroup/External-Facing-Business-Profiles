@@ -65,7 +65,6 @@ describe('Routing', function () {
                 .send(user1)
                 .expect(200) //Status code
                 .end(function (err, res) {
-                    user1Id = res.body.message;
                     res.body.success.should.equal(true);
                     done();
                 });
