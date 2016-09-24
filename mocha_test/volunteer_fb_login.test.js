@@ -30,7 +30,7 @@ describe('Facebook Login', function(done) {
     describe('logs into facebook', function() {
             this.timeout(20000);
             before(function() {
-                return Promise.resolve(TestBrowser.visit(`${url}/users/auth/facebook/login`)).then(() => {
+                return Promise.resolve(TestBrowser.visit(url + '/users/auth/facebook/login')).then(() => {
                     return TestBrowser.fill('email', secret.facebook.fbEmail)
                                     .fill('pass', secret.facebook.fbPassword)
                                     .pressButton('Log In');
@@ -49,7 +49,7 @@ describe('Facebook Login', function(done) {
             });
 
             it('can logout', function(done) {
-                TestBrowser.visit(`${url}/users/auth/logout`, function() {
+                TestBrowser.visit(url + '/users/auth/logout', function() {
                     var bodyContent = JSON.parse(TestBrowser.document.body._childNodes[0]._data);
                     bodyContent.message.should.equal('logged out');
                     done();
@@ -57,7 +57,7 @@ describe('Facebook Login', function(done) {
             });
 
             it('can not access user data after logging out', function(done) {
-                TestBrowser.visit(`${url}/users/`, function() {
+                TestBrowser.visit(url + '/users/', function() {
                     var bodyContent = JSON.parse(TestBrowser.document.body._childNodes[0]._data);
                     bodyContent.message.should.equal('Not logged in');
                     done();
