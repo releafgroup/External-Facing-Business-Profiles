@@ -24,6 +24,9 @@ userUpdateInfo = testHelpers.userUpdateInfo;
 var userWithBadId = JSON.parse(JSON.stringify(user1));
 userWithBadId['id'] = '122222222';
 
+var userAboveMaxAge = JSON.parse(JSON.stringify(user1));
+userAboveMaxAge['dob'] = '1936-09-24';
+
 var user2 = testHelpers.user2;
 var user2Id = -1;
 

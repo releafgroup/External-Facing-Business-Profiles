@@ -39,9 +39,16 @@ var validationMessages = {
 // Create custom validators
 var currentDate = new Date();
 currentDate.setDate(currentDate.getDate() - 1);
+var maxDate = new Date(
+    currentDate.getFullYear() - 80, currentDate.getMonth(), currentDate.getDay()
+);
+var minDate = new Date(
+    currentDate.getFullYear() - 18, currentDate.getMonth(), currentDate.getDay()
+);
+
 dobValidation = {
     validator: function (r) {
-        return r < currentDate;
+        return (r > minDate && r < maxDate);
     }, message: validationMessages['dob'][app.get('env')]
 };
 
