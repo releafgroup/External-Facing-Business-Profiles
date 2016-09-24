@@ -7,6 +7,7 @@ var testHelpers = require('../helpers/test');
 var super_agent = request.agent(url);
 
 var user1 = testHelpers.user1;
+var user1Id = -1;
 
 var userWithBadEmail = JSON.parse(JSON.stringify(user1));
 userWithBadEmail['local.email'] = "odddddd.com";
@@ -65,6 +66,7 @@ describe('Routing', function () {
                 .send(user1)
                 .expect(200) //Status code
                 .end(function (err, res) {
+                    user1Id = res.body.message;
                     res.body.success.should.equal(true);
                     done();
                 });
@@ -285,7 +287,7 @@ describe('Routing', function () {
 
         it('tests that can determine email is not in system', function (done) {
             request(url)
-                .get('/users/email?email=' + 'missing@gmail.com')
+                .get('/users/email?email=missing@gmail.com')
                 .end(function (err, res) {
                     res.body.success.should.not.equal(true);
                     done();

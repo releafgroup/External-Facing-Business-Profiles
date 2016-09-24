@@ -7,7 +7,7 @@ var HOST_DOMAIN = process.env.HOST_DOMAIN || 'http://localhost:3000';
 var url = HOST_DOMAIN;
 Browser.localhost(url, 2000);
 
-describe('Facebook Login', function(done) {
+describe('Facebook Login', function() {
      var TestBrowser = new Browser();
 
     before(function(done) {
