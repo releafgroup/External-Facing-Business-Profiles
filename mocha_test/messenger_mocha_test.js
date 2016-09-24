@@ -50,7 +50,7 @@ describe("Messenger Socket Server", function () {
           done();
         }
       });
-    };
+    }
 
     client1 = io.connect(socketURL, options);
     checkMessage(client1);
