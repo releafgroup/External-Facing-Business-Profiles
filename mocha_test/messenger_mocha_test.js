@@ -1,9 +1,5 @@
-var should = require('should');
 var io = require('socket.io-client');
 var request = require('supertest');
-var server = require('../bin/www');
-
-
 
 var socketURL = 'http://localhost:3000';
 
@@ -45,7 +41,7 @@ describe("Messenger Socket Server", function () {
     var message = {username: 'user', room: 'general', message: 'Hello members'};
     var messages = 0;
 
-    var checkMessage = function (client) {
+    function checkMessage (client) {
       client.on('message', function (msg) {
         message.message.should.equal(msg.content);
         client.disconnect();
