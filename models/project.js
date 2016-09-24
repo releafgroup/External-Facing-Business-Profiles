@@ -81,6 +81,7 @@ var ProjectSchema = new Schema({
     project_name: {type: String, required: true, validate: projectNameValidation},
     long_description: {type: String, required: true, validate: longDescriptionValidation},
     short_description: {type: String, required: true, validate: shortDescriptionValidation},
+    project_background: {type: String},
     core_skills: {type: [String], validate: coreSkillsValidation, index: true},
     industry_focus: {type: String, required: true, validate: industryFocusValidation},
     completion_time: {type: Number, required: true}, // TODO: figure out max and min

@@ -7,10 +7,32 @@ var Company = require('../models/company');
 var Project = require('../models/project');
 
 var companyData = {
-    "business_name": faker.company.companyName(),
+    "business_name": 'Agro Tech',
     "primary_contact_name": faker.name.findName(),
     "primary_contact_phone": '+23480080000',
-    "email": 'testcompant@mailinator.com',
+    "company_logo": "/img/agrotech-logo.png",
+    "email": 'agrotech@mailinator.com',
+    "password": "12345678",
+    "company_purpose": "Agriculture",
+    "company_size": "1 Partner",
+    "company_industry_1": "Processing",
+    "company_industry_2": "Transport",
+    "company_industry_3": "Storage",
+    "value_hoped_for": "we hope to get a lot of value",
+    "short_term_obj": "short term objective",
+    "long_term_obj": "long term objective",
+    "pressing_problems": "talent and capital",
+    "best_medium": "Email",
+    "internet_access": "Work Hours",
+    "dummy_data": true
+};
+
+var companyData2 = {
+    "business_name": 'Tech Cabal',
+    "primary_contact_name": faker.name.findName(),
+    "primary_contact_phone": '+23480080000',
+    "company_logo": "/img/tech-cabal-logo.png",
+    "email": 'techcabal@mailinator.com',
     "password": "12345678",
     "company_purpose": "Agriculture",
     "company_size": "1 Partner",
@@ -31,6 +53,7 @@ var project1Data = {
     "short_description": 'Agrotech has patnered with the  Releaf group to source the best ' +
     'consulting talent for their flagship Agro-development project in Nigeria',
     "long_description": faker.lorem.sentence(),
+    "project_background": '/img/masai-pic.png',
     "core_skills": [
         "Consulting",
         "Account Management"
@@ -45,6 +68,7 @@ var project2Data = {
     "short_description": 'Tech Cabal has patnered with the  Releaf group to source the best ' +
     'consulting talent for their IT Systems for Agri Growth project',
     "long_description": faker.lorem.sentence(),
+    "project_background": '/img/picture-tech-cabal-card.png',
     "core_skills": [
         "C#",
         "JavaScript",
@@ -62,24 +86,33 @@ exports.addDummyProjects = function () {
             console.log('Inserting dummy projects');
             var companyObj = new Company(companyData);
             companyObj.save().then(function (savedCompany) {
-                console.log('Company created successfully');
+                console.log('Company 1 created successfully');
                 project1Data['_company'] = savedCompany._id;
-                project2Data['_company'] = savedCompany._id;
                 var project = new Project(project1Data);
-                var project2 = new Project(project2Data);
 
                 project.save().then(function (project) {
                     console.log("Dummy project 1 inserted");
                     savedCompany.projects.push(project);
 
-                    project2.save().then(function (project2) {
-                        console.log("Dummy project 2 inserted");
-                        savedCompany.projects.push(project2);
+                    savedCompany.save().then(function (savedCompany) {
+                        console.log('Project 1 linked to company 1');
+                    })
+                });
+            });
 
-                        savedCompany.save().then(function (savedCompany) {
-                            console.log('Projects linked to company');
-                        })
-                    });
+            companyObj = new Company(companyData2);
+            companyObj.save().then(function (savedCompany) {
+                console.log('Company 2 created successfully');
+                project2Data['_company'] = savedCompany._id;
+                var project2 = new Project(project2Data);
+
+                project2.save().then(function (project2) {
+                    console.log("Dummy project 2 inserted");
+                    savedCompany.projects.push(project2);
+
+                    savedCompany.save().then(function (savedCompany) {
+                        console.log('Project 2 linked to company 2');
+                    })
                 });
             });
         }
