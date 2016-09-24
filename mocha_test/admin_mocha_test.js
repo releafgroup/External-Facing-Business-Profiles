@@ -42,7 +42,7 @@ describe('Routing', function () {
 
     before(function (done) {
         // Use mocha test db
-        mongoose.connection.once('connected', () => {
+        mongoose.connection.once('connected', function () {
             /* Drop the DB */
             mongoose.connection.db.dropDatabase();
         });
