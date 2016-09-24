@@ -12,8 +12,13 @@ var errorMessages = {
         'development': genericError,
         'production': genericError
     },
-    'project_description': {
-        'mocha_db': "project description must be less than 1000 characters",
+    'long_description': {
+        'mocha_db': "long description must be less than 1000 characters",
+        'development': genericError,
+        'production': genericError
+    },
+    'short_description': {
+        'mocha_db': "short description must be less than 140 characters",
         'development': genericError,
         'production': genericError
     },
@@ -36,10 +41,16 @@ var skillOptions = ['Data Analytics', 'Marketing', 'Web Development', 'App Devel
     'Raising Capital', 'Business Plan', 'SWOT Analysis', 'Competitive Analysis', 'New Market Entry',
     'Operations Improvement'];
 
-var projectDescriptionValidation = {
+var longDescriptionValidation = {
     validator: function (r) {
         return r.length <= 1000;
-    }, message: errorMessages['project_description'][app.get('env')]
+    }, message: errorMessages['long_description'][app.get('env')]
+};
+
+var shortDescriptionValidation = {
+    validator: function (r) {
+        return r.length <= 140;
+    }, message: errorMessages['short_description'][app.get('env')]
 };
 
 var coreSkillsValidation = {
@@ -68,7 +79,8 @@ var ProjectSchema = new Schema({
     _company: {type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true},
     is_verified: {type: Boolean, required: true},
     project_name: {type: String, required: true, validate: projectNameValidation},
-    project_description: {type: String, required: true, validate: projectDescriptionValidation},
+    long_description: {type: String, required: true, validate: longDescriptionValidation},
+    short_description: {type: String, required: true, validate: shortDescriptionValidation},
     core_skills: {type: [String], validate: coreSkillsValidation, index: true},
     industry_focus: {type: String, required: true, validate: industryFocusValidation},
     completion_time: {type: Number, required: true}, // TODO: figure out max and min
