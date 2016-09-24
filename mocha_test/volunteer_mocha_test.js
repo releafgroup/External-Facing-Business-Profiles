@@ -159,6 +159,52 @@ describe('Routing', function () {
                 });
         });
 
+        it('tests that dob is not above max age', function (done) {
+            // change email to ensure failure is not due to non-unique email
+            var userAboveMaxAge = JSON.parse(JSON.stringify(user1));
+            userAboveMaxAge['dob'] = '1936-09-23'; // always above max age
+            userAboveMaxAge['local.email'] = 'volunteer@old.com';
+            super_agent
+                .post('/users/auth/signup')
+                .send(userAboveMaxAge)
+                .expect(400) //Status code
+                .end(function (err, res) {
+                    res.body.success.should.not.equal(true);
+                    done();
+                });
+        });
+
+        it('tests that dob is within allowed range', function (done) {
+            userWithinAgeLimit = JSON.parse(JSON.stringify(user1));
+            userWithinAgeLimit['dob'] = '2001-09-22';
+            userWithinAgeLimit['local.email'] = 'volunteer@rightage.com';
+            super_agent
+                .post('/users/auth/signup')
+                .send(userWithinAgeLimit)
+                .expect(200) //Status code
+                .end(function (err, res) {
+                    res.body.success.should.equal(true);
+                    done();
+                });
+        });
+
+        it('tests that dob is not less than min age', function (done) {
+            userBelowMinAge = JSON.parse(JSON.stringify(user1));
+            var currentDate = new Date();
+            userBelowMinAge['dob'] = new Date(
+                currentDate.getFullYear() - 15, currentDate.getMonth(), currentDate.getDate()
+            );
+            userBelowMinAge['local.email'] = 'volunteer@younger.com';
+            super_agent
+                .post('/users/auth/signup')
+                .send(userBelowMinAge)
+                .expect(400) //Status code
+                .end(function (err, res) {
+                    res.body.success.should.not.equal(true);
+                    done();
+                });
+        });
+
         // TODO: change
         it('tests that required information is needed', function (done) {
             var user = {
