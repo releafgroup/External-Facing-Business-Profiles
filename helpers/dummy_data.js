@@ -54,6 +54,7 @@ var project1Data = {
     'consulting talent for their flagship Agro-development project in Nigeria',
     "long_description": faker.lorem.sentence(),
     "project_background": '/img/masai-pic.png',
+    "banner_project_img": '/img/banner-image.png',
     "core_skills": [
         "Consulting",
         "Account Management"
@@ -69,6 +70,7 @@ var project2Data = {
     'consulting talent for their IT Systems for Agri Growth project',
     "long_description": faker.lorem.sentence(),
     "project_background": '/img/picture-tech-cabal-card.png',
+    "banner_project_img": '/img/banner-image.png',
     "core_skills": [
         "C#",
         "JavaScript",
