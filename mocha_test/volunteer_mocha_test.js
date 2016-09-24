@@ -167,7 +167,7 @@ describe('Routing', function () {
             super_agent
                 .post('/users/auth/signup')
                 .send(userAboveMaxAge)
-                .expect(200) //Status code
+                .expect(400) //Status code
                 .end(function (err, res) {
                     res.body.success.should.not.equal(true);
                     done();
@@ -198,7 +198,7 @@ describe('Routing', function () {
             super_agent
                 .post('/users/auth/signup')
                 .send(userBelowMinAge)
-                .expect(200) //Status code
+                .expect(400) //Status code
                 .end(function (err, res) {
                     res.body.success.should.not.equal(true);
                     done();
