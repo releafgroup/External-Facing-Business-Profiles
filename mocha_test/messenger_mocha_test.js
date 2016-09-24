@@ -19,7 +19,7 @@ describe("Messenger Socket Server", function () {
   it('Should notify new user once they connect', function (done) {
     var client = io.connect(socketURL, options);
 
-    client.on('connect', function (data) {
+    client.on('connect', function () {
       client.emit('new user', user1);
     });
 
@@ -55,17 +55,17 @@ describe("Messenger Socket Server", function () {
     client1 = io.connect(socketURL, options);
     checkMessage(client1);
 
-    client1.on('connect', function (data) {
+    client1.on('connect', function () {
       client2 = io.connect(socketURL, options);
       client1.emit('new user', user1);
       checkMessage(client2);
 
-      client2.on('connect', function (data) {
+      client2.on('connect', function () {
         client2.emit('new user', user2);
         client3 = io.connect(socketURL, options);
         checkMessage(client3);
 
-        client3.on('connect', function (data) {
+        client3.on('connect', function () {
           client3.emit('new user', user3);
           client2.send(message);
         });

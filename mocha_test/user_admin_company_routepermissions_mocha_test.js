@@ -9,7 +9,6 @@ var server = require('../bin/www');
 
 var url = testHelpers.url;
 
-var admin1Id = -1;
 var superAgentAdmin = (require('supertest')).agent(url);
 var admin1 = {
     'name': 'admin1@gmail.com',
@@ -38,7 +37,7 @@ describe('Routing', function () {
                 .send(admin1)
                 .expect(200)
                 .end(function (err, res) {
-                    admin1Id = res.body.message;
+                    admin1['_id'] = res.body.message;
                     res.body.success.should.equal(true);
                     done();
                 });
