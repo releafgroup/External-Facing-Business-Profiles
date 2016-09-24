@@ -176,7 +176,7 @@ describe('Routing', function () {
 
         it('tests that dob is within allowed range', function (done) {
             userWithinAgeLimit = JSON.parse(JSON.stringify(user1));
-            userWithinAgeLimit['dob'] = '1998-09-22';
+            userWithinAgeLimit['dob'] = '2001-09-22';
             userWithinAgeLimit['local.email'] = 'volunteer@rightage.com';
             super_agent
                 .post('/users/auth/signup')
@@ -192,7 +192,7 @@ describe('Routing', function () {
             userBelowMinAge = JSON.parse(JSON.stringify(user1));
             var currentDate = new Date();
             userBelowMinAge['dob'] = new Date(
-                currentDate.getFullYear() - 18, currentDate.getMonth(), currentDate.getDate()
+                currentDate.getFullYear() - 15, currentDate.getMonth(), currentDate.getDate()
             );
             userBelowMinAge['local.email'] = 'volunteer@younger.com';
             super_agent

@@ -42,7 +42,7 @@ var minDate = new Date(
     currentDate.getFullYear() - 80, currentDate.getMonth(), currentDate.getDate()
 );
 var maxDate = new Date(
-    currentDate.getFullYear() - 18, currentDate.getMonth(), currentDate.getDate()
+    currentDate.getFullYear() - 15, currentDate.getMonth(), currentDate.getDate()
 );
 
 dobValidation = {

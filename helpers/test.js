@@ -103,7 +103,7 @@ exports.user1 = {
     'skills': ['s', 'f', 'o'],
     'skill_ratings': [1, 2, 3],
     'gender': 'Female',
-    'dob': '1998-09-23'
+    'dob': '2001-09-23'
 };
 
 exports.user2 = {
@@ -116,7 +116,7 @@ exports.user2 = {
     'skills': ['s', 'f', 'o'],
     'skill_ratings': [1, 2, 3],
     'gender': 'Female',
-    'dob': '1998-09-23'
+    'dob': '2001-09-23'
 };
 
 exports.userUpdateInfo = {
@@ -129,7 +129,7 @@ exports.userUpdateInfo = {
     'skills': ['c', 'l', 't'],
     'skill_ratings': [2, 3, 4],
     'gender': 'Male',
-    'dob': '1998-09-23'
+    'dob': '2001-09-23'
 };
 
 exports.admin1 = {
