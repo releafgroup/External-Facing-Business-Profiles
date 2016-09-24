@@ -9,7 +9,7 @@ var Project = require('../models/project');
 var companyData = {
     "business_name": faker.company.companyName(),
     "primary_contact_name": faker.name.findName(),
-    "primary_contact_phone": faker.phone.phoneNumber(),
+    "primary_contact_phone": '+23480080000',
     "email": 'testcompant@mailinator.com',
     "password": "12345678",
     "company_purpose": "Agriculture",
@@ -28,7 +28,9 @@ var companyData = {
 
 var project1Data = {
     "project_name": "Masai Agro Reclaimation",
-    "project_description": faker.lorem.sentence(),
+    "short_description": 'Agrotech has patnered with the  Releaf group to source the best ' +
+    'consulting talent for their flagship Agro-development project in Nigeria',
+    "long_description": faker.lorem.sentence(),
     "core_skills": [
         "Consulting",
         "Account Management"
@@ -40,7 +42,9 @@ var project1Data = {
 };
 var project2Data = {
     "project_name": "IT Systems for Agri Growth",
-    "project_description": faker.lorem.sentence(),
+    "short_description": 'Tech Cabal has patnered with the  Releaf group to source the best ' +
+    'consulting talent for their IT Systems for Agri Growth project',
+    "long_description": faker.lorem.sentence(),
     "core_skills": [
         "C#",
         "JavaScript",
