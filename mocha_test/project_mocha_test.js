@@ -1,10 +1,7 @@
-var should = require('should');
-var assert = require('assert');
 var request = require('supertest');
 var mongoose = require('mongoose');
 var config = require('../config.js');
 var testHelpers = require('../helpers/test');
-var server = require('../bin/www');
 
 /**
  * SUPER IMPORTANT NOTE: throughout the test cases we may modify these variables. the modifications persist across all of the test cases after any modification
@@ -25,7 +22,7 @@ describe('Projects Routes', function () {
         });
         agent.post('/users/auth/signup')
             .send(testHelpers.user1)
-            .end(function (err, res) {
+            .end(function () {
             });
         // Insert user into database
         done();
@@ -78,7 +75,7 @@ describe('Projects Routes', function () {
         it('gets project 1', function (done) {
             request(url)
                 .get('/projects/' + projectId1)
-                .end(function (err, res) {
+                .end(function (err) {
                     if (!err) done();
                 });
         });
@@ -86,7 +83,7 @@ describe('Projects Routes', function () {
         it('gets project 2', function (done) {
             request(url)
                 .get('/projects/' + projectId2)
-                .end(function (err, res) {
+                .end(function (err) {
                     if (!err) done();
                 });
         });

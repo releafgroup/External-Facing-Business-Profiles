@@ -45,18 +45,19 @@ var maxDate = new Date(
     currentDate.getFullYear() - 15, currentDate.getMonth(), currentDate.getDate()
 );
 
-dobValidation = {
+var dobValidation = {
     validator: function (r) {
         return (r < maxDate && r > minDate);
     }, message: validationMessages['dob'][app.get('env')]
 };
 
-primaryInstitutionValidation = {
+var primaryInstitutionValidation = {
     validator: function (r) {
         return r != this.secondary_institution;
     }, message: validationMessages['primary_institution'][app.get('env')]
 };
-secondaryInstitutionValidation = {
+
+var secondaryInstitutionValidation = {
     validator: function (r) {
         return r != this.primary_institution;
     }, message: validationMessages['secondary_institution'][app.get('env')]

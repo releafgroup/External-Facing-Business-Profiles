@@ -19,7 +19,7 @@ exports.isLoggedIn = function (req, res, next) {
  * @param res
  * @returns {boolean}
  */
-exports.checkUserProfilePermission = function (req, res) {
+exports.checkUserProfilePermission = function (req) {
     return !(typeof req.session.passport.user === 'undefined' || req.session.passport.user === null
     || req.session.passport.user.type != "volunteer");
 };

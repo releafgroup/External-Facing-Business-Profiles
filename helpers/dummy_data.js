@@ -110,7 +110,7 @@ exports.addDummyProjects = function () {
                     console.log("Dummy project 2 inserted");
                     savedCompany.projects.push(project2);
 
-                    savedCompany.save().then(function (savedCompany) {
+                    savedCompany.save().then(function () {
                         console.log('Project 2 linked to company 2');
                     })
                 });

@@ -1,10 +1,6 @@
-var should = require('should');
-var assert = require('assert');
 var request = require('supertest');
 var mongoose = require('mongoose');
-var config = require('../config.js');
 var testHelpers = require('../helpers/test');
-var server = require('../bin/www');
 
 /**
  * Unit Tests to make sure Admin works
@@ -14,7 +10,6 @@ var server = require('../bin/www');
  */
 var url = testHelpers.url;
 
-var admin1Id = -1;
 var superAgentAdmin = (require('supertest')).agent(url);
 var admin1 = testHelpers.admin1;
 
@@ -23,26 +18,21 @@ var user1Id = -1;
 var user1 = testHelpers.user1;
 
 var superAgent2 = (require('supertest')).agent(url);
-var user2Id = -1;
 var user2 = testHelpers.user2;
 
 var company1Id = -1;
 var company1 = testHelpers.company1();
 
-var comp2_id = -1;
-var company2 = testHelpers.company2();
-
 var project1Id = -1;
 var project1 = testHelpers.project1;
 
-var project2Id = -1;
 var project2 = testHelpers.project2;
 
 describe('Routing', function () {
 
     before(function (done) {
         // Use mocha test db
-        mongoose.connection.once('connected', () => {
+        mongoose.connection.once('connected', function () {
             /* Drop the DB */
             mongoose.connection.db.dropDatabase();
         });
@@ -56,7 +46,7 @@ describe('Routing', function () {
                 .send(admin1)
                 .expect(200)
                 .end(function (err, res) {
-                    admin1Id = res.body.message;
+                    admin1['_id'] = res.body.message;
                     res.body.success.should.equal(true);
                     done();
                 });
@@ -96,7 +86,7 @@ describe('Routing', function () {
                 .send(user2)
                 .expect(200) //Status code
                 .end(function (err, res) {
-                    user2Id = res.body.message;
+                    user2['_id'] = res.body.message;
                     res.body.success.should.equal(true);
                     done();
                 });
@@ -137,7 +127,7 @@ describe('Routing', function () {
                 .send(project2)
                 .expect(200) //Status code
                 .end(function (err, res) {
-                    project2Id = res.body.id;
+                    project2['_id'] = res.body.id;
                     res.body.success.should.equal(true);
                     done();
                 });

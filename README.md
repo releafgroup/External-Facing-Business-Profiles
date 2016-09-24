@@ -71,6 +71,7 @@ Ikeora Backend Server
 |
 └───app.js
 └───config.js
+└───.eslintrc.yml
 └───package.json
 └───.gitignore
 └───README.md (that's me)
