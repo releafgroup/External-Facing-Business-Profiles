@@ -8,7 +8,8 @@ exports.url = 'http://localhost:3000';
 
 exports.project1 = {
     'project_name': 'First Project',
-    'project_description': 'test_first',
+    'short_description': 'test_first',
+    'long_description': faker.lorem.sentence(),
     'core_skills': [
         'App Development',
         'Growth Strategy',
@@ -22,7 +23,8 @@ exports.project1 = {
 
 exports.project2 = {
     'project_name': 'Second Project',
-    'project_description': 'test_second',
+    'short_description': 'test_second',
+    'long_description': faker.lorem.sentence(),
     'core_skills': [
         'App Development',
         'Growth Strategy',
@@ -36,7 +38,8 @@ exports.project2 = {
 
 exports.project3 = {
     'project_name': 'Third Project',
-    'project_description': 'test_second',
+    'short_description': 'test_second',
+    'long_description': faker.lorem.sentence(),
     'core_skills': [
         'App Development',
         'Growth Strategy',
