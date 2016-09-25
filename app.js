@@ -1,18 +1,15 @@
 var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var config = require('./config.js');
 var mongoose = require('mongoose');
-var superSecret = config.superSecret;
 var authfunc = require('./utils/authentication');
 var io = require('socket.io')();
 var passport = require('./utils/passport');
 var session = require('express-session');
-var multer = require('multer');
-var upload = multer({dest: './users/upload'});//catch all multipart data, fileuploads automatically and stores the file to ‘upload/’ folder.
+//catch all multipart data, fileuploads automatically and stores the file to ‘upload/’ folder.
 var dummyData = require('./helpers/dummy_data');
 
 var MongoStore = require('connect-mongo')(session);
@@ -24,7 +21,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
 //TODO: Front end to have a form tag, with its action pointed to the express route.
-//Fileupload handling will be taken care automatically and all file moved to ‘upload’ folder.
 
 var domain_allowed = 'https://releaf-frontend-app.herokuapp.com';
 if (app.get('env') == 'mocha_db' || app.get('env') == 'development') {
@@ -50,6 +46,8 @@ app.use(function (req, res, next) {
     next();
 });
 
+// Ensures that responses are not cached
+app.use(require('./middlewares/no_cache'));
 
 mongoose.Promise = global.Promise;
 if (app.get('env') == 'mocha_db') { // TODO: abstract away better/clean up code quality
@@ -58,7 +56,8 @@ if (app.get('env') == 'mocha_db') { // TODO: abstract away better/clean up code 
     mongoose.connect(config.database);
 }
 
-app.use(session({secret: 'releaf4lyfe', store: new MongoStore({mongooseConnection: mongoose.connection})})); // session secret
+// session secret
+app.use(session({secret: 'releaf4lyfe', store: new MongoStore({mongooseConnection: mongoose.connection})}));
 
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
@@ -71,14 +70,12 @@ var companies = require('./routes/companies')(passport);
 var admin = require('./routes/admin')(passport);
 var projects = require('./routes/projects');
 var messenger = require('./routes/messenger')(app.get('io'));
-var upload = require('./routes/upload');
 app.use('/', routes);
 app.use('/users', users);
 app.use('/companies', companies);
 app.use('/admin', admin);
 app.use('/projects', projects);
 app.use('/messenger', messenger);
-app.use('/upload', upload);
 app.use(authfunc);
 
 // Adds dummy projects
@@ -87,30 +84,11 @@ dummyData.addDummyProjects();
 // Error Handling
 app.use(function (err, req, res, next) {
     res.status(err.status || 500);
-    return res.json({
+    res.json({
         message: err.message,
         success: false,
         errors: err.errors
     });
 });
-
-/**
- * Development Settings
- */
-if (app.get('env') === 'development' || app.get('env') == 'mocha_db') {
-    // This will change in production since we'll be using the dist folder
-    app.use(express.static(path.join(__dirname, '../client')));
-    // This covers serving up the index page
-    app.use(express.static(path.join(__dirname, '../client/.tmp')));
-    app.use(express.static(path.join(__dirname, '../client/app')));
-}
-
-/**
- * Production Settings
- */
-if (app.get('env') === 'production') {
-    // changes it to use the optimized version for production
-    app.use(express.static(path.join(__dirname, '/dist')));
-}
 
 module.exports = app;
