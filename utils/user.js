@@ -1,7 +1,7 @@
-// File which handles all user related functions
-
 var User = require('../models/user.js');
 var Project = require('../models/project.js');
+var awsS3 = require('../helpers/aws_s3');
+var base64Utils = require('../helpers/base_64');
 
 
 /** Function for user error handling in saving user info
@@ -182,3 +182,24 @@ exports.getUserFavoriteProject = function (user_id, req, res) {
     });
 };
 
+exports.uploadMedia = function (data, folderName, extension, field, newUser) {
+    var file = data;
+    var mimeType = base64Utils.getMimeType(file);
+
+    var buf = new Buffer(base64Utils.getData(file), 'base64');
+    var environment = process.env.APPLICATION_ENV;
+    var filename = environment + '/' + folderName + '/' + newUser._id + '.' + extension;
+
+    awsS3.upload({
+        Key: filename,
+        Body: buf,
+        ContentEncoding: 'base64',
+        ContentType: mimeType,
+        ACL: 'public-read'
+    }, function (err) {
+        if (!err) {
+            newUser.setItem(field, awsS3.getUrl(filename));
+            newUser.save();
+        }
+    });
+};
