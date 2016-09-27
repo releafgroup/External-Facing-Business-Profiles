@@ -9,8 +9,10 @@ var authfunc = require('./utils/authentication');
 var io = require('socket.io')();
 var passport = require('./utils/passport');
 var session = require('express-session');
-//catch all multipart data, fileuploads automatically and stores the file to ‘upload/’ folder.
 var dummyData = require('./helpers/dummy_data');
+
+// Loads the environment variables from the dotenv file
+require('dotenv').config();
 
 var MongoStore = require('connect-mongo')(session);
 
