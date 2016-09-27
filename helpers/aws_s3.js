@@ -1,9 +1,13 @@
+require('dotenv').config();
+
 var AWS = require('aws-sdk');
+// Loads the environment variables from the dotenv file
+
 var s3Bucket = new AWS.S3({params: {Bucket: 'ikeora-v2'}});
 
 var exports = module.exports = {};
 
-exports.uploadToS3 = function (data, cb) {
+exports.upload = function (data, cb) {
     s3Bucket.putObject(data, cb);
 };
 
