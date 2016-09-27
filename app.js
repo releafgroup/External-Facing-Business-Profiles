@@ -1,5 +1,4 @@
 var express = require('express');
-var path = require('path');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -19,7 +18,8 @@ var MongoStore = require('connect-mongo')(session);
 var app = express();
 app.use(logger('dev'));
 app.use(cookieParser());
-app.use(bodyParser.json());
+// Increate body limit to 4MB
+app.use(bodyParser.json({limit: 1024 * 1024 * 4, type: 'application/json'}));
 app.use(bodyParser.urlencoded({extended: false}));
 
 //TODO: Front end to have a form tag, with its action pointed to the express route.
