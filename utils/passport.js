@@ -1,13 +1,12 @@
 var LocalStrategy = require('passport-local').Strategy;
 var passport = require('passport');
-// load up the user model
 var User = require('../models/user');
 var Admin = require('../models/admin');
 var Company = require('../models/company');
-var bcrypt = require('bcryptjs');
 var FacebookStrategy = require('./passport_facebook');
 var AdminLoginStrategy = require('./passport_admin');
 var companyPassport = require('./passport_company');
+var userFunctions = require('../utils/user');
 
 var TYPE_BUSINESS = 'business';
 var TYPE_ADMIN = 'admin';
@@ -22,7 +21,7 @@ var TYPE_VOLUNTEER = 'volunteer';
  * Read to understand how sessions work with multiple types of Schemas
  */
 passport.serializeUser(function (model, done) {
-    type = TYPE_VOLUNTEER;
+    var type = TYPE_VOLUNTEER;
     if (model instanceof Admin) {
         type = TYPE_ADMIN;
     } else if (model instanceof Company) {
@@ -128,6 +127,18 @@ passport.use('local-signup', new LocalStrategy({
                 newUser.save(function (err) {
                     if (err) {
                         return done({message: err.message, status: 400, errors: err.errors}, false);
+                    }
+
+                    // Upload image
+                    if (req.body.profile_photo_data) {
+                        userFunctions.uploadMedia(req.body.profile_photo_data, 'profile_photos', 'jpg',
+                            'profile_photo', newUser);
+                    }
+
+                    // Upload resume
+                    if (req.body.resume_data && req.body.resume_extension) {
+                        userFunctions.uploadMedia(req.body.resume_data, 'resumes', req.body.resume_extension,
+                            'resume', newUser);
                     }
                     return done(null, newUser);
                 });
