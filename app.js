@@ -71,6 +71,7 @@ var companies = require('./routes/companies')(passport);
 var admin = require('./routes/admin')(passport);
 var projects = require('./routes/projects');
 var messenger = require('./routes/messenger')(app.get('io'));
+var messengerCore = require('./messenger/core')(app.get('io'));
 var upload = require('./routes/upload');
 app.use('/', routes);
 app.use('/users', users);

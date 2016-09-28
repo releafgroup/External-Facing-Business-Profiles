@@ -63,3 +63,4 @@ ideas
 
 # Jetbrains IDE files
 .idea/
+/nbproject/private/
