@@ -1,20 +1,14 @@
-var should = require('should');
-var assert = require('assert');
 var request = require('supertest');
 var mongoose = require('mongoose');
 var config = require('../config.js');
-var path = require('path');
 var url = process.env.HOST_DOMAIN || 'http://localhost:3000';
-var User = require('./../models/user.js');
 var testHelpers = require('../helpers/test');
-var server = require('../bin/www');
-
 
 var super_agent = request.agent(url);
-var super_agent2 = (require('supertest')).agent(url);
 
-var user1Id = -1;
 var user1 = testHelpers.user1;
+var user1Id = -1;
+
 var userWithBadEmail = JSON.parse(JSON.stringify(user1));
 userWithBadEmail['local.email'] = "odddddd.com";
 
@@ -23,9 +17,6 @@ userUpdateInfo = testHelpers.userUpdateInfo;
 
 var userWithBadId = JSON.parse(JSON.stringify(user1));
 userWithBadId['id'] = '122222222';
-
-var user2 = testHelpers.user2;
-var user2Id = -1;
 
 var project1 = testHelpers.project1;
 
@@ -36,8 +27,6 @@ var project2 = JSON.parse(JSON.stringify(project1));
 var project2Id = -1;
 
 var project3 = JSON.parse(JSON.stringify(project1));
-var project3Id = -1;
-
 
 var company1Id = -1;
 var company1 = testHelpers.company1();
@@ -159,6 +148,52 @@ describe('Routing', function () {
                 });
         });
 
+        it('tests that dob is not above max age', function (done) {
+            // change email to ensure failure is not due to non-unique email
+            var userAboveMaxAge = JSON.parse(JSON.stringify(user1));
+            userAboveMaxAge['dob'] = '1936-09-23'; // always above max age
+            userAboveMaxAge['local.email'] = 'volunteer@old.com';
+            super_agent
+                .post('/users/auth/signup')
+                .send(userAboveMaxAge)
+                .expect(400) //Status code
+                .end(function (err, res) {
+                    res.body.success.should.not.equal(true);
+                    done();
+                });
+        });
+
+        it('tests that dob is within allowed range', function (done) {
+            var userWithinAgeLimit = JSON.parse(JSON.stringify(user1));
+            userWithinAgeLimit['dob'] = '2001-09-22';
+            userWithinAgeLimit['local.email'] = 'volunteer@rightage.com';
+            super_agent
+                .post('/users/auth/signup')
+                .send(userWithinAgeLimit)
+                .expect(200) //Status code
+                .end(function (err, res) {
+                    res.body.success.should.equal(true);
+                    done();
+                });
+        });
+
+        it('tests that dob is not less than min age', function (done) {
+            var userBelowMinAge = JSON.parse(JSON.stringify(user1));
+            var currentDate = new Date();
+            userBelowMinAge['dob'] = new Date(
+                currentDate.getFullYear() - 15, currentDate.getMonth(), currentDate.getDate()
+            );
+            userBelowMinAge['local.email'] = 'volunteer@younger.com';
+            super_agent
+                .post('/users/auth/signup')
+                .send(userBelowMinAge)
+                .expect(400) //Status code
+                .end(function (err, res) {
+                    res.body.success.should.not.equal(true);
+                    done();
+                });
+        });
+
         // TODO: change
         it('tests that required information is needed', function (done) {
             var user = {
@@ -252,7 +287,7 @@ describe('Routing', function () {
 
         it('tests that can determine email is not in system', function (done) {
             request(url)
-                .get('/users/email?email=' + 'missing@gmail.com')
+                .get('/users/email?email=missing@gmail.com')
                 .end(function (err, res) {
                     res.body.success.should.not.equal(true);
                     done();
@@ -321,7 +356,6 @@ describe('Routing', function () {
                 .send(project3)
                 .expect(200) //Status code
                 .end(function (err, res) {
-                    project3Id = res.body.id;
                     res.body.success.should.equal(true);
                     done();
                 });

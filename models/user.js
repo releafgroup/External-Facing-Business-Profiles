@@ -38,19 +38,26 @@ var validationMessages = {
 
 // Create custom validators
 var currentDate = new Date();
-currentDate.setDate(currentDate.getDate() - 1);
-dobValidation = {
+var minDate = new Date(
+    currentDate.getFullYear() - 80, currentDate.getMonth(), currentDate.getDate()
+);
+var maxDate = new Date(
+    currentDate.getFullYear() - 15, currentDate.getMonth(), currentDate.getDate()
+);
+
+var dobValidation = {
     validator: function (r) {
-        return r < currentDate;
+        return (r < maxDate && r > minDate);
     }, message: validationMessages['dob'][app.get('env')]
 };
 
-primaryInstitutionValidation = {
+var primaryInstitutionValidation = {
     validator: function (r) {
         return r != this.secondary_institution;
     }, message: validationMessages['primary_institution'][app.get('env')]
 };
-secondaryInstitutionValidation = {
+
+var secondaryInstitutionValidation = {
     validator: function (r) {
         return r != this.primary_institution;
     }, message: validationMessages['secondary_institution'][app.get('env')]

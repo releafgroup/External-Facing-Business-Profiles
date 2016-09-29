@@ -1,10 +1,7 @@
-var should = require('should');
-var assert = require('assert');
 var request = require('supertest');
 var mongoose = require('mongoose');
 var config = require('../config.js');
 var testHelpers = require('../helpers/test');
-var server = require('../bin/www');
 
 describe('Routing', function () {
     var url = testHelpers.url;

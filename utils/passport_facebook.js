@@ -12,7 +12,7 @@ var fbInfo = process.env.NODE_ENV === 'production' ? secret.facebook.production 
 module.exports = new FacebookStrategy({
     clientID: fbInfo.id,
     clientSecret: fbInfo.secret,
-    callbackURL: `${HOST_DOMAIN}/users/auth/facebook/login/callback`
+    callbackURL: HOST_DOMAIN + '/users/auth/facebook/login/callback'
   },
   function(accessToken, refreshToken, profile, done) {
     process.nextTick(function() {
