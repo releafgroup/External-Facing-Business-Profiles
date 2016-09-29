@@ -1,5 +1,3 @@
-
-
 module.exports = function (io) {
   
     var username = '';
