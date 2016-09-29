@@ -1,17 +1,15 @@
 module.exports = function (io) {
-
     var username = '';
-
     var config = require('./../config');
-
     var dl = require('delivery');
-    var usersOnline = [];
-    var msgQ = [];
-    var userSockets = {};
     var debug = require('debug')('server:io');
     var Message = require('./../models/message');
     var helper = require('./../helpers/messenger');
     var nodemailer = require('./../utils/node_mailer');
+    var usersOnline = [];
+    var msgQ = [];
+    var userSockets = {};
+
     nodemailer.setupTransport(config.mailConfig.smtp);
     console.log('-Messenger Socket Server running...');
 
@@ -26,7 +24,7 @@ module.exports = function (io) {
         var delivery = dl.listen(socket);
         delivery.on('receive.success', function (file) {
             var data = file.params;
-            if (!validateReuest(data)) {
+            if (!validateRequest(data)) {
                 return socket.emit('error', {success: false, message: 'Missing data on request!'});
             }
             var msgNew = {
@@ -65,15 +63,15 @@ module.exports = function (io) {
             debug('in progress', file.name)
         });
 
-        var validateReuest = function (data) {
+        function validateRequest(data) {
             if (!data.username || !username)
                 return false;
             return true;
-        };
+        }
 
         function sendPrivateMessage(msg) {
             if (msg.type == 'private') {
-                if (!isOnline(msg.to)) {
+                if (!helper.isOnline(msg.to)) {
                     if (msgQ.indexOf(msg.to) == -1)
                         msgQ.push(msg.to);
                 }

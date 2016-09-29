@@ -1,5 +1,4 @@
 var express = require('express');
-var path = require('path');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -63,6 +62,9 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.set('io', io);
 
+// Messenger core
+require('./messenger/core')(app.get('io'));
+
 // import routes
 var routes = require('./routes/index');
 var users = require('./routes/users')(passport);
@@ -70,8 +72,7 @@ var companies = require('./routes/companies')(passport);
 var admin = require('./routes/admin')(passport);
 var projects = require('./routes/projects');
 var messenger = require('./routes/messenger')(app.get('io'));
-var messengerCore = require('./messenger/core')(app.get('io'));
-var upload = require('./routes/upload');
+
 app.use('/', routes);
 app.use('/users', users);
 app.use('/companies', companies);

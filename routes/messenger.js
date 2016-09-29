@@ -1,19 +1,7 @@
 module.exports = function (io) {
-    var username = '';
-    var moment = require('moment');
-
     var config = require('./../config');
-    var schedule = require('node-schedule');
 
     var express = require('express');
-    var path = require('path');
-    var fs = require('fs');
-    var dl = require('delivery');
-    var spanHours = .5;//
-    var cronString = '59 * * * *';//4 hours// * */4 * * *
-    var usersOnline = [];
-    var msgQ = [];
-    var userSockets = {};
     var debug = require('debug')('server:io');
     var router = express.Router();
     var Message = require('./../models/message');
@@ -121,11 +109,11 @@ module.exports = function (io) {
             '_id': query
         }).exec(function (err, group) {
             if (err) {
-                return res.json({success: false, message: handleGroupSaveError(err)});
+                return res.json({success: false, message: helper.handleGroupSaveError(err)});
             }
             if (group) {
                 //send error that this group , is taken already
-                return res.json({success: false, message: handleGroupSaveError({code: 11000})});
+                return res.json({success: false, message: helper.handleGroupSaveError({code: 11000})});
             }
             debug(' not found ');
 
@@ -141,7 +129,7 @@ module.exports = function (io) {
             var group = new Groups(groupData);
             group.save(function (err, group) {
                 if (err) {
-                    return res.json({success: false, message: handleGroupSaveError(err)});
+                    return res.json({success: false, message: helper.handleGroupSaveError(err)});
                 }
                 return res.json({id: group.id, success: true}); // Returns company id
             });
@@ -210,10 +198,5 @@ module.exports = function (io) {
                 res.json({success: true, d: delRes});
             });
     });
-
-
-    
-  
-    
     return router;
 };
