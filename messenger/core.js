@@ -1,30 +1,20 @@
 module.exports = function (io) {
-  
+
     var username = '';
-    var moment = require('moment');
 
     var config = require('./../config');
-    var schedule = require('node-schedule');
 
-    var express = require('express');
-    var path = require('path');
-    var fs = require('fs');
     var dl = require('delivery');
-    var spanHours = .5;//
-    var cronString = '59 * * * *';//4 hours// * */4 * * *
     var usersOnline = [];
     var msgQ = [];
     var userSockets = {};
     var debug = require('debug')('server:io');
-    var router = express.Router();
     var Message = require('./../models/message');
-    var Groups = require('./../models/chat_groups');
     var helper = require('./../helpers/messenger');
-    var user_functions = require('../utils/user');
     var nodemailer = require('./../utils/node_mailer');
     nodemailer.setupTransport(config.mailConfig.smtp);
     console.log('-Messenger Socket Server running...');
-    
+
     /**
      * SOCKET CONNECTION for messenger
      */
@@ -114,7 +104,7 @@ module.exports = function (io) {
             //New user joins the default room
             socket.join(data.room);
 
-           helper.getGroups({
+            helper.getGroups({
                 username: username
             }, function (err, groups) {
                 socket.emit('init', {username: username, room: data.room, usersOnline: usersOnline, groups: groups});

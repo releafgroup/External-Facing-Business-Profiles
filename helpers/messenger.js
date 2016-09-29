@@ -3,23 +3,13 @@ var username = '';
 var moment = require('moment');
 
 var config = require('./../config');
-var schedule = require('node-schedule');
 
-var express = require('express');
-var path = require('path');
-var fs = require('fs');
-var dl = require('delivery');
-var spanHours = .5;//
-var cronString = '59 * * * *';//4 hours// * */4 * * *
+var spanHours = 0.5;//
 var usersOnline = [];
-var msgQ = [];
-var userSockets = {};
 var debug = require('debug')('server:io');
-var router = express.Router();
 var Message = require('./../models/message');
 var Groups = require('./../models/chat_groups');
 
-var user_functions = require('../utils/user');
 var nodemailer = require('./../utils/node_mailer');
 nodemailer.setupTransport(config.mailConfig.smtp);
 
@@ -113,7 +103,7 @@ exports.fetchMessages = function (option, cb) {
           createdAt: 1 //Sort by Date Added DESC
         }
       }).exec(cb);
-}
+};
 
 exports.getGroups = function (option, cb) {
   // Find
@@ -131,7 +121,7 @@ exports.getGroups = function (option, cb) {
   //to get only that users saved groups
   debug('Query in getGroups:', query);
   Groups.find(query).populate('members').exec(cb);
-}
+};
 
 exports.handleGroupSaveError = function (err) {
   // Check if business name already exists
@@ -153,7 +143,7 @@ exports.handleGroupSaveError = function (err) {
     }
   }
   return err.message;
-}
+};
 
 exports.isOnline = function (userId) {
   return usersOnline.indexOf(userId) != -1;
@@ -180,11 +170,11 @@ exports.getQueuedPrivateMsg = function (cb, options) {
 
 exports.formatTime = function (dateStr) {
   return moment(dateStr).format('LT');
-}
+};
 
 exports.formatMessage = function (msg) {
   return "<br>At: " + formatTime(msg.createdAt) + " <br> " + msg.content + " <br><br>";
-}
+};
 
 /**
  * will get the array of the queue and get all messages for each users to send and get the email of the user
@@ -207,6 +197,6 @@ exports.filterByUser = function (msgs) {
     d[msg.to].messages.push(msg);
   }
   return d;
-}
+};
 
 
