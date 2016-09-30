@@ -100,6 +100,18 @@ module.exports = function (passport) {
             return userFunctions.favoriteProjectById(req.params.id, req, res);
         });
 
+    /**
+     * Route: /users/projects/favorite
+     * GET
+     * Gets favorited project
+     * If success: {success: true, message: favorited_project}
+     */
+    router.route('/projects/favorite')
+        .get(isLoggedIn, function (req, res) {
+            if (!checkUserProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+            return userFunctions.getUserFavoriteProject(req.session.passport.user.id, req, res);
+        });
+
     router.route('/')
         .get(isLoggedIn, function (req, res) {
             if (!checkUserProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
