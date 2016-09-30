@@ -1,118 +1,202 @@
-var express = require('express');
-
 module.exports = function (io) {
+    var config = require('./../config');
 
-  var debug = require('debug')('server:io');
-  var router = express.Router();
-  var Message = require('../models/message.js');
-  var authFunc = require('../utils/authentication.js');
+    var express = require('express');
+    var debug = require('debug')('server:io');
+    var router = express.Router();
+    var Message = require('./../models/message');
+    var Groups = require('./../models/chat_groups');
+    var helper = require('./../helpers/messenger');
+    var user_functions = require('../utils/user');
+    var nodemailer = require('./../utils/node_mailer');
+    nodemailer.setupTransport(config.mailConfig.smtp);
 
+    router.get('/messages/:room', function (req, res) {
+        debug(' got messages request ', req.params);
+        //Find
+        Message.find({
+            'room': req.params.room.toLowerCase()
+        }, null, {
+            skip: 0, // Starting Row
+            limit: 100, // Ending Row
+            sort: {
+                createdAt: -1 //Sort by Date Added DESC
+            }
+        }).exec(function (err, msgs) {
+            //Send
+            debug('Found saved messages for room ' + req.params.room.toLowerCase(), " Count" + msgs.length);
+            res.json(msgs);
+        });
+    });
 
-//This route produces a list of message as filterd by 'room' query
-  router
-          .get('/messages', function (req, res) {
-            debug(' got messages request ', req.query)
-            //Find
-            Message.find({
-              'room': req.query.room.toLowerCase()
-            }).exec(function (err, msgs) {
-              //Send
-              debug('Found saved messages for room ' + req.query.room.toLowerCase(), " Count" + msgs.length)
-              res.json(msgs);
+    /** Route: /volunteers
+     * GET
+     * No input
+     * Returns list of all volunteers
+     * If success: {success: true, message: [volunteers]}
+     * If failure: {success: false, ...}
+     * See getAllUsers for more info
+     */
+    router.route('/volunteers').get(function (req, res) {
+        return user_functions.getAllUsers(req, res);
+    });
+
+    /**
+     * OK:100% //need to protect it by auth
+     *  @id is the message _id
+     *  this will send the file to download on request
+     */
+    router.route('/messages/file/:id').get(function (req, res) {
+        debug(' got file download request ', req.params);
+        //Find
+        Message.findOne({
+            '_id': req.params.id
+        }).exec(function (err, msg) {
+            if (err) {
+                return res.status(500).end('No file found!');
+            }
+            if (!msg || !msg.file || !msg.file.data) {
+                return res.status(404).end('No file found!');
+            }
+            //Send
+            debug('Found saved message by id', msg.file);
+            res.writeHead(200, {
+                'Content-Type': 'application/force-download',
+                'Content-disposition': 'attachment; filename=' + msg.file.name
             });
-          })
+            res.end(msg.file.data);
+        });
+    });
 
-          //Listens for a new chat message
-//          .post('/new', function (req, res) {
-//            //Create message
-//            var data = req.body;
-//            var newMsg = new Message({
-//              username: data.username,
-//              content: data.message,
-//              room: data.room.toLowerCase(),
-//              created: new Date()
-//            });
-//            //Save it to database
-//            newMsg.save(function (err, msg) {
-//              //Send message to those connected in the room
-//              res.json(msg);
-//            });
-//          });
-          ;
-  /*|||||||||||||||| SOCKET CONNECTION for messenger |||||||||||||||||||||||*/
-//Listen for connection socket 
-  io.on('connection', function (socket) {
+    /**
+     * gets all saved active groups
+     * will filter later on
+     * FILTER THERE IN INNER FUNC
+     */
+    router.route('/groups')
+        .get(function (req, res) {
+            debug(' got groups request ', req.query);
+            helper.getGroups(function (err, groups) {
+                if (err)
+                    return res.json({success: false, message: err.message});
+                res.json({success: true, groups: groups});
+            });
+        })
+    ;
 
-    debug('new connection');
-    var defaultRoom = 'general';
-    //var rooms = ["General", "private"];
+    /**
+     * GET - gets all saved active groups, will filter later on | FILTER THERE IN INNER FUNC
+     * POST -add new group//with members//
+     */
+    router.route('/admin/groups').get(function (req, res) {
+        debug(' got groups request ', req.query);
+        helper.getGroups({admin: true}, function (err, groups) {
+            if (err)
+                return res.json({success: false, message: err.message});
+            res.json({success: true, groups: groups});
+        });
+    }).post(function (req, res) {
+        debug('Data:', req.body);
+        var user = req.session.passport.user;
 
-    //Emit the rooms array
-//    socket.emit('rooms', {
-//      rooms: rooms //will implement rooms from database later on//actually saved groups
-//    });
+        debug('groups post request ', user);
+        var members = JSON.parse(req.body.members);
+        debug('members ', members);
 
-    //Listens for new user
-    socket.on('new user', function (data) {
-      debug('on new user event ', data);
-      data.room = defaultRoom;
+        var query = req.body.id;
 
-      //New user joins the default room
-      socket.join(defaultRoom);
-      //Tell all those in the room that a new user joined
-      io.in(defaultRoom).emit('user joined', data);
+        Groups.find({
+            '_id': query
+        }).exec(function (err, group) {
+            if (err) {
+                return res.json({success: false, message: helper.handleGroupSaveError(err)});
+            }
+            if (group) {
+                //send error that this group , is taken already
+                return res.json({success: false, message: helper.handleGroupSaveError({code: 11000})});
+            }
+            debug(' not found ');
+
+            var owner = user; //for now we keep it blank//this should be req.session.passport.user
+            var groupData = {
+                name: req.body.name, //uniq
+                owner: owner,
+                members: members,
+                photo: req.body.photo
+            };
+
+            // Populate Information to group instance
+            var group = new Groups(groupData);
+            group.save(function (err, group) {
+                if (err) {
+                    return res.json({success: false, message: helper.handleGroupSaveError(err)});
+                }
+                return res.json({id: group.id, success: true}); // Returns company id
+            });
+        })
     });
 
 
-//Listens for switch room
-    socket.on('switch room', function (data) {
-      //Handles joining and leaving rooms
-      debug("On switch room ", data);
-      socket.leave(data.room);
-      socket.join(data.newRoom);
-      io.in(data.room).emit('user left', data);
-      io.in(data.newRoom).emit('user joined', data);
+    /**
+     * PUT - make inactive a group
+     */
+    router.route('/groups/:name').put(function (req, res) {
+        debug('groups put request ', req.params);
+        Groups.findOne({name: req.params.name}).exec(function (err, doc) {
+            if (err) {
+                return res.json({success: false, message: err.message});
+            }
+            if (!doc) {
+                return res.json({success: false, message: "Group not found!"});
+            }
+            doc.status = true;
+            doc.save(function (err, affected) {
+                if (err)
+                    return res.json({success: false, message: err.message});
+                res.json({success: true});
+            });
+        });
+    }).delete(function (req, res) {
+        debug('groups delete request ', req.params);
+        Groups.findOne({name: req.params.name}).exec(function (err, doc) {
+            if (err) {
+                return res.json({success: false, message: err.message});
+            }
+            if (!doc) {
+                return res.json({success: false, message: "Group not found!"});
+            }
+            doc.status = false;
+            doc.save(function (err, affected) {
+                if (err)
+                    return res.json({success: false, message: err.message});
+                res.json({success: true});
+            });
+        });
     });
 
-
-
-    //Listens for a new chat message
-    socket.on('message', function (data) {
-      debug('on message event with ', data);
-      //Create message
-      var newMsg = new Message({
-        username: data.username,
-        content: data.message,
-        room: data.room.toLowerCase(),
-        created: new Date()
-      });
-      //Save it to database
-      newMsg.save(function (err, msg) {
-        if (err) {
-          debug('Error saving message', err);
-          return;
-        }
-        //implementation of private person to person message later on
-        //if(msg.private && meg.to){
-        //  //code goes here to send message to that user's socket only
-        //  //if the targeted user not online we will send an email later on with the gross messages
-        //}
-
-        //Send message to those connected in the room
-        debug('Saved  message', msg.room);
-        io.in(msg.room).emit('message', msg);
-      });
+    /**
+     * add remove group members any time
+     * id === username/email
+     */
+    router.route('/groups/:name/member/:id').post(function (req, res) {
+        Groups.update(
+            {name: req.params.name},
+            {$push: {'members': req.params.id}}
+            , function (err, updatedRes) {
+                if (err)
+                    return res.json({success: false, message: err.message});
+                res.json({success: true, d: updatedRes});
+            });
+    }).delete(function (req, res) {
+        // TODO: delete associated
+        Groups.update(
+            {name: req.params.name},
+            {$pull: {'members': req.params.id}}
+            , function (err, delRes) {
+                if (err)
+                    return res.json({success: false, message: err.message});
+                res.json({success: true, d: delRes});
+            });
     });
-
-    socket.on('disconnect', function () {
-      debug("disconnected client"); //If Verbose Debug
-    });
-  });
-  //end of socket server implementation
-
-  return router;
-
-}
-
-
-
+    return router;
+};

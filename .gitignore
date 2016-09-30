@@ -66,3 +66,4 @@ ideas
 
 # Dotenv file
 .env
+/nbproject/private/
