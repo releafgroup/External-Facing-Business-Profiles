@@ -112,11 +112,25 @@ exports.updateUserById = function (user_id, req, res) {
             }
             if (user.signupType !== 'local') {
                 user.fullUserFormSumitted = true
-            } // start requiring default fields
-            return res.json({success: true});
+            }
+            if (!req.body.profile_photo_data && !(req.body.resume_data && req.body.resume_extension)) {
+                return res.json({success: true});
+            } else {
+                exports.uploadMedia(req.body.profile_photo_data, 'profile_photos', 'jpg',
+                    'profile_photo', user, function () {
+                        if (req.body.resume_data && req.body.resume_extension) {
+                            exports.uploadMedia(req.body.resume_data, 'resumes', req.body.resume_extension,
+                                'resume', user, function () {
+                                    return res.json({success: true});
+                                });
+                        } else {
+                            return res.json({success: true});
+                        }
+                    });
+            }
         });
     });
-}
+};
 
 /** Gets all Users
  * @params: req, res
@@ -182,7 +196,8 @@ exports.getUserFavoriteProject = function (user_id, req, res) {
     });
 };
 
-exports.uploadMedia = function (data, folderName, extension, field, newUser) {
+exports.uploadMedia = function (data, folderName, extension, field, newUser, successCallback) {
+    // TODO Handle upload failures
     var file = data;
     var mimeType = base64Utils.getMimeType(file);
 
@@ -199,7 +214,11 @@ exports.uploadMedia = function (data, folderName, extension, field, newUser) {
     }, function (err) {
         if (!err) {
             newUser.setItem(field, awsS3.getUrl(filename));
-            newUser.save();
+            newUser.save().then(function () {
+                successCallback();
+            });
+        } else {
+            successCallback();
         }
     });
 };

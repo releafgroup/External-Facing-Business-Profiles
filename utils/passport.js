@@ -129,22 +129,24 @@ passport.use('local-signup', new LocalStrategy({
                         return done({message: err.message, status: 400, errors: err.errors}, false);
                     }
 
-                    // Upload image
-                    if (req.body.profile_photo_data) {
+                    if (!req.body.profile_photo_data && !(req.body.resume_data && req.body.resume_extension)) {
+                        return done(null, newUser);
+                    } else {
                         userFunctions.uploadMedia(req.body.profile_photo_data, 'profile_photos', 'jpg',
-                            'profile_photo', newUser);
+                            'profile_photo', newUser, function () {
+                                if (req.body.resume_data && req.body.resume_extension) {
+                                    userFunctions.uploadMedia(req.body.resume_data, 'resumes', req.body.resume_extension,
+                                        'resume', newUser, function () {
+                                            return done(null, newUser);
+                                        });
+                                } else {
+                                    return done(null, newUser);
+                                }
+                            });
                     }
-
-                    // Upload resume
-                    if (req.body.resume_data && req.body.resume_extension) {
-                        userFunctions.uploadMedia(req.body.resume_data, 'resumes', req.body.resume_extension,
-                            'resume', newUser);
-                    }
-                    return done(null, newUser);
                 });
             });
         });
-
     })
 );
 

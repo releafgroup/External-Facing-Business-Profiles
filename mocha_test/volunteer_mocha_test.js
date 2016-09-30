@@ -5,6 +5,7 @@ var config = require('../config.js');
 var url = process.env.HOST_DOMAIN || 'http://localhost:3000';
 var testHelpers = require('../helpers/test');
 var faker = require('faker');
+var User = require('../models/user');
 
 var superAgent = request.agent(url);
 
@@ -131,8 +132,30 @@ describe('Volunteer Test Cases', function () {
                 });
         });
 
+        it('tests updating resume and profile photo', function (done) {
+            this.timeout(10000);
+            superAgent
+                .put('/users/')
+                .send({
+                    profile_photo_data: '123456789',
+                    resume_data: '123455789',
+                    resume_extension: 'docx'
+                })
+                .end(function (err, res) {
+                    res.body.success.should.equal(true);
+                    superAgent.get('/users')
+                        .end(function (getErr, getRes) {
+                            getRes.body.success.should.equal(true);
+                            should.exist(getRes.body.message.profile_photo);
+                            should.exist(getRes.body.message.resume);
+                            getRes.body.message.resume.should.endWith('docx');
+                            done();
+                        });
+                });
+        });
 
         it('tests signup with profile_data and resume', function (done) {
+            this.timeout(10000);
             user1['local.email'] = faker.internet.email();
             user1.profile_photo_data = '123456789';
             user1.resume_data = '123455789';
@@ -156,6 +179,12 @@ describe('Volunteer Test Cases', function () {
                         });
                 });
         });
+
+        after(function () {
+            delete user1.resume_extension;
+            delete user1.resume_data;
+            delete user1.profile_photo_data;
+        });
     });
 
 
@@ -163,8 +192,6 @@ describe('Volunteer Test Cases', function () {
 
         // TODO: change
         it('tests that we check if an email has valid format', function (done) {
-
-
             superAgent
                 .post('/users/auth/signup')
                 .send(userWithBadEmail)
