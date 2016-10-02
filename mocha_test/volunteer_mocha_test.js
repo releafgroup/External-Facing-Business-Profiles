@@ -1,8 +1,11 @@
 var request = require('supertest');
 var mongoose = require('mongoose');
+var should = require('should');
 var config = require('../config.js');
 var url = process.env.HOST_DOMAIN || 'http://localhost:3000';
 var testHelpers = require('../helpers/test');
+var faker = require('faker');
+var User = require('../models/user');
 
 var superAgent = request.agent(url);
 
@@ -36,7 +39,7 @@ var company2 = JSON.parse(JSON.stringify(company1));
 
 // TODO: add test cases for user permissions
 // i.e. companies can't access this, users can't access other users data, etc.
-describe('Routing', function () {
+describe('Volunteer Test Cases', function () {
     before(function (done) {
         // Use mocha test db
         mongoose.connect(config.mocha_database, function () {
@@ -129,6 +132,59 @@ describe('Routing', function () {
                 });
         });
 
+        it('tests updating resume and profile photo', function (done) {
+            this.timeout(10000);
+            superAgent
+                .put('/users/')
+                .send({
+                    profile_photo_data: '123456789',
+                    resume_data: '123455789',
+                    resume_extension: 'docx'
+                })
+                .end(function (err, res) {
+                    res.body.success.should.equal(true);
+                    superAgent.get('/users')
+                        .end(function (getErr, getRes) {
+                            getRes.body.success.should.equal(true);
+                            should.exist(getRes.body.message.profile_photo);
+                            should.exist(getRes.body.message.resume);
+                            getRes.body.message.resume.should.endWith('docx');
+                            done();
+                        });
+                });
+        });
+
+        it('tests signup with profile_data and resume', function (done) {
+            this.timeout(10000);
+            user1['local.email'] = faker.internet.email();
+            user1.profile_photo_data = '123456789';
+            user1.resume_data = '123455789';
+            user1.resume_extension = 'docx';
+
+            var agent = request.agent(url);
+            agent.post('/users/auth/signup')
+                .send(user1)
+                .expect(200) //Status code
+                .end(function (err, res) {
+                    user1Id = res.body.message;
+                    res.body.success.should.equal(true);
+
+                    agent.get('/users')
+                        .end(function (getErr, getRes) {
+                            getRes.body.success.should.equal(true);
+                            should.exist(getRes.body.message.profile_photo);
+                            should.exist(getRes.body.message.resume);
+                            getRes.body.message.resume.should.endWith(user1.resume_extension);
+                            done();
+                        });
+                });
+        });
+
+        after(function () {
+            delete user1.resume_extension;
+            delete user1.resume_data;
+            delete user1.profile_photo_data;
+        });
     });
 
 
@@ -136,8 +192,6 @@ describe('Routing', function () {
 
         // TODO: change
         it('tests that we check if an email has valid format', function (done) {
-
-
             superAgent
                 .post('/users/auth/signup')
                 .send(userWithBadEmail)
@@ -225,7 +279,7 @@ describe('Routing', function () {
                 "skill_3_rating": 3,
                 "gender": "Female",
                 "dob": "2016-06-07"
-            }
+            };
 
             request(url)
                 .post('/users')
@@ -414,6 +468,7 @@ describe('Routing', function () {
                                 });
                         }
                     });
+
             });
 
             it('should switch between favoriting project 2 instead of project 1', function (done) {

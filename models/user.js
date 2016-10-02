@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
     bcrypt = require('bcryptjs');
 var express = require('express');
 var app = express();
-
+var mediaFields = ['profile_photo_data', 'resume_data'];
 
 /**
  * Validation error messages
@@ -137,6 +137,8 @@ var UserSchema = new Schema(
         },
         skills: [{type: String}],
         skill_ratings: [{type: String}],
+        profile_photo: {type: String},
+        resume: {type: String},
         gender: {
             type: String,
             validate: genderValidation,
@@ -195,10 +197,14 @@ UserSchema.methods.comparePassword = function (password) {
 UserSchema.methods.setItem = function (key, value) {
     var user = this;
     key = key.split('.');
-    if (key.length === 2) {
-        user[key[0]][key[1]] = value;
-    } else {
-        user[key[0]] = value;
+
+    // Ensures that media fields are not set into object
+    if(mediaFields.indexOf(key) == -1) {
+        if (key.length === 2) {
+            user[key[0]][key[1]] = value;
+        } else {
+            user[key[0]] = value;
+        }
     }
 };
 

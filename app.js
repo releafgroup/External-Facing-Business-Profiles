@@ -8,15 +8,18 @@ var authfunc = require('./utils/authentication');
 var io = require('socket.io')();
 var passport = require('./utils/passport');
 var session = require('express-session');
-//catch all multipart data, fileuploads automatically and stores the file to ‘upload/’ folder.
 var dummyData = require('./helpers/dummy_data');
+
+// Loads the environment variables from the dotenv file
+require('dotenv').config();
 
 var MongoStore = require('connect-mongo')(session);
 
 var app = express();
 app.use(logger('dev'));
 app.use(cookieParser());
-app.use(bodyParser.json());
+// Increate body limit to 4MB
+app.use(bodyParser.json({limit: 1024 * 1024 * 4, type: 'application/json'}));
 app.use(bodyParser.urlencoded({extended: false}));
 
 //TODO: Front end to have a form tag, with its action pointed to the express route.
