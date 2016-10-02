@@ -2,6 +2,7 @@ var User = require('../models/user.js');
 var Project = require('../models/project.js');
 var awsS3 = require('../helpers/aws_s3');
 var base64Utils = require('../helpers/base_64');
+var responseUtils = require('../helpers/response');
 
 
 /** Function for user error handling in saving user info
@@ -157,15 +158,24 @@ exports.favoriteProjectById = function (project_id, req, res) {
 
     Project.findOne({'_id': project_id}, function (err, proj) {
 
-        if (err) return res.json({success: false, message: err.message});
-        if (!proj) return res.json({sucess: false, message: "no project"});
+        if (err) {
+            return responseUtils.sendError(err.message, 500, res);
+        }
+        if (!proj) {
+            return responseUtils.sendError('no project', 404, res);
+        }
 
         User.findOne({
             '_id': req.session.passport.user.id
         }, function (err2, user) {
 
-            if (err2) return res.json({success: false, message: err2.message});
-            if (!user) return res.json({success: false, message: "no user"});
+            if (err2) {
+                return responseUtils.sendError(err2.message, 500, res);
+            }
+
+            if (!user) {
+                return responseUtils.sendError('no user', 404, res);
+            }
 
             if (user.favorite == project_id) { // Project is currently favored ... make it unfavorited
                 user.favorite = undefined;
@@ -174,7 +184,9 @@ exports.favoriteProjectById = function (project_id, req, res) {
             }
 
             user.save(function (user_err, succ) {
-                if (user_err) return res.json({success: false, message: "error occurred saving"});
+                if (user_err)  {
+                    return responseUtils.sendError('error occurred saving', 500, res);
+                }
                 return res.json({success: true});
             });
         });
