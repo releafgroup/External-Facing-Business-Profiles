@@ -63,4 +63,7 @@ ideas
 
 # Jetbrains IDE files
 .idea/
+
+# Dotenv file
+.env
 /nbproject/private/
