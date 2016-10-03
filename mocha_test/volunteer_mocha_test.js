@@ -459,11 +459,11 @@ describe('Volunteer Test Cases', function () {
                     .end(function (err, res) {
                         if (res.body.success) {
                             superAgent
-                                .get('/users')
+                                .get('/users/projects/favorite')
                                 .expect(200)
                                 .end(function (err2, res2) {
-                                    res2.body.message.favorite.should.equal(project1Id);
                                     res2.body.success.should.equal(true);
+                                    res2.body.message._id.should.equal(project1Id);
                                     done();
                                 });
                         }
@@ -478,11 +478,11 @@ describe('Volunteer Test Cases', function () {
                     .end(function (err, res) {
                         if (res.body.success) {
                             superAgent
-                                .get('/users')
+                                .get('/users/projects/favorite')
                                 .expect(200)
                                 .end(function (err2, res2) {
-                                    res2.body.message.favorite.should.equal(project2Id);
                                     res2.body.success.should.equal(true);
+                                    res2.body.message._id.should.equal(project2Id);
                                     done();
                                 });
                         }

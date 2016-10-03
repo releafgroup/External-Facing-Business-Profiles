@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var config = require('../config.js');
 var faker = require('faker');
 var testHelpers = require('../helpers/test');
-var server = require('../bin/www');
+require('../bin/www');
 
 var url = testHelpers.url;
 
@@ -15,7 +15,6 @@ var admin1 = {
 };
 
 var superAgent = request.agent(url);
-var user1Id = -1;
 var user1 = testHelpers.user1;
 var token = null;
 

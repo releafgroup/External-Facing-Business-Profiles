@@ -145,7 +145,7 @@ var UserSchema = new Schema(
             required: this.fullUserFormSumitted || this.signupType === 'local'
         },
         dob: {type: Date, required: this.fullUserFormSumitted || this.signupType === 'local', validate: dobValidation},
-        favorite: {type: ObjectId, ref: 'ProjectSchema'}
+        favorite: {type: ObjectId, ref: 'Project'}
     },
 
     {
