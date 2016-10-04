@@ -30,6 +30,20 @@ describe('Company routes', function () {
                 });
         });
 
+        it('tests that business cannot signup with same industry', function (done) {
+            company1 = testHelpers.company1();
+            var badCompany = Object.assign(company1, {});
+            badCompany.company_industry = ['Storage', 'Storage'];
+            request(url)
+                .post('/companies/auth/signup')
+                .send(badCompany)
+                .expect(400) //Status code
+                .end(function (err, res) {
+                    res.body.success.should.equal(false);
+                    done();
+                });
+        });
+
         it('tests that business can signup', function (done) {
             company1 = testHelpers.company1();
             request(url)
