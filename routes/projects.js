@@ -47,7 +47,7 @@ router.route('/')
             // Next save project
             project.save(function (projectErr, project) {
                 if (projectErr) {
-                    return responseHelper.sendError(handleProjectSaveError(projectErr), 500, res);
+                    return responseHelper.sendError(handleProjectSaveError(projectErr), 400, res);
                 }
 
                 // Finally, add to company schema

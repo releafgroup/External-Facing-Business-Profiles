@@ -57,12 +57,11 @@ var coreSkillsValidation = {
     validator: function (skills) {
         var skillsCache = [];
         skills.forEach(function (skill) {
-            if (skill in skills || !(skill in skillOptions)) {
-                return false;
+            if (skillsCache.indexOf(skill) == -1 && skillOptions.indexOf(skill) > -1) {
+                skillsCache.push(skill);
             }
-            skillsCache.push(skill);
         });
-        return true;
+        return skills.length == skillsCache.length;
     },
     message: errorMessages['core_skills'][app.get('env')]
 };

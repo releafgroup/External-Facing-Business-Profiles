@@ -44,6 +44,23 @@ describe('Projects Routes', function () {
                 });
         });
 
+        it('creates project with same core skills', function (done) {
+            project1['_company'] = companyId;
+            var badProject = Object.assign({}, project1);
+            badProject.core_skills = [
+                'App Development',
+                'App Development'
+            ];
+            request(url)
+                .post('/projects')
+                .send(badProject)
+                .expect(400) //Status code
+                .end(function (err, res) {
+                    res.body.success.should.equal(false);
+                    done();
+                });
+        });
+
         it('creates project 1', function (done) {
             project1['_company'] = companyId;
             request(url)
