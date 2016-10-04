@@ -176,7 +176,7 @@ var CompanySchema = new Schema({
     password: {type: String, required: true, select: false}, // Validation done through routes bc of hashing
     email: {type: String, required: true, unique: true, validate: emailValidation},
     state: {type: String}, // TODO: ensure within certain list or have some form of validation
-    lca: {type: String}, // TODO: ensure within certain list or have some form of validation
+    city: {type: String}, // TODO: ensure within certain list or have some form of validation
     company_logo: {type: String}, // TODO: ensure within certain list or have some form of validation
     company_purpose: {type: String, required: true, validate: companyPurposeValidation},
     company_size: {type: String, required: true, validate: companySizeValidation},
