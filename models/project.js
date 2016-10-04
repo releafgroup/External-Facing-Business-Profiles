@@ -41,6 +41,9 @@ var skillOptions = ['Data Analytics', 'Marketing', 'Web Development', 'App Devel
     'Raising Capital', 'Business Plan', 'SWOT Analysis', 'Competitive Analysis', 'New Market Entry',
     'Operations Improvement'];
 
+// TODO Remove dummy project core skills
+skillOptions = skillOptions.concat(['Consulting', 'Account Management', 'C#', 'JavaScript', 'AngularJS']);
+
 var longDescriptionValidation = {
     validator: function (r) {
         return r.length <= 1000;
