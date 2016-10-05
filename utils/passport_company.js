@@ -1,7 +1,6 @@
 var LocalStrategy = require('passport-local').Strategy,
-    passport = require('passport'),
     Company = require('../models/company'),
-    bcrypt = require('bcryptjs');
+    companyFunctions = require('../utils/company');
 
 
 var exports = module.exports;
@@ -28,7 +27,14 @@ exports.CompanySignupStrategy = new LocalStrategy({
             }
             newCompany.password = newCompany.generateHash(newCompany.password);
             newCompany.save().then(function (savedCompany) {
-                return done(null, savedCompany);
+                if (!req.body.company_logo_data) {
+                    return done(null, savedCompany);
+                } else {
+                    companyFunctions.uploadMedia(req.body.company_logo_data, 'company_logos', 'jpg',
+                        'company_logo', savedCompany, function () {
+                            return done(null, savedCompany);
+                        });
+                }
             }).catch(function (saveError) {
                 return done({message: saveError.message, status: 400, errors: saveError.errors}, false);
             });
@@ -60,7 +66,7 @@ exports.CompanyLoginStrategy = new LocalStrategy({
                 }, false);
             return done(null, company);
         }).catch(function (error) {
-            return done(err, false);
+            return done(error, false);
         });
     });
 });

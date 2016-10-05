@@ -2,6 +2,7 @@ var request = require('supertest');
 var mongoose = require('mongoose');
 var config = require('../config.js');
 var testHelpers = require('../helpers/test');
+var should = require('should');
 
 var company1 = testHelpers.company1();
 var company1Id = -1;
@@ -74,6 +75,25 @@ describe('Company routes', function () {
                 .end(function (err, res) {
                     res.body.success.should.equal(true);
                     done();
+                });
+        });
+
+        it('tests that business can signup with logo', function (done) {
+            this.timeout(10000);
+            company1 = Object.assign({company_logo_data: '123456789'}, testHelpers.company1());
+            request(url)
+                .post('/companies/auth/signup')
+                .send(company1)
+                .end(function (err, res) {
+                    res.body.success.should.equal(true);
+                    var id = res.body.message;
+                    request(url).get('/companies/' + id)
+                        .end(function (getErr, getRes) {
+                            getRes.body.success.should.equal(true);
+                            should.exist(getRes.body.message.company_logo);
+                            getRes.body.message.company_logo.should.endWith('jpg');
+                            done();
+                        });
                 });
         });
     });
