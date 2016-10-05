@@ -34,7 +34,7 @@ describe('Facebook Login', function() {
             });
 
             it('gets user data', function(done) {
-                var bodyContent = JSON.parse(TestBrowser.document.body._childNodes[0]._data);
+                var bodyContent = JSON.parse(TestBrowser.document.body.childNodes[0].innerHTML);
                 bodyContent.message.facebook.should.have.property('id');
                 bodyContent.message.skills.length.should.equal(0);
                 done();
@@ -42,7 +42,7 @@ describe('Facebook Login', function() {
 
             it('can logout', function(done) {
                 TestBrowser.visit(url + '/users/auth/logout', function() {
-                    var bodyContent = JSON.parse(TestBrowser.document.body._childNodes[0]._data);
+                    var bodyContent = JSON.parse(TestBrowser.document.body.childNodes[0].innerHTML);
                     bodyContent.message.should.equal('logged out');
                     done();
                 });
@@ -50,7 +50,7 @@ describe('Facebook Login', function() {
 
             it('can not access user data after logging out', function(done) {
                 TestBrowser.visit(url + '/users/', function() {
-                    var bodyContent = JSON.parse(TestBrowser.document.body._childNodes[0]._data);
+                    var bodyContent = JSON.parse(TestBrowser.document.body.childNodes[0].innerHTML);
                     bodyContent.message.should.equal('Not logged in');
                     done();
                 });
