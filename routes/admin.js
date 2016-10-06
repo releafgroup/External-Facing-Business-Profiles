@@ -65,6 +65,34 @@ module.exports = function (passport) {
     }
 
     /**
+     * Route: admin
+     *
+     * Create and Retrieves all administrators
+     */
+    router.route('/admin')
+
+        /**
+         * POST
+         * 
+         * 
+         */
+        .post(function(req, res) {
+            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+
+            var newAdmin = new Admin();
+            for (var a in req.body) {
+                newAdmin[a] = req.body[a];
+            }
+
+            newAdmin.save(function (err, newAdmin) {
+                if (err) {
+                    return res.json({success: false, message: err.message});
+                }
+                return res.json({success: true, message: newAdmin});
+            });
+        })
+
+    /**
      * Get Requests
      */
     /** Route: /admin/volunteers
@@ -212,7 +240,7 @@ module.exports = function (passport) {
             if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
             var volunteer_assignment = new VolunteerAssignment();
 
-            for (a in req.body) {
+            for (var a in req.body) {
                 volunteer_assignment[a] = req.body[a];
             }
 
