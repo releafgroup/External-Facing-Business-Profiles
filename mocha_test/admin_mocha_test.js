@@ -40,7 +40,7 @@ describe('Routing', function () {
         done();
     });
 
-    describe('Creates admin user', function () {
+    describe('Creates admin user 1', function () {
         it('creates admin 1', function (done) {
             superAgentAdmin
                 .post('/admin')

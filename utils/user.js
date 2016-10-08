@@ -1,5 +1,6 @@
 var User = require('../models/user.js');
 var Project = require('../models/project.js');
+var Admin = require('../models/admin.js');
 var awsS3 = require('../helpers/aws_s3');
 var base64Utils = require('../helpers/base_64');
 var responseUtils = require('../helpers/response');
@@ -17,7 +18,7 @@ function handleUserSaveError(err) {
         // If user validation, gets one of the errors to return
         if (err.message == "User validation failed") {
             var one_error;
-            for (first in err.errors) { // Get one of the errors
+            for (var first in err.errors) { // Get one of the errors
                 one_error = err.errors[first];
                 break;
             }
@@ -80,7 +81,7 @@ exports.updateUserById = function (user_id, req, res) {
     }, function (err, user) {
         if (!user) return res.json({success: false, message: 'User not found'});
         if (err) return res.json({success: false, message: err.message});
-        for (a in req.body) {
+        for (var a in req.body) {
             var value = req.body[a];
             if (a !== "id" && a !== 'local.email' && a !== "_id" && a !== 'facebook.id') {
                 if (a === "local.password") {
@@ -146,6 +147,21 @@ exports.getAllUsers = function (req, res) {
     });
 
 };
+
+exports.getAdminById = function (admin_id, req, res) {
+    Admin.findOne({'_id': admin_id}, function(err, admin){
+        if (err) return res.json({success: false, message: err.message});
+        return res.json({success: true, message: admin});
+    })
+}
+
+exports.getAllAdmin = function(req, res) {
+    Admin.find(function (err, admin) {
+        if (err) return res.json({success: false, message: err.message});
+        return res.json({success: true, message: admin});
+    });
+}
+
 
 /** Toggles the favorite attribute for a given user
  * @params: project_id, req, res

@@ -68,20 +68,14 @@ module.exports = function (passport) {
         .get(function (req, res) {
             if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
 
-            Admin.find({}, function (err, admin) {
-                if (err) return res.json({success: false, message: err.message});
-                return res.json({success: true, message: admin});
-            });
+            return user_functions.getAllAdmin(req, res);
         })
 
     router.route('/:id')
         .get(function (req, res) {
             if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
 
-            Admin.findById(req.params.id, function(err, admin){
-                if (err) return res.json({success: false, message: err.message});
-                return res.json({success: true, message: admin});
-            })
+            return user_functions.getAdminById(req.params.id, req, res);
         })
 
     /**
