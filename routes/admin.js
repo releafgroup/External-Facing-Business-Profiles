@@ -74,6 +74,16 @@ module.exports = function (passport) {
             });
         })
 
+    router.route('/:id')
+        .get(function (req, res) {
+            // if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+
+            Admin.findOne( {'_id' : req.params.id }, function(err, admin){
+                if (err) return res.json({success: false, message: err.message});
+                res.json({success: true, message: admin});
+            })
+        })
+
     /**
      * Get Requests
      */

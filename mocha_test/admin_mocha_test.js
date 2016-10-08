@@ -12,6 +12,7 @@ var url = testHelpers.url;
 
 var superAgentAdmin = (require('supertest')).agent(url);
 var admin1 = testHelpers.admin1;
+var admin2 = testHelpers.admin2
 
 var superAgent1 = request.agent(url);
 var user1Id = -1;
@@ -53,6 +54,19 @@ describe('Routing', function () {
 
         });
 
+        it('creates admin 2', function (done) {
+            superAgentAdmin
+                .post('/admin')
+                .send(admin2)
+                .expect(200)
+                .end(function (err, res) {
+                    admin2['_id'] = res.body.message;
+                    res.body.success.should.equal(true);
+                    done();
+                });
+
+        });
+
         it('tries to login admin 1', function (done) {
             superAgentAdmin
                 .post('/admin/auth/login')
@@ -68,7 +82,7 @@ describe('Routing', function () {
     });
 
     describe('Gets all admin users', function () {
-        it('gets admin 1', function (done) {
+        it('gets all admins', function (done) {
             superAgentAdmin
                 .get('/admin')
                 .expect(200)
@@ -82,9 +96,9 @@ describe('Routing', function () {
     });
 
     describe('Gets a single admin user', function () {
-        it('gets admin 1', function (done) {
+        it('gets admin 2', function (done) {
             superAgentAdmin
-                .get('/admin/' + admin1._id)
+                .get('/admin/' + admin2._id)
                 .expect(200)
                 .end(function (err, res) {
                     res.body.success.should.equal(true);
