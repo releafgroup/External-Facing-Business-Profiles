@@ -66,21 +66,21 @@ module.exports = function (passport) {
 
     router.route('/')
         .get(function (req, res) {
-            // if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
 
             Admin.find({}, function (err, admin) {
                 if (err) return res.json({success: false, message: err.message});
-                res.json({success: true, message: admin});
+                return res.json({success: true, message: admin});
             });
         })
 
     router.route('/:id')
         .get(function (req, res) {
-            // if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
 
-            Admin.findOne( {'_id' : req.params.id }, function(err, admin){
+            Admin.findById(req.params.id, function(err, admin){
                 if (err) return res.json({success: false, message: err.message});
-                res.json({success: true, message: admin});
+                return res.json({success: true, message: admin});
             })
         })
 

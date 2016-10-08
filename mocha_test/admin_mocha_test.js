@@ -88,6 +88,7 @@ describe('Routing', function () {
                 .expect(200)
                 .end(function (err, res) {
                     res.body.success.should.equal(true);
+                    res.body.message.should.be.instanceof(Array).and.have.lengthOf(2);
                     done();
                 });
 
