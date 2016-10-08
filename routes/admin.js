@@ -48,49 +48,21 @@ module.exports = function (passport) {
      * Only make available in dev/testing environment
      * TODO: test in production
      */
-    if (process.env.NODE_ENV !== 'production') {
-        router.route('/')
-            .post(function (req, res) {
-
-                var newAdmin = new Admin();
-                newAdmin['password'] = newAdmin.generateHash(req.body['password']);
-                newAdmin['name'] = req.body['name'];
-                newAdmin.save(function (err) {
-                    if (err) {
-                        return res.json({success: false, message: err.message});
-                    }
-                    return res.json({success: true, message: newAdmin._id});
-                });
-            });
-    }
-
-    /**
-     * Route: admin
-     *
-     * Create and Retrieves all administrators
-     */
-    router.route('/admin')
-
-        /**
-         * POST
-         * 
-         * 
-         */
-        .post(function(req, res) {
-            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+   
+    router.route('/')
+        .post(function (req, res) {
+            // if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
 
             var newAdmin = new Admin();
-            for (var a in req.body) {
-                newAdmin[a] = req.body[a];
-            }
-
-            newAdmin.save(function (err, newAdmin) {
+            newAdmin['password'] = newAdmin.generateHash(req.body['password']);
+            newAdmin['name'] = req.body['name'];
+            newAdmin.save(function (err) {
                 if (err) {
                     return res.json({success: false, message: err.message});
                 }
-                return res.json({success: true, message: newAdmin});
+                return res.json({success: true, message: newAdmin._id});
             });
-        })
+        });
 
     /**
      * Get Requests
