@@ -1,4 +1,6 @@
 var Company = require('../models/company.js');
+var awsS3 = require('../helpers/aws_s3');
+var base64Utils = require('../helpers/base_64');
 
 /** Function for user error handling in saving company info
  * @params: error from saving a company
@@ -88,5 +90,32 @@ exports.getAllCompanies = function(req, res) {
     Company.find(function(err, companies){
         if(err) return res.json({success: false, message: err.message}); 
         res.json({success: true, message: companies}); 
+    });
+};
+
+exports.uploadMedia = function (data, folderName, extension, field, newCompany, successCallback) {
+    // TODO Handle upload failures
+    var file = data;
+    var mimeType = base64Utils.getMimeType(file);
+
+    var buf = new Buffer(base64Utils.getData(file), 'base64');
+    var environment = process.env.APPLICATION_ENV;
+    var filename = environment + '/' + folderName + '/' + newCompany._id + '.' + extension;
+
+    awsS3.upload({
+        Key: filename,
+        Body: buf,
+        ContentEncoding: 'base64',
+        ContentType: mimeType,
+        ACL: 'public-read'
+    }, function (err) {
+        if (!err) {
+            newCompany[field] = awsS3.getUrl(filename);
+            newCompany.save().then(function () {
+                successCallback();
+            });
+        } else {
+            successCallback();
+        }
     });
 };

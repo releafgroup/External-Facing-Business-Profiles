@@ -41,6 +41,9 @@ var skillOptions = ['Data Analytics', 'Marketing', 'Web Development', 'App Devel
     'Raising Capital', 'Business Plan', 'SWOT Analysis', 'Competitive Analysis', 'New Market Entry',
     'Operations Improvement'];
 
+// TODO Remove dummy project core skills
+skillOptions = skillOptions.concat(['Consulting', 'Account Management', 'C#', 'JavaScript', 'AngularJS']);
+
 var longDescriptionValidation = {
     validator: function (r) {
         return r.length <= 1000;
@@ -57,12 +60,11 @@ var coreSkillsValidation = {
     validator: function (skills) {
         var skillsCache = [];
         skills.forEach(function (skill) {
-            if (skill in skills || !(skill in skillOptions)) {
-                return false;
+            if (skillsCache.indexOf(skill) == -1 && skillOptions.indexOf(skill) > -1) {
+                skillsCache.push(skill);
             }
-            skillsCache.push(skill);
         });
-        return true;
+        return skills.length == skillsCache.length;
     },
     message: errorMessages['core_skills'][app.get('env')]
 };

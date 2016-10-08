@@ -15,9 +15,11 @@ var companyData = {
     "password": "12345678",
     "company_purpose": "Agriculture",
     "company_size": "1 Partner",
-    "company_industry_1": "Processing",
-    "company_industry_2": "Transport",
-    "company_industry_3": "Storage",
+    'company_industry': [
+        'Processing',
+        'Transport',
+        'Storage'
+    ],
     "value_hoped_for": "we hope to get a lot of value",
     "short_term_obj": "short term objective",
     "long_term_obj": "long term objective",
@@ -36,9 +38,11 @@ var companyData2 = {
     "password": "12345678",
     "company_purpose": "Agriculture",
     "company_size": "1 Partner",
-    "company_industry_1": "Processing",
-    "company_industry_2": "Transport",
-    "company_industry_3": "Storage",
+    'company_industry': [
+        'Processing',
+        'Transport',
+        'Storage'
+    ],
     "value_hoped_for": "we hope to get a lot of value",
     "short_term_obj": "short term objective",
     "long_term_obj": "long term objective",
