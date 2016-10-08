@@ -67,6 +67,34 @@ describe('Routing', function () {
 
     });
 
+    describe('Gets all admin users', function () {
+        it('gets admin 1', function (done) {
+            superAgentAdmin
+                .get('/admin')
+                .expect(200)
+                .end(function (err, res) {
+                    res.body.success.should.equal(true);
+                    done();
+                });
+
+        });
+
+    });
+
+    describe('Gets a single admin user', function () {
+        it('gets admin 1', function (done) {
+            superAgentAdmin
+                .get('/admin/' + admin1._id)
+                .expect(200)
+                .end(function (err, res) {
+                    res.body.success.should.equal(true);
+                    done();
+                });
+
+        });
+
+    });
+
     describe('Setup users, projects companies for admin test', function () {
         it('creates user 1', function (done) {
             superAgent1
