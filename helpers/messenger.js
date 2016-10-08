@@ -4,7 +4,7 @@ var moment = require('moment');
 
 var config = require('./../config');
 
-var spanHours = 0.5;//
+var spanHours = config.mailConfig.spanHours;//
 var usersOnline = [];
 var debug = require('debug')('server:io');
 var Message = require('./../models/message');
@@ -12,7 +12,7 @@ var Groups = require('./../models/chat_groups');
 
 var nodemailer = require('./../utils/node_mailer');
 nodemailer.setupTransport(config.mailConfig.smtp);
-
+exports.msgQ = [];
 
 /**
  * General Functions
@@ -154,28 +154,29 @@ exports.getQueuedPrivateMsg = function (cb, options) {
   Message.find({
     type: 'private',
 //      from: options.from,
-//      to: options.to,
-    createdAt: {$gt: new Date() - (spanHours * 60 * 60 * 1000) - 10 * 1000}//-10 second rewind
+    to: {$in:options.to},
+    createdAt: {$gt: new Date() - (spanHours * 60 * 60 * 1000) - 30 * 1000}//-30 second rewind
   }, null, {
     skip: 0, // Starting Row
-    limit: 2,
+    //limit: 2,//
     sort: {
       createdAt: 1 //Sort by Date Added DESC
     }
-  }).exec(function (err, msgs) {
+  }).populate('to').populate('username').exec(function (err, msgs) {
     debug('Found saved messages for user ' + options.to + ' Count ' + msgs.length);
     cb(err, msgs);
   });
 };
 
-exports.formatTime = function (dateStr) {
+var formatTime = function (dateStr) {
   return moment(dateStr).format('LT');
-};
+}
+exports.formatTime = formatTime;
 
-exports.formatMessage = function (msg) {
+var formatMessage = function (msg) {
   return "<br>At: " + formatTime(msg.createdAt) + " <br> " + msg.content + " <br><br>";
-};
-
+}
+exports.formatMessage = formatMessage;
 /**
  * will get the array of the queue and get all messages for each users to send and get the email of the user
  * then send emails

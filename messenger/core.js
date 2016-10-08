@@ -6,8 +6,8 @@ module.exports = function (io) {
     var Message = require('./../models/message');
     var helper = require('./../helpers/messenger');
     var nodemailer = require('./../utils/node_mailer');
+    var scheduler = require('./../utils/messenger_mail_scheduler')();
     var usersOnline = [];
-    var msgQ = [];
     var userSockets = {};
 
     nodemailer.setupTransport(config.mailConfig.smtp);
@@ -72,8 +72,8 @@ module.exports = function (io) {
         function sendPrivateMessage(msg) {
             if (msg.type == 'private') {
                 if (!helper.isOnline(msg.to)) {
-                    if (msgQ.indexOf(msg.to) == -1)
-                        msgQ.push(msg.to);
+                    if (helper.msgQ.indexOf(msg.to) == -1)
+                        helper.msgQ.push(msg.to);
                 }
                 //userSockets[msg.to] is the saved socket for the specific user
                 if (userSockets[msg.to]) {
@@ -87,15 +87,15 @@ module.exports = function (io) {
             debug('on new user event ', data);
             if (usersOnline.indexOf(data.username) == -1) {
                 usersOnline.push(data.username);
-                if (msgQ.indexOf(data.username) !== -1)
-                    msgQ.splice(msgQ.indexOf(data.username), 1);
+                if (helper.msgQ.indexOf(data.username) !== -1)
+                    helper.msgQ.splice(helper.msgQ.indexOf(data.username), 1);
             }
 
             username = data.username;
 
             userSockets[username] = socket;
             socket.join(defaultRoom);
-            if (!data.romm)
+            if (!data.room)
                 data.room = defaultRoom;
 
 
