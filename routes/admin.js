@@ -45,40 +45,6 @@ module.exports = function (passport) {
         }); //TODO: user or admin???
 
     /**
-     * Only make available in dev/testing environment
-     * TODO: test in production
-     */
-   
-    router.route('/')
-        .post(function (req, res) {
-            // if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
-
-            var newAdmin = new Admin();
-            newAdmin['password'] = newAdmin.generateHash(req.body['password']);
-            newAdmin['name'] = req.body['name'];
-            newAdmin.save(function (err) {
-                if (err) {
-                    return res.json({success: false, message: err.message});
-                }
-                return res.json({success: true, message: newAdmin._id});
-            });
-        });
-
-    router.route('/')
-        .get(function (req, res) {
-            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
-
-            return user_functions.getAllAdmin(req, res);
-        })
-
-    router.route('/:id')
-        .get(function (req, res) {
-            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
-
-            return user_functions.getAdminById(req.params.id, req, res);
-        })
-
-    /**
      * Get Requests
      */
     /** Route: /admin/volunteers
@@ -250,6 +216,35 @@ module.exports = function (passport) {
             });
 
         });
+    
+    router.route('/')
+        .post(function (req, res) {
+            // if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+
+            var newAdmin = new Admin();
+            newAdmin['password'] = newAdmin.generateHash(req.body['password']);
+            newAdmin['name'] = req.body['name'];
+            newAdmin.save(function (err) {
+                if (err) {
+                    return res.json({success: false, message: err.message});
+                }
+                return res.json({success: true, message: newAdmin._id});
+            });
+        });
+
+    router.route('/')
+        .get(function (req, res) {
+            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+
+            return user_functions.getAllAdmin(req, res);
+        })
+
+    router.route('/:id')
+        .get(function (req, res) {
+            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+
+            return user_functions.getAdminById(req.params.id, req, res);
+        })
 
     return router;
 
