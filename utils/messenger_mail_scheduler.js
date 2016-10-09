@@ -29,7 +29,7 @@ module.exports = function (io) {
           nodemailer.sendMail(mailOptions);
         })(filteredMsg[i]);
       }
-
+       setTimeout(function(){helper.msgQ = [];}, 10);
 
     }, {
       //option here
