@@ -219,7 +219,12 @@ module.exports = function (passport) {
     
     router.route('/')
         .post(function (req, res) {
-            // if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+
+            Admin.count({},function(count) {
+                if (!checkAdminProfilePermission(req, res) && count > 0)  {
+                    return res.json({ success: false, message: 'No permission' });    
+                }
+            });
 
             var newAdmin = new Admin();
             newAdmin['password'] = newAdmin.generateHash(req.body['password']);

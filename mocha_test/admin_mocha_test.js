@@ -47,6 +47,7 @@ describe('Routing', function () {
                 .send(admin1)
                 .expect(200)
                 .end(function (err, res) {
+                    console.log('This is it: ', res.body.message);
                     admin1['_id'] = res.body.message;
                     res.body.success.should.equal(true);
                     done();
