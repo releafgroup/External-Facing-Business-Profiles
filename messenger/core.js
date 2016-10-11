@@ -6,7 +6,7 @@ module.exports = function (io) {
     var Message = require('./../models/message');
     var helper = require('./../helpers/messenger');
     var nodemailer = require('./../utils/node_mailer');
-    var scheduler = require('./../utils/messenger_mail_scheduler')();
+    require('./../utils/messenger_mail_scheduler')();
     var usersOnline = [];
     var userSockets = {};
 
