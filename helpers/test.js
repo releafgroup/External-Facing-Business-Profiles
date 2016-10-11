@@ -140,3 +140,8 @@ exports.admin1 = {
     'name': 'admin1@gmail.com',
     'password': 'admin1'
 };
+
+exports.admin2 = {
+    'name': 'admin2@gmail.com',
+    'password': 'admin2'
+};

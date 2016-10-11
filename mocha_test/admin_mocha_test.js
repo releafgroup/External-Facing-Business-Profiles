@@ -12,6 +12,7 @@ var url = testHelpers.url;
 
 var superAgentAdmin = (require('supertest')).agent(url);
 var admin1 = testHelpers.admin1;
+var admin2 = testHelpers.admin2;
 
 var superAgent1 = request.agent(url);
 var user1Id = -1;
@@ -28,7 +29,7 @@ var project1 = testHelpers.project1;
 
 var project2 = testHelpers.project2;
 
-describe('Routing', function () {
+describe('Admin Routes', function () {
 
     before(function (done) {
         // Use mocha test db
@@ -39,7 +40,7 @@ describe('Routing', function () {
         done();
     });
 
-    describe('Creates admin user', function () {
+    describe('Admin Creation and Authentication', function () {
         it('creates admin 1', function (done) {
             superAgentAdmin
                 .post('/admin')
@@ -47,6 +48,31 @@ describe('Routing', function () {
                 .expect(200)
                 .end(function (err, res) {
                     admin1['_id'] = res.body.message;
+                    res.body.success.should.equal(true);
+                    done();
+                });
+
+        });
+
+        it('Another admin cannot be created by non admin after first admin is created', function (done) {
+            request.agent(url)
+                .post('/admin')
+                .send(admin1)
+                .expect(200)
+                .end(function (err, res) {
+                    res.body.success.should.equal(false);
+                    done();
+                });
+
+        });
+
+        it('creates admin 2', function (done) {
+            superAgentAdmin
+                .post('/admin')
+                .send(admin2)
+                .expect(200)
+                .end(function (err, res) {
+                    admin2['_id'] = res.body.message;
                     res.body.success.should.equal(true);
                     done();
                 });
@@ -64,6 +90,35 @@ describe('Routing', function () {
 
         });
 
+
+    });
+
+    describe('Gets all admin users', function () {
+        it('gets all admins', function (done) {
+            superAgentAdmin
+                .get('/admin')
+                .expect(200)
+                .end(function (err, res) {
+                    res.body.success.should.equal(true);
+                    res.body.message.should.be.instanceof(Array).and.have.lengthOf(2);
+                    done();
+                });
+
+        });
+
+    });
+
+    describe('Gets a single admin user', function () {
+        it('gets admin 2', function (done) {
+            superAgentAdmin
+                .get('/admin/' + admin2._id)
+                .expect(200)
+                .end(function (err, res) {
+                    res.body.success.should.equal(true);
+                    done();
+                });
+
+        });
 
     });
 
@@ -176,7 +231,7 @@ describe('Routing', function () {
 
         });
 
-        it('tests retrieveal of single user', function (done) {
+        it('tests retrieval of single user', function (done) {
             superAgentAdmin
                 .get('/admin/volunteers/' + user1Id)
                 .expect(200) //Status code
@@ -188,7 +243,7 @@ describe('Routing', function () {
                 });
         });
 
-        it('tests retrieveal of single company', function (done) {
+        it('tests retrieval of single company', function (done) {
             superAgentAdmin
                 .get('/admin/companies/' + company1Id)
                 .expect(200) //Status code
@@ -200,7 +255,7 @@ describe('Routing', function () {
                 });
         });
 
-        it('tests retrieveal of single project', function (done) {
+        it('tests retrieval of single project', function (done) {
             superAgentAdmin
                 .get('/admin/projects/' + project1Id)
                 .expect(200) //Status code
