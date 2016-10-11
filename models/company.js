@@ -47,18 +47,8 @@ var errorMessages = {
         'development': genericErrorMessage,
         'production': genericErrorMessage
     },
-    'company_industry_1': {
-        'mocha_db': 'This must be a valid industry and cannot be the same as the other industries',
-        'development': genericErrorMessage,
-        'production': genericErrorMessage
-    },
-    'company_industry_2': {
-        'mocha_db': 'This must be a valid industry and cannot be the same as the other industries',
-        'development': genericErrorMessage,
-        'production': genericErrorMessage
-    },
-    'company_industry_3': {
-        'mocha_db': 'This must be a valid industry and cannot be the same as the other industries',
+    'company_industry': {
+        'mocha_db': "Company industry must be part of allowed options and unique",
         'development': genericErrorMessage,
         'production': genericErrorMessage
     },
@@ -131,21 +121,6 @@ var companySizeValidation = {
         return companySizeOptions.indexOf(r) >= 0;
     }, message: errorMessages['company_size'][app.get('env')]
 };
-var companyIndustry1Validation = {
-    validator: function (r) {
-        return companyIndustryOptions.indexOf(r) >= 0 && r != this.company_industry_2 && r != this.company_industry_3;
-    }, message: errorMessages['company_industry_1'][app.get('env')]
-};
-var companyIndustry2Validation = {
-    validator: function (r) {
-        return companyIndustryOptions.indexOf(r) >= 0 && r != this.company_industry_1 && r != this.company_industry_3;
-    }, message: errorMessages['company_industry_2'][app.get('env')]
-};
-var companyIndustry3Validation = {
-    validator: function (r) {
-        return companyIndustryOptions.indexOf(r) >= 0 && r != this.company_industry_1 && r != this.company_industry_2;
-    }, message: errorMessages['company_industry_3'][app.get('env')]
-};
 
 var valueHopedForValidation = {
     validator: function (r) {
@@ -179,6 +154,19 @@ var internetAccessValidation = {
     }, message: errorMessages['internet_access'][app.get('env')]
 };
 
+var companyIndustryValidation = {
+    validator: function (companyIndustries) {
+        var companyIndustryCache = [];
+        companyIndustries.forEach(function (companyIndustry) {
+            if (companyIndustryCache.indexOf(companyIndustry) == -1 && companyIndustryOptions.indexOf(companyIndustry) > -1) {
+                companyIndustryCache.push(companyIndustry);
+            }
+        });
+        return companyIndustries.length > 0 && companyIndustries.length == companyIndustryCache.length;
+    },
+    message: errorMessages['company_industry'][app.get('env')]
+};
+
 // TODO: figure out why unique business_name does not work
 // TODO: Create endpoint to validate business name to ensure its unique
 var CompanySchema = new Schema({
@@ -188,13 +176,11 @@ var CompanySchema = new Schema({
     password: {type: String, required: true, select: false}, // Validation done through routes bc of hashing
     email: {type: String, required: true, unique: true, validate: emailValidation},
     state: {type: String}, // TODO: ensure within certain list or have some form of validation
-    lca: {type: String}, // TODO: ensure within certain list or have some form of validation
+    city: {type: String}, // TODO: ensure within certain list or have some form of validation
     company_logo: {type: String}, // TODO: ensure within certain list or have some form of validation
     company_purpose: {type: String, required: true, validate: companyPurposeValidation},
     company_size: {type: String, required: true, validate: companySizeValidation},
-    company_industry_1: {type: String, required: true, validate: companyIndustry1Validation},
-    company_industry_2: {type: String, validate: companyIndustry2Validation},
-    company_industry_3: {type: String, validate: companyIndustry3Validation},
+    company_industry: {type: [String], required: true, validate: companyIndustryValidation, index: true},
     value_hoped_for: {type: String, required: true, validate: valueHopedForValidation},
     short_term_obj: {type: String, required: true, validate: shortTermObjectiveValidation},
     long_term_obj: {type: String, required: true, validate: longTermObjectiveValidation},
