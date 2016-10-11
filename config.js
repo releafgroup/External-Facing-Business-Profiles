@@ -5,10 +5,6 @@ module.exports = {"database":database, "superSecret": superSecret, "mocha_databa
 
 module.exports.mailConfig = {
     smtp: {
-       // host: 'smtp.gmail.com',
-       // secureConnection: true,
-       // pool:true,
-        //port: 25,
         service: 'gmail',
         auth: {
             user: 'tester0715@gmail.com',

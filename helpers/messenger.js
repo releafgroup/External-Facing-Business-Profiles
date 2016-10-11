@@ -153,12 +153,10 @@ exports.isOnline = function (userId) {
 exports.getQueuedPrivateMsg = function (cb, options) {
   Message.find({
     type: 'private',
-//      from: options.from,
     to: {$in:options.to},
     createdAt: {$gt: new Date() - (spanHours * 60 * 60 * 1000) - 30 * 1000}//-30 second rewind
   }, null, {
     skip: 0, // Starting Row
-    //limit: 2,//
     sort: {
       createdAt: 1 //Sort by Date Added DESC
     }
