@@ -12,7 +12,7 @@ var url = testHelpers.url;
 
 var superAgentAdmin = (require('supertest')).agent(url);
 var admin1 = testHelpers.admin1;
-var admin2 = testHelpers.admin2
+var admin2 = testHelpers.admin2;
 
 var superAgent1 = request.agent(url);
 var user1Id = -1;
@@ -29,7 +29,7 @@ var project1 = testHelpers.project1;
 
 var project2 = testHelpers.project2;
 
-describe('Routing', function () {
+describe('Admin Routes', function () {
 
     before(function (done) {
         // Use mocha test db
@@ -40,16 +40,27 @@ describe('Routing', function () {
         done();
     });
 
-    describe('Creates admin user 1', function () {
+    describe('Admin Creation and Authentication', function () {
         it('creates admin 1', function (done) {
             superAgentAdmin
                 .post('/admin')
                 .send(admin1)
                 .expect(200)
                 .end(function (err, res) {
-                    console.log('This is it: ', res.body.message);
                     admin1['_id'] = res.body.message;
                     res.body.success.should.equal(true);
+                    done();
+                });
+
+        });
+
+        it('Another admin cannot be created by non admin after first admin is created', function (done) {
+            request.agent(url)
+                .post('/admin')
+                .send(admin1)
+                .expect(200)
+                .end(function (err, res) {
+                    res.body.success.should.equal(false);
                     done();
                 });
 
@@ -220,7 +231,7 @@ describe('Routing', function () {
 
         });
 
-        it('tests retrieveal of single user', function (done) {
+        it('tests retrieval of single user', function (done) {
             superAgentAdmin
                 .get('/admin/volunteers/' + user1Id)
                 .expect(200) //Status code
@@ -232,7 +243,7 @@ describe('Routing', function () {
                 });
         });
 
-        it('tests retrieveal of single company', function (done) {
+        it('tests retrieval of single company', function (done) {
             superAgentAdmin
                 .get('/admin/companies/' + company1Id)
                 .expect(200) //Status code
@@ -244,7 +255,7 @@ describe('Routing', function () {
                 });
         });
 
-        it('tests retrieveal of single project', function (done) {
+        it('tests retrieval of single project', function (done) {
             superAgentAdmin
                 .get('/admin/projects/' + project1Id)
                 .expect(200) //Status code

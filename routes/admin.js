@@ -7,16 +7,13 @@ module.exports = function (passport) {
 
     var express = require('express');
     var router = express.Router();
-    var Company = require('../models/company');
-    var User = require('../models/user');
     var Project = require('../models/project');
     var Admin = require('../models/admin');
     var VolunteerAssignment = require('../models/volunteer_assignment');
-    var bcrypt = require('bcryptjs');
-    var user_functions = require('../utils/user');
-    var company_functions = require('../utils/company');
-    var project_functions = require('../utils/project');
-    var path = require('path');
+    var userFunctions = require('../utils/user');
+    var companyFunctions = require('../utils/company');
+    var projectFunctions = require('../utils/project');
+    var permissionHelper = require('../helpers/permission');
 
     /**
      * Authentication
@@ -57,8 +54,8 @@ module.exports = function (passport) {
      */
     router.route('/volunteers')
         .get(function (req, res) {
-            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
-            return user_functions.getAllUsers(req, res);
+            if (!permissionHelper.checkAdminProfilePermission(req)) return res.json({success: false, message: 'No permission'});
+            return userFunctions.getAllUsers(req, res);
 
         });
 
@@ -72,8 +69,8 @@ module.exports = function (passport) {
      */
     router.route('/volunteers/:id')
         .get(function (req, res) {
-            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
-            return user_functions.getUserById(req.params.id, req, res);
+            if (!permissionHelper.checkAdminProfilePermission(req)) return res.json({success: false, message: 'No permission'});
+            return userFunctions.getUserById(req.params.id, req, res);
 
         });
 
@@ -87,8 +84,8 @@ module.exports = function (passport) {
      */
     router.route('/companies')
         .get(isLoggedIn, function (req, res) {
-            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
-            return company_functions.getAllCompanies(req, res);
+            if (!permissionHelper.checkAdminProfilePermission(req)) return res.json({success: false, message: 'No permission'});
+            return companyFunctions.getAllCompanies(req, res);
 
         });
 
@@ -102,8 +99,8 @@ module.exports = function (passport) {
      */
     router.route('/companies/:id')
         .get(isLoggedIn, function (req, res) {
-            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
-            return company_functions.getCompanyById(req.params.id, req, res);
+            if (!permissionHelper.checkAdminProfilePermission(req)) return res.json({success: false, message: 'No permission'});
+            return companyFunctions.getCompanyById(req.params.id, req, res);
 
         });
 
@@ -117,8 +114,8 @@ module.exports = function (passport) {
      */
     router.route('/projects')
         .get(isLoggedIn, function (req, res) {
-            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
-            return project_functions.getAllProjects(req, res);
+            if (!permissionHelper.checkAdminProfilePermission(req)) return res.json({success: false, message: 'No permission'});
+            return projectFunctions.getAllProjects(req, res);
         });
 
     /** Route: /admin/projects/:id
@@ -131,14 +128,14 @@ module.exports = function (passport) {
      */
     router.route('/projects/:id')
         .get(isLoggedIn, function (req, res) { // TODO: add in extracting info from company
-            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
-            return project_functions.getProjectById(req.params.id, req, res);
+            if (!permissionHelper.checkAdminProfilePermission(req)) return res.json({success: false, message: 'No permission'});
+            return projectFunctions.getProjectById(req.params.id, req, res);
         });
 
     router.route('/company/:id/projects')
         .get(isLoggedIn, function (req, res) {
-            if (!checkUserProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
-            return project_functions.getAllCompanyProjects(req.params.id, req, res);
+            if (!permissionHelper.checkUserProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+            return projectFunctions.getAllCompanyProjects(req.params.id, req, res);
         });
 
     /**
@@ -147,7 +144,7 @@ module.exports = function (passport) {
      */
     router.route('/projects/verify/:id') // Only looks at is_verified parameter
         .put(isLoggedIn, function (req, res) {
-            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+            if (!permissionHelper.checkAdminProfilePermission(req)) return res.json({success: false, message: 'No permission'});
             Project.findOne({
                 '_id': req.params.id
             }, function (err, project) {
@@ -177,7 +174,7 @@ module.exports = function (passport) {
         .get(isLoggedIn, function (req, res) {
             // Sends list of all assignments, volunteer and project are populated with the respective information too
             // [{volunteer : {}, project : {}}, {volunteer : {}, project : {}}, ..]
-            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+            if (!permissionHelper.checkAdminProfilePermission(req)) return res.json({success: false, message: 'No permission'});
             VolunteerAssignment.find({})
                 .populate('volunteer')
                 .populate('project')
@@ -189,7 +186,7 @@ module.exports = function (passport) {
         .post(isLoggedIn, function (req, res) {
             // Assumes body contains volunteer_id as 'volunteer' and
             // project_id as 'project' as the names that contain needed information
-            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+            if (!permissionHelper.checkAdminProfilePermission(req)) return res.json({success: false, message: 'No permission'});
             var volunteer_assignment = new VolunteerAssignment();
 
             for (var a in req.body) {
@@ -205,7 +202,7 @@ module.exports = function (passport) {
         })
         .delete(isLoggedIn, function (req, res) {
             // Assumes FE sending in the volunteer + company ID. Could change to send in the relationship's id
-            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+            if (!permissionHelper.checkAdminProfilePermission(req)) return res.json({success: false, message: 'No permission'});
             VolunteerAssignment.remove({
                 'volunteer': req.body.volunteer,
                 'project': req.body.project
@@ -221,36 +218,35 @@ module.exports = function (passport) {
         .post(function (req, res) {
 
             Admin.count({},function(count) {
-                if (!checkAdminProfilePermission(req, res) && count > 0)  {
+                if (!permissionHelper.checkAdminProfilePermission(req) && count > 0)  {
                     return res.json({ success: false, message: 'No permission' });    
+                } else {
+                    var newAdmin = new Admin();
+                    newAdmin['password'] = newAdmin.generateHash(req.body['password']);
+                    newAdmin['name'] = req.body['name'];
+                    newAdmin.save(function (err) {
+                        if (err) {
+                            return res.json({success: false, message: err.message});
+                        }
+                        return res.json({success: true, message: newAdmin._id});
+                    });
                 }
-            });
-
-            var newAdmin = new Admin();
-            newAdmin['password'] = newAdmin.generateHash(req.body['password']);
-            newAdmin['name'] = req.body['name'];
-            newAdmin.save(function (err) {
-                if (err) {
-                    return res.json({success: false, message: err.message});
-                }
-                return res.json({success: true, message: newAdmin._id});
             });
         });
 
     router.route('/')
         .get(function (req, res) {
-            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+            if (!permissionHelper.checkAdminProfilePermission(req)) return res.json({success: false, message: 'No permission'});
 
-            return user_functions.getAllAdmin(req, res);
-        })
+            return userFunctions.getAllAdmin(req, res);
+        });
 
     router.route('/:id')
         .get(function (req, res) {
-            if (!checkAdminProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+            if (!permissionHelper.checkAdminProfilePermission(req)) return res.json({success: false, message: 'No permission'});
 
-            return user_functions.getAdminById(req.params.id, req, res);
-        })
-
+            return userFunctions.getAdminById(req.params.id, req, res);
+        });
     return router;
 
 };
@@ -263,10 +259,4 @@ function isLoggedIn(req, res, next) {
     return res.json({success: false, message: "Not logged in"});
 }
 
-// TODO: check if this is actually the best way to do this
-// Checks that passport user is defined
-// TODO: likley redudant with isLoggedIn
-function checkAdminProfilePermission(req, res) {
-    return !(typeof req.session.passport.user === 'undefined' || req.session.passport.user === null ||
-    req.session.passport.user.type != "admin");
-}
+

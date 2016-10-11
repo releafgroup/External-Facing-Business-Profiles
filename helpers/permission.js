@@ -16,10 +16,19 @@ exports.isLoggedIn = function (req, res, next) {
 /**
  * Checks that a session is defined and the signed in user is type volunteer
  * @param req
- * @param res
  * @returns {boolean}
  */
 exports.checkUserProfilePermission = function (req) {
     return !(typeof req.session.passport.user === 'undefined' || req.session.passport.user === null
     || req.session.passport.user.type != "volunteer");
+};
+
+/**
+ * Checks that a session is defined and the signed in user is type admin
+ * @param req
+ * @returns {boolean}
+ */
+exports.checkAdminProfilePermission = function(req) {
+    return !(typeof req.session.passport.user === 'undefined' || req.session.passport.user === null ||
+    req.session.passport.user.type != "admin");
 };
