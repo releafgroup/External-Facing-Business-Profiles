@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Project = require('../models/project');
 var Company = require('../models/company');
+var VolunteerAssignment = require('../models/volunteer_assignment');
 var projectFunctions = require('../utils/project');
 var utils = require('../helpers/permission');
 var responseHelper = require('../helpers/response');
@@ -75,8 +76,11 @@ router.route('/:id')
             if (err) return responseHelper.sendError(err.message, 500, res);
 
             // TODO: delete from company's array and add unit test in mocha
-            // TODO: delete from VolunteerAssignment and add unit test in mocha
-            return responseHelper.sendSuccess(true, res);
+            VolunteerAssignment.remove({'project': req.params.id}, function (err) {
+                if(err) return responseHelper.sendError();
+
+                return responseHelper.sendSuccess(true, res);
+            });
         });
     });
 
