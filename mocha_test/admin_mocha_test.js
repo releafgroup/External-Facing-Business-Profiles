@@ -277,7 +277,7 @@ describe('Admin Routes', function () {
                 .expect(200)
                 .end(function (err, res) {
                     res.body.success.should.equal(true);
-                    done()
+                    done();
                 })
         });
 
@@ -287,7 +287,7 @@ describe('Admin Routes', function () {
                 .expect(200)
                 .end(function (err, res) {
                     res.body.success.should.equal(true);
-                    done()
+                    done();
                 })
         });
     });
