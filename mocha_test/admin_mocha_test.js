@@ -268,4 +268,27 @@ describe('Admin Routes', function () {
         });
 
     });
+
+    describe('Volunteer Assignment and Project Deletion', function () {
+        it('assigns user 1 to project 1', function (done) {
+            superAgentAdmin
+                .post('/admin/assign')
+                .send({'volunteer': user1Id, 'project': project1Id})
+                .expect(200)
+                .end(function (err, res) {
+                    res.body.success.should.equal(true);
+                    done();
+                })
+        });
+
+        it('deletes project 1 after assignment', function (done) {
+            request(url)
+                .delete('/projects/' + project1Id)
+                .expect(200)
+                .end(function (err, res) {
+                    res.body.success.should.equal(true);
+                    done();
+                })
+        });
+    });
 });

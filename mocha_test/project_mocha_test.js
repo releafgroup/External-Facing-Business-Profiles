@@ -138,6 +138,16 @@ describe('Projects Routes', function () {
                     done();
                 });
         });
+
+       it('deletes project 1', function (done) {
+            request(url)
+                .delete('/projects/' + projectId1)
+                .expect(200)
+                .end(function (err, res) {
+                    res.body.success.should.equal(true);
+                    done();
+                })
+        })
     });
 
     describe('Project creation errors', function () {
