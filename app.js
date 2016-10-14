@@ -1,10 +1,15 @@
+// Loads newrelic APM on production environment
+if (process.env.LOAD_NEW_RELIC) {
+    require('newrelic');
+}
+
 var express = require('express');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var config = require('./config.js');
 var mongoose = require('mongoose');
-var authfunc = require('./utils/authentication');
+var authFunction = require('./utils/authentication');
 var io = require('socket.io')();
 var passport = require('./utils/passport');
 var session = require('express-session');
@@ -18,21 +23,20 @@ var MongoStore = require('connect-mongo')(session);
 var app = express();
 app.use(logger('dev'));
 app.use(cookieParser());
-// Increate body limit to 4MB
+
+// Increase body limit to 4MB
 app.use(bodyParser.json({limit: 1024 * 1024 * 4, type: 'application/json'}));
 app.use(bodyParser.urlencoded({extended: false}));
 
-//TODO: Front end to have a form tag, with its action pointed to the express route.
-
-var domain_allowed = 'https://releaf-frontend-app.herokuapp.com';
+var domainAllowed = 'https://releaf-frontend-app.herokuapp.com';
 if (app.get('env') == 'mocha_db' || app.get('env') == 'development') {
-    domain_allowed = 'http://localhost:3001';
+    domainAllowed = 'http://localhost:3001';
 }
 
 // TODO: maybe switch to cors plugin
 app.use(function (req, res, next) {
     // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', domain_allowed); //TODO: add in FE
+    res.setHeader('Access-Control-Allow-Origin', domainAllowed);
 
     // Request methods you wish to allow
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -82,7 +86,7 @@ app.use('/companies', companies);
 app.use('/admin', admin);
 app.use('/projects', projects);
 app.use('/messenger', messenger);
-app.use(authfunc);
+app.use(authFunction);
 
 // Adds dummy projects
 dummyData.addDummyProjects();
