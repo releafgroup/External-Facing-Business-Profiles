@@ -1,5 +1,5 @@
 // Loads newrelic APM on production environment
-if (process.env.LOAD_NEW_RELIC) {
+if (process.env.LOAD_NEWRELIC) {
     require('newrelic');
 }
 
