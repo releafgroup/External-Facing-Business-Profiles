@@ -68,3 +68,6 @@ ideas
 .env
 /nbproject/private/
 /nbproject/
+
+# New Relic agent log
+newrelic_agent.log
