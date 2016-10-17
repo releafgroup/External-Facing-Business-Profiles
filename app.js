@@ -30,7 +30,7 @@ app.use(cookieParser());
 app.use(bodyParser.json({limit: 1024 * 1024 * 4, type: 'application/json'}));
 app.use(bodyParser.urlencoded({extended: false}));
 
-var domainAllowed = 'https://releaf-frontend-app.herokuapp.com';
+var domainAllowed = process.env.HOST_DOMAIN;
 if (app.get('env') == 'mocha_db' || app.get('env') == 'development') {
     domainAllowed = 'http://localhost:3001';
 }
