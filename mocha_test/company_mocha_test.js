@@ -3,6 +3,7 @@ var mongoose = require('mongoose');
 var config = require('../config.js');
 var testHelpers = require('../helpers/test');
 var should = require('should');
+var Company = require('../models/company.js');
 
 var company1 = testHelpers.company1();
 var company1Id = -1;
@@ -57,6 +58,49 @@ describe('Company routes', function () {
                     done();
                 });
         });
+
+        it('Fail Case: Try to verify email with invalid token', function (done) {
+            request.agent(url)
+                .post('/companies/email/verify')
+                .send({token: 'invalid token'})
+                .expect(400)
+                .end(function (err, res) {
+                    res.body.success.should.equal(false);
+                    res.body.message.should.equal('invalid verification token');
+                    done();
+                });
+        });
+
+        it('Success Case: Verify email with valid token', function (done) {
+            Company.findOne({'_id': company1Id}, function (err, company) {
+                if(err) done(err);
+                if(!company) done('Company not found');
+                request.agent(url)
+                    .post('/companies/email/verify')
+                    .send({token: company.email_verification_token})
+                    .expect(200)
+                    .end(function (err, res) {
+                        res.body.success.should.equal(true);
+                        done();
+                    });
+            });
+        });
+
+        it('Success Case: Resend Verification Email', function (done) {
+            Company.findOne({'_id': company1Id}, function (err, company) {
+                if(err) done(err);
+                if(!company) done('Company not found');
+                request.agent(url)
+                    .post('/companies/email/verify/resend')
+                    .send({email: company.email})
+                    .expect(200)
+                    .end(function (err, res) {
+                        res.body.success.should.equal(true);
+                        done();
+                    });
+            });
+        });
+
 
         it('tests that business can login', function (done) {
             request(url).post('/companies/auth/login')
