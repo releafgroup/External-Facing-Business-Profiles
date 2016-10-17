@@ -129,6 +129,8 @@ passport.use('local-signup', new LocalStrategy({
                         return done({message: err.message, status: 400, errors: err.errors}, false);
                     }
 
+                    userFunctions.sendVerificationEmail(newUser);
+
                     if (!req.body.profile_photo_data && !(req.body.resume_data && req.body.resume_extension)) {
                         return done(null, newUser);
                     } else {

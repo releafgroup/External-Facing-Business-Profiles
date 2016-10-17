@@ -27,6 +27,7 @@ exports.CompanySignupStrategy = new LocalStrategy({
             }
             newCompany.password = newCompany.generateHash(newCompany.password);
             newCompany.save().then(function (savedCompany) {
+                companyFunctions.sendVerificationEmail(savedCompany);
                 if (!req.body.company_logo_data) {
                     return done(null, savedCompany);
                 } else {

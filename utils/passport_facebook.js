@@ -33,6 +33,7 @@ module.exports = new FacebookStrategy({
                 signupType: 'facebook' // allows db to save user even though some fields are missing
             });
 
+            newUser.email_verified = true;
             newUser.save(function(err) {
                 if (err) { return done({success: false, message: err.message}); }
                 return done(null, newUser);
