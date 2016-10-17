@@ -1,3 +1,6 @@
+// Loads the environment variables from the dotenv file
+require('dotenv').config();
+
 // Loads newrelic APM on production environment
 if (process.env.LOAD_NEWRELIC) {
     require('newrelic');
@@ -15,8 +18,7 @@ var passport = require('./utils/passport');
 var session = require('express-session');
 var dummyData = require('./helpers/dummy_data');
 
-// Loads the environment variables from the dotenv file
-require('dotenv').config();
+
 
 var MongoStore = require('connect-mongo')(session);
 
