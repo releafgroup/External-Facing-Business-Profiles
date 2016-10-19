@@ -7,10 +7,7 @@ var FacebookStrategy = require('./passport_facebook');
 var AdminLoginStrategy = require('./passport_admin');
 var companyPassport = require('./passport_company');
 var userFunctions = require('../utils/user');
-
-var TYPE_BUSINESS = 'business';
-var TYPE_ADMIN = 'admin';
-var TYPE_VOLUNTEER = 'volunteer';
+var constants = require('../libs/constants');
 
 /**
  * Passport session setup
@@ -21,21 +18,21 @@ var TYPE_VOLUNTEER = 'volunteer';
  * Read to understand how sessions work with multiple types of Schemas
  */
 passport.serializeUser(function (model, done) {
-    var type = TYPE_VOLUNTEER;
+    var type = constants.USER_TYPE_VOLUNTEER;
     if (model instanceof Admin) {
-        type = TYPE_ADMIN;
+        type = constants.USER_TYPE_ADMIN;
     } else if (model instanceof Company) {
-        type = TYPE_BUSINESS;
+        type = constants.USER_TYPE_BUSINESS;
     }
     done(null, {'id': model.id, 'type': type});
 });
 
 passport.deserializeUser(function (sessionInfo, done) {
-    if (sessionInfo.type == TYPE_ADMIN) {
+    if (sessionInfo.type == constants.USER_TYPE_ADMIN) {
         Admin.findById(sessionInfo.id, function (err, admin) {
             done(err, admin);
         });
-    } else if (sessionInfo.type == TYPE_BUSINESS) {
+    } else if (sessionInfo.type == constants.USER_TYPE_BUSINESS) {
         Company.findById(sessionInfo.id, function (err, company) {
             done(err, company);
         });
@@ -107,7 +104,7 @@ passport.use('local-signup', new LocalStrategy({
                 //  We're not logged in, so we're creating a brand new user.
                 // create the user
                 var newUser = new User();
-                for (a in req.body) {
+                for (var a in req.body) {
                     if (a !== "local.password" && a !== "skills" && a !== "skill_ratings") {
                         newUser.setItem(a, req.body[a]);
                     } else if (a === "local.password") {

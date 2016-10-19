@@ -3,6 +3,10 @@ var router = express.Router();
 var Company = require('../models/company');
 var bcrypt = require('bcryptjs');
 var companyFunctions = require('../utils/company');
+var permissionHelper = require('../helpers/permission');
+
+var isLoggedIn = permissionHelper.isLoggedIn;
+var checkBusinessProfilePermission = permissionHelper.checkBusinessProfilePermission;
 
 
 // Function for company error handling in saving company info
@@ -14,7 +18,7 @@ function handleCompanySaveError(err) {
         // If company validation, gets one of the errors to return
         if (err.message == "Company validation failed") {
             var one_error;
-            for (first in err.errors) { // Get one of the errors
+            for (var first in err.errors) { // Get one of the errors
                 one_error = err.errors[first];
                 break;
             }
@@ -71,6 +75,20 @@ module.exports = function (passport) {
             return res.json({id: company.id, success: true}); // Returns company id
         });
     });
+
+    /**
+     * GET - Gets the logged in business
+     * PUT - Updates the logged in business
+     */
+    router.route('/')
+        .get(isLoggedIn, function (req, res) {
+            if (!checkBusinessProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+            return companyFunctions.getCompanyById(req.session.passport.user.id, req, res);
+        })
+        .put(isLoggedIn, function (req, res) {
+            if (!checkBusinessProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+            return companyFunctions.updateCompanyById(req.session.passport.user.id, req, res);
+        });
 
     router.route('/:id').get(function (req, res) {
         return companyFunctions.getCompanyById(req.params.id, req, res);
