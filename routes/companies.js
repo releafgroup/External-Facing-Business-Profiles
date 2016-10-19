@@ -58,7 +58,7 @@ module.exports = function (passport) {
     router.route('/').post(function (req, res) {
         var company = new Company();
         // Populate Information
-        for (a in req.body) {
+        for (var a in req.body) {
             if (a != "password") {
                 company[a] = req.body[a];
             } else {
