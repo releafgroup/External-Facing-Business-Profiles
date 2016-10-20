@@ -258,8 +258,10 @@ exports.uploadMedia = function (data, folderName, extension, field, newUser, suc
  * @param user User
  */
 exports.sendVerificationEmail = function (user) {
+    var token = user.getEmailVerificationToken();
+    if (!config.featureToggles.isFeatureEnabled('emailVerification')) return;
     volunteerEmails.sendVerificationEmail(
-        config.feBaseUrl + "/user/verify/email?token=" + user.getEmailVerificationToken(),
+        config.feBaseUrl + "/user/verify/email?token=" + token,
         user.local.email,
         "Releaf <noreply@releaf.ng>"
     );

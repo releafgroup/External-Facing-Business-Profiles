@@ -1,4 +1,6 @@
 var env = require('dotenv').config();
+var featureToggles = require('feature-toggles');
+var toggles = require('./toggles');
 
 var database = process.env.MONGODB_URI || 'mongodb://localhost/first_test_db';
 var superSecret = '';
@@ -23,3 +25,7 @@ module.exports.mailConfig = {
 };
 
 module.exports.feBaseUrl = env.FE_BASE_URL;
+
+featureToggles.load(toggles);
+
+module.exports.featureToggles = featureToggles;

@@ -132,8 +132,10 @@ exports.uploadMedia = function (data, folderName, extension, field, newCompany, 
  * @todo Reuse implementation in users
  */
 exports.sendVerificationEmail = function (company) {
+    var token = company.getEmailVerificationToken();
+    if (!config.featureToggles.isFeatureEnabled('emailVerification')) return;
     companyEmails.sendVerificationEmail(
-        config.feBaseUrl + "/business/verify/email?token=" + company.getEmailVerificationToken(),
+        config.feBaseUrl + "/business/verify/email?token=" + token,
         company.email,
         "Releaf <noreply@releaf.ng>"
     );
