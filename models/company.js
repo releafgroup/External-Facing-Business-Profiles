@@ -4,6 +4,7 @@ var mongoose = require('mongoose'),
 var express = require('express');
 var app = express();
 var randToken = require('rand-token');
+var constants = require('../libs/constants');
 
 // Constants and field enums
 var companySizeOptions = ['Sole Proprietor', '1 Partner', '2 - 10 Employees', '11 - 50 Employees',
@@ -227,7 +228,7 @@ CompanySchema.methods.getEmailVerificationToken = function () {
     if (company.email_verification_token === null || company.verification_token_expires_at < Date.now()) {
         company.email_verification_token = randToken.generate(20);
         //TODO: Confirm number of days before token expires, set to 7 for now
-        company.verification_token_expires_at = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).getTime();
+        company.verification_token_expires_at = new Date(Date.now() + constants.EMAIL_VERIFICATION_EXPIRY).getTime();
         company.save(function (err) {
             if (err) return false;
         });

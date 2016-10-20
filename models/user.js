@@ -6,6 +6,7 @@ var express = require('express');
 var app = express();
 var mediaFields = ['profile_photo_data', 'resume_data'];
 var randToken = require('rand-token');
+var constants = require('../libs/constants');
 
 /**
  * Validation error messages
@@ -229,7 +230,7 @@ UserSchema.methods.getEmailVerificationToken = function () {
     if (user.email_verification_token === null || user.verification_token_expires_at < Date.now()) {
         user.email_verification_token = randToken.generate(20);
         //TODO: Confirm number of days before token expires, set to 7 for now
-        user.verification_token_expires_at = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).getTime();
+        user.verification_token_expires_at = new Date(Date.now() + constants.EMAIL_VERIFICATION_EXPIRY).getTime();
         user.save(function (err) {
             if (err) return false;
         });
