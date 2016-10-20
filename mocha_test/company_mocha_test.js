@@ -7,9 +7,10 @@ var Company = require('../models/company.js');
 
 var company1 = testHelpers.company1();
 var company1Id = -1;
+var url = testHelpers.url;
+var loginRequest = request.agent(url);
 
 describe('Company routes', function () {
-    var url = testHelpers.url;
     before(function (done) {
         // Use mocha test db
         mongoose.connect(config.mocha_database, function () {
@@ -103,7 +104,7 @@ describe('Company routes', function () {
 
 
         it('tests that business can login', function (done) {
-            request(url).post('/companies/auth/login')
+            loginRequest.post('/companies/auth/login')
                 .send(company1)
                 .expect(200)
                 .end(function (err, res) {
@@ -113,8 +114,37 @@ describe('Company routes', function () {
                 });
         });
 
+        it('tests can get business data after login', function (done) {
+            loginRequest.get('/companies/')
+                .expect(200)
+                .end(function (err, newRes) {
+                    newRes.body.success.should.equal(true);
+                    newRes.body.message._id.should.equal(company1Id);
+                    done();
+                });
+        });
+
+        it('tests can update business data after login', function (done) {
+            var newCompanyPurpose = "the purpose is to test if the creation works";
+            loginRequest.put('/companies/')
+                .expect(200)
+                .send({
+                    "company_purpose": newCompanyPurpose
+                })
+                .end(function (err, newRes) {
+                    newRes.body.success.should.equal(true);
+                    loginRequest.get('/companies/')
+                        .expect(200)
+                        .end(function (err, newRes) {
+                            newRes.body.success.should.equal(true);
+                            newRes.body.message.company_purpose.should.equal(newCompanyPurpose);
+                            done();
+                        });
+                });
+        });
+
         it('tests that business can logout', function (done) {
-            request(url).get('/companies/auth/logout')
+            loginRequest.get('/companies/auth/logout')
                 .expect(200)
                 .end(function (err, res) {
                     res.body.success.should.equal(true);

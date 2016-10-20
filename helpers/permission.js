@@ -1,3 +1,4 @@
+var constants = require('../libs/constants');
 var exports = module.exports = {};
 
 /**
@@ -20,7 +21,7 @@ exports.isLoggedIn = function (req, res, next) {
  */
 exports.checkUserProfilePermission = function (req) {
     return !(typeof req.session.passport.user === 'undefined' || req.session.passport.user === null
-    || req.session.passport.user.type != "volunteer");
+    || req.session.passport.user.type != constants.USER_TYPE_VOLUNTEER);
 };
 
 /**
@@ -30,5 +31,15 @@ exports.checkUserProfilePermission = function (req) {
  */
 exports.checkAdminProfilePermission = function(req) {
     return !(typeof req.session.passport.user === 'undefined' || req.session.passport.user === null ||
-    req.session.passport.user.type != "admin");
+    req.session.passport.user.type != constants.USER_TYPE_ADMIN);
+};
+
+/**
+ * Checks that a session is defined and the signed in user is type admin
+ * @param req
+ * @returns {boolean}
+ */
+exports.checkBusinessProfilePermission = function(req) {
+    return !(typeof req.session.passport.user === 'undefined' || req.session.passport.user === null ||
+    req.session.passport.user.type != constants.USER_TYPE_BUSINESS);
 };
