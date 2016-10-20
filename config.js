@@ -21,3 +21,5 @@ module.exports.mailConfig = {
     },
     spanHours : 4//how many hours span we sent unread messages to users
 };
+
+module.exports.feBaseUrl = env.FE_BASE_URL;

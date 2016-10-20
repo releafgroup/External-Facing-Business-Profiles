@@ -3,6 +3,7 @@ var awsS3 = require('../helpers/aws_s3');
 var base64Utils = require('../helpers/base_64');
 var responseUtils = require('../helpers/response');
 var companyEmails = require('../emails/company');
+var config = require('../config');
 
 /** Function for user error handling in saving company info
  * @params: error from saving a company
@@ -132,7 +133,7 @@ exports.uploadMedia = function (data, folderName, extension, field, newCompany, 
  */
 exports.sendVerificationEmail = function (company) {
     companyEmails.sendVerificationEmail(
-        "http://releaf.ng/business/verify/email?token=" + company.getEmailVerificationToken(),
+        config.feBaseUrl + "/business/verify/email?token=" + company.getEmailVerificationToken(),
         company.email,
         "Releaf <noreply@releaf.ng>"
     );

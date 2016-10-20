@@ -5,6 +5,7 @@ var awsS3 = require('../helpers/aws_s3');
 var base64Utils = require('../helpers/base_64');
 var responseUtils = require('../helpers/response');
 var volunteerEmails = require('../emails/volunteer');
+var config = require('../config');
 
 
 /** Function for user error handling in saving user info
@@ -258,7 +259,7 @@ exports.uploadMedia = function (data, folderName, extension, field, newUser, suc
  */
 exports.sendVerificationEmail = function (user) {
     volunteerEmails.sendVerificationEmail(
-        "http://releaf.ng/user/verify/email?token=" + user.getEmailVerificationToken(),
+        config.feBaseUrl + "/user/verify/email?token=" + user.getEmailVerificationToken(),
         user.local.email,
         "Releaf <noreply@releaf.ng>"
     );
