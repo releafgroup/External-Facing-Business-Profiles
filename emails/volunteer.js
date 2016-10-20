@@ -9,17 +9,6 @@ var templates = new EmailTemplates({
 
 exports.sendVerificationEmail = function (verificationUrl, to, from) {
     templates.render('volunteer_email_verification.html', {verification_url: verificationUrl}, function (err, html) {
-        send('Welcome to the Releaf Family!', html, to, from)
+        nodemailer.send('Welcome to the Releaf Family!', html, to, from);
     })
 };
-
-
-
-function send(subject, html, to, from) {
-    nodemailer.sendMail({
-        from: from,
-        to: to,
-        subject: subject,
-        html: html
-    });
-}

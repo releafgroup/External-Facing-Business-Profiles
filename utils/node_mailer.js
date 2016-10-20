@@ -38,4 +38,20 @@ exports.sendMail = function (mailOptions) {
         }
     });
 };
+
+/**
+ * Send email
+ * @param subject
+ * @param html
+ * @param to
+ * @param from
+ */
+exports.send = function send(subject, html, to, from) {
+    exports.sendMail({
+        from: from,
+        to: to,
+        subject: subject,
+        html: html
+    });
+};
         
