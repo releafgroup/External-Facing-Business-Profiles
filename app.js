@@ -80,6 +80,7 @@ var users = require('./routes/users')(passport);
 var companies = require('./routes/companies')(passport);
 var admin = require('./routes/admin')(passport);
 var projects = require('./routes/projects');
+var password_reset = require('./routes/password_reset');
 var messenger = require('./routes/messenger')(app.get('io'));
 
 app.use('/', routes);
@@ -88,6 +89,7 @@ app.use('/companies', companies);
 app.use('/admin', admin);
 app.use('/projects', projects);
 app.use('/messenger', messenger);
+app.use('/password', password_reset);
 app.use(authFunction);
 
 // Adds dummy projects

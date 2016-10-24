@@ -508,6 +508,19 @@ describe('Volunteer Test Cases', function () {
             });
 
         });
+
+        describe('Password Reset', function () {
+            it('Send password reset email to user', function (done) {
+                superAgent
+                    .post('/password/reset/email')
+                    .send({email: user1['local.email']})
+                    .expect(200)
+                    .end(function (err, res) {
+                        res.body.success.should.equal(true);
+                        done();
+                    });
+            });
+        });
     });
 
 });
