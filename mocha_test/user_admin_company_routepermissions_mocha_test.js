@@ -5,6 +5,7 @@ var config = require('../config.js');
 var faker = require('faker');
 var testHelpers = require('../helpers/test');
 var User = require('../models/user.js');
+var messages = require('../libs/messages');
 require('../bin/www');
 
 var url = testHelpers.url;
@@ -86,7 +87,7 @@ describe('Routing', function () {
                 .expect(400)
                 .end(function (err, res) {
                     res.body.success.should.equal(false);
-                    res.body.message.should.equal('invalid verification token');
+                    res.body.message.should.equal(messages.INVALID_EMAIL_VERIFICATION_TOKEN);
                     done();
                 });
         });

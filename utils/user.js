@@ -6,6 +6,7 @@ var base64Utils = require('../helpers/base_64');
 var responseUtils = require('../helpers/response');
 var volunteerEmails = require('../emails/volunteer');
 var config = require('../config');
+var messages = require('../libs/messages');
 
 
 /** Function for user error handling in saving user info
@@ -276,18 +277,18 @@ exports.verifyEmail = function (token, req, res) {
     User.findOne({
         'email_verification_token': token
     }, function (err, user) {
-        if (err) return responseUtils.sendError('An error occurred while trying to verify email', 500, res);
+        if (err) return responseUtils.sendError(messages.EMAIL_VERIFICATION_ERROR, 500, res);
 
-        if (!user) return responseUtils.sendError('invalid verification token', 400, res);
+        if (!user) return responseUtils.sendError(messages.INVALID_EMAIL_VERIFICATION_TOKEN, 400, res);
 
         if (user.verification_token_expires_at < Date.now()) {
-            return responseUtils.sendError('verification token has expired', 400, res);
+            return responseUtils.sendError(messages.EMAIL_VERIFICATION_TOKEN_EXPIRED, 400, res);
         }
 
         user.email_verified = true;
         user.verification_token_expires_at = Date.now();
         user.save(function (err) {
-            if (err) return responseUtils.sendError('Could not verify email', 500, res);
+            if (err) return responseUtils.sendError(messages.EMAIL_VERIFICATION_ERROR, 500, res);
             return responseUtils.sendSuccess(true, res);
         });
     })

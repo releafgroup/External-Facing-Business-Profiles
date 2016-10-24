@@ -4,6 +4,7 @@ var base64Utils = require('../helpers/base_64');
 var responseUtils = require('../helpers/response');
 var companyEmails = require('../emails/company');
 var config = require('../config');
+var messages = require('../libs/messages');
 
 /** Function for user error handling in saving company info
  * @params: error from saving a company
@@ -152,18 +153,18 @@ exports.verifyEmail = function (token, req, res) {
     Company.findOne({
         'email_verification_token': token
     }, function (err, company) {
-        if (err) return responseUtils.sendError('An error occurred while trying to verify email', 500, res);
+        if (err) return responseUtils.sendError(messages.EMAIL_VERIFICATION_ERROR, 500, res);
 
-        if (!company) return responseUtils.sendError('invalid verification token', 400, res);
+        if (!company) return responseUtils.sendError(messages.INVALID_EMAIL_VERIFICATION_TOKEN, 400, res);
 
         if (company.verification_token_expires_at < Date.now()) {
-            return responseUtils.sendError('verification token has expired', 400, res);
+            return responseUtils.sendError(messages.EMAIL_VERIFICATION_TOKEN_EXPIRED, 400, res);
         }
 
         company.email_verified = true;
         company.verification_token_expires_at = Date.now();
         company.save(function (err) {
-            if (err) return responseUtils.sendError('Could not verify email', 500, res);
+            if (err) return responseUtils.sendError(messages.EMAIL_VERIFICATION_ERROR, 500, res);
             return responseUtils.sendSuccess(true, res);
         });
     })

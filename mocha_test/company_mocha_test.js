@@ -4,6 +4,7 @@ var config = require('../config.js');
 var testHelpers = require('../helpers/test');
 var should = require('should');
 var Company = require('../models/company.js');
+var messages = require('../libs/messages');
 
 var company1 = testHelpers.company1();
 var company1Id = -1;
@@ -67,7 +68,7 @@ describe('Company routes', function () {
                 .expect(400)
                 .end(function (err, res) {
                     res.body.success.should.equal(false);
-                    res.body.message.should.equal('invalid verification token');
+                    res.body.message.should.equal(messages.INVALID_EMAIL_VERIFICATION_TOKEN);
                     done();
                 });
         });
