@@ -100,8 +100,7 @@ module.exports = function (passport) {
     /**
      * Get company projects
      */
-    router.route('/:id/projects').get(isLoggedIn, function (req, res) {
-        if (!checkBusinessProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+    router.route('/:id/projects').get(function (req, res) {
         return projectFunctions.getAllCompanyProjects(req.params.id, req, res);
     });
     return router;
