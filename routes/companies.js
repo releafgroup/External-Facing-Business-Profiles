@@ -3,6 +3,7 @@ var router = express.Router();
 var Company = require('../models/company');
 var bcrypt = require('bcryptjs');
 var companyFunctions = require('../utils/company');
+var projectFunctions = require('../utils/project');
 var permissionHelper = require('../helpers/permission');
 
 var isLoggedIn = permissionHelper.isLoggedIn;
@@ -96,5 +97,12 @@ module.exports = function (passport) {
         return companyFunctions.updateCompanyById(req.params.id, req, res);
     });
 
+    /**
+     * Get company projects
+     */
+    router.route('/:id/projects').get(isLoggedIn, function (req, res) {
+        if (!checkBusinessProfilePermission(req, res)) return res.json({success: false, message: 'No permission'});
+        return projectFunctions.getAllCompanyProjects(req.params.id, req, res);
+    });
     return router;
 };
