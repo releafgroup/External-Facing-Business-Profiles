@@ -3,6 +3,8 @@ var mongoose = require('mongoose'),
     bcrypt = require('bcryptjs');
 var express = require('express');
 var app = express();
+var randToken = require('rand-token');
+var constants = require('../libs/constants');
 
 // Constants and field enums
 var companySizeOptions = ['Sole Proprietor', '1 Partner', '2 - 10 Employees', '11 - 50 Employees',
@@ -188,7 +190,10 @@ var CompanySchema = new Schema({
     best_medium: {type: String, required: true, validate: bestMediumValidation},
     internet_access: {type: String, required: true, validate: internetAccessValidation},
     projects: [{type: mongoose.Schema.Types.ObjectId, ref: 'Project'}],
-    dummy_data: {type: Boolean, default: false}
+    dummy_data: {type: Boolean, default: false},
+    is_email_verified: {type: Boolean, default: false},
+    email_verification_token: {type: String, default: null},
+    verification_token_expires_at: {type: Number, default: 0}
 }, {
     timestamps: true
 });
@@ -210,6 +215,26 @@ CompanySchema.methods.validatePassword = function (password) {
 
 CompanySchema.methods.comparePassword = function (password) {
     return bcrypt.compareSync(password, this.password);
+};
+
+/**
+ * Generate email verification token and set expirty
+ * @returns {*}
+ * @todo Reuse implementation in User Model
+ */
+CompanySchema.methods.getEmailVerificationToken = function () {
+    var company = this;
+
+    if (company.email_verification_token === null || company.verification_token_expires_at < Date.now()) {
+        company.email_verification_token = randToken.generate(20);
+        //TODO: Confirm number of days before token expires, set to 7 for now
+        company.verification_token_expires_at = new Date(Date.now() + constants.EMAIL_VERIFICATION_EXPIRY).getTime();
+        company.save(function (err) {
+            if (err) return false;
+        });
+    }
+
+    return company.email_verification_token;
 };
 
 module.exports = mongoose.model('Company', CompanySchema);

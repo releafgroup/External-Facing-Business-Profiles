@@ -5,7 +5,6 @@ module.exports = function () {
     var spanHours = config.mailConfig.spanHours;
     var cronString = '* */' + spanHours + ' * * *';
     var nodemailer = require('./../utils/node_mailer');
-    nodemailer.setupTransport(config.mailConfig.smtp);
     var helper = require('./../helpers/messenger');
 
     debug("-Running scheduler... ");

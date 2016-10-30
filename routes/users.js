@@ -131,6 +131,25 @@ module.exports = function (passport) {
             return userFunctions.checkIfEmailExists(req.query.email, req, res);
         });
 
+
+    /** Route: /users/email/verify
+     * Verifies user's email
+     * 'token' must be passed in the req body
+     */
+    router.route('/email/verify')
+        .post(function (req, res) {
+            return userFunctions.verifyEmail(req.body.token, req, res);
+        });
+
+    /** Route: /user/email/verify/resend
+     * Resend verification email to user
+     * 'email' must be passed in the req body
+     */
+    router.route('/email/verify/resend')
+        .post(function (req, res) {
+            return userFunctions.resendVerificationEmail(req.body.email, req, res);
+        });
+
     return router;
 };
 

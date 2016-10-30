@@ -1,0 +1,3 @@
+exports.toggles = {
+    emailVerification: false
+};

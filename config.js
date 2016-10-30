@@ -1,4 +1,6 @@
-require('dotenv').config();
+var env = require('dotenv').config();
+var featureToggles = require('feature-toggles');
+var toggles = require('./toggles');
 
 var database = process.env.MONGODB_URI || 'mongodb://localhost/first_test_db';
 var superSecret = '';
@@ -7,10 +9,12 @@ module.exports = {"database":database, "superSecret": superSecret, "mocha_databa
 
 module.exports.mailConfig = {
     smtp: {
-        service: 'gmail',
+        pool: true,
+        host: env.MAILER_HOST,
+        port: env.MAILER_PORT,
         auth: {
-            user: 'tester0715@gmail.com',
-            pass: 'TesterMustak0715'
+            user: env.MAILER_SMTP_USER,
+            pass: env.MAILER_SMTP_PASS
         }
     },
     sendingEmailFrom: {
@@ -19,3 +23,9 @@ module.exports.mailConfig = {
     },
     spanHours : 4//how many hours span we sent unread messages to users
 };
+
+module.exports.feBaseUrl = env.FE_BASE_URL;
+
+featureToggles.load(toggles);
+
+module.exports.featureToggles = featureToggles;

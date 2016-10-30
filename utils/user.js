@@ -4,6 +4,9 @@ var Admin = require('../models/admin.js');
 var awsS3 = require('../helpers/aws_s3');
 var base64Utils = require('../helpers/base_64');
 var responseUtils = require('../helpers/response');
+var volunteerEmails = require('../emails/volunteer');
+var config = require('../config');
+var messages = require('../libs/messages');
 
 
 /** Function for user error handling in saving user info
@@ -149,13 +152,13 @@ exports.getAllUsers = function (req, res) {
 };
 
 exports.getAdminById = function (admin_id, req, res) {
-    Admin.findOne({'_id': admin_id}, function(err, admin){
+    Admin.findOne({'_id': admin_id}, function (err, admin) {
         if (err) return res.json({success: false, message: err.message});
         return res.json({success: true, message: admin});
     })
 }
 
-exports.getAllAdmin = function(req, res) {
+exports.getAllAdmin = function (req, res) {
     Admin.find(function (err, admin) {
         if (err) return res.json({success: false, message: err.message});
         return res.json({success: true, message: admin});
@@ -200,7 +203,7 @@ exports.favoriteProjectById = function (project_id, req, res) {
             }
 
             user.save(function (user_err, succ) {
-                if (user_err)  {
+                if (user_err) {
                     return responseUtils.sendError('error occurred saving', 500, res);
                 }
                 return res.json({success: true});
@@ -248,5 +251,58 @@ exports.uploadMedia = function (data, folderName, extension, field, newUser, suc
         } else {
             successCallback();
         }
+    });
+};
+
+/**
+ *
+ * @param user User
+ */
+exports.sendVerificationEmail = function (user) {
+    var token = user.getEmailVerificationToken();
+    if (!config.featureToggles.isFeatureEnabled('emailVerification')) return;
+    volunteerEmails.sendVerificationEmail(
+        config.feBaseUrl + "/user/verify/email?token=" + token,
+        user.local.email,
+        "Releaf <noreply@releaf.ng>"
+    );
+};
+
+/**
+ * @param token
+ * @param req
+ * @param res
+ */
+exports.verifyEmail = function (token, req, res) {
+    User.findOne({
+        'email_verification_token': token
+    }, function (err, user) {
+        if (err) return responseUtils.sendError(messages.EMAIL_VERIFICATION_ERROR, 500, res);
+
+        if (!user) return responseUtils.sendError(messages.INVALID_EMAIL_VERIFICATION_TOKEN, 400, res);
+
+        if (user.verification_token_expires_at < Date.now()) {
+            return responseUtils.sendError(messages.EMAIL_VERIFICATION_TOKEN_EXPIRED, 400, res);
+        }
+
+        user.email_verified = true;
+        user.verification_token_expires_at = Date.now();
+        user.save(function (err) {
+            if (err) return responseUtils.sendError(messages.EMAIL_VERIFICATION_ERROR, 500, res);
+            return responseUtils.sendSuccess(true, res);
+        });
+    })
+};
+
+/**
+ * @param email
+ * @param req
+ * @param res
+ */
+exports.resendVerificationEmail = function (email, req, res) {
+    User.findOne({'local.email': email}, function (err, user) {
+        if (err) return responseUtils.sendError('User not found', 400, res);
+        exports.sendVerificationEmail(user);
+        return responseUtils.sendSuccess(true, res);
     });
 };

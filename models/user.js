@@ -5,6 +5,8 @@ var mongoose = require('mongoose'),
 var express = require('express');
 var app = express();
 var mediaFields = ['profile_photo_data', 'resume_data'];
+var randToken = require('rand-token');
+var constants = require('../libs/constants');
 
 /**
  * Validation error messages
@@ -145,7 +147,10 @@ var UserSchema = new Schema(
             required: this.fullUserFormSumitted || this.signupType === 'local'
         },
         dob: {type: Date, required: this.fullUserFormSumitted || this.signupType === 'local', validate: dobValidation},
-        favorite: {type: ObjectId, ref: 'Project'}
+        favorite: {type: ObjectId, ref: 'Project'},
+        is_email_verified: {type: Boolean, default: false},
+        email_verification_token: {type: String, default: null},
+        verification_token_expires_at: {type: Number, default: 0}
     },
 
     {
@@ -199,7 +204,7 @@ UserSchema.methods.setItem = function (key, value) {
     key = key.split('.');
 
     // Ensures that media fields are not set into object
-    if(mediaFields.indexOf(key) == -1) {
+    if (mediaFields.indexOf(key) == -1) {
         if (key.length === 2) {
             user[key[0]][key[1]] = value;
         } else {
@@ -213,6 +218,25 @@ UserSchema.methods.getItem = function (key) {
     key = key.split('.');
     if (key.length === 2) return user[key[0]][key[1]];
     return user[key[0]];
+};
+
+/**
+ * Generate email verification token and set expirty
+ * @returns {*}
+ */
+UserSchema.methods.getEmailVerificationToken = function () {
+    var user = this;
+
+    if (user.email_verification_token === null || user.verification_token_expires_at < Date.now()) {
+        user.email_verification_token = randToken.generate(20);
+        //TODO: Confirm number of days before token expires, set to 7 for now
+        user.verification_token_expires_at = new Date(Date.now() + constants.EMAIL_VERIFICATION_EXPIRY).getTime();
+        user.save(function (err) {
+            if (err) return false;
+        });
+    }
+
+    return user.email_verification_token;
 };
 
 module.exports = mongoose.model('User', UserSchema);

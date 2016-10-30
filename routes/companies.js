@@ -103,5 +103,24 @@ module.exports = function (passport) {
     router.route('/:id/projects').get(function (req, res) {
         return projectFunctions.getAllCompanyProjects(req.params.id, req, res);
     });
+
+    /** Route: /companies/email/verify
+     * Verifies company's email
+     * 'token' must be passed in the req body
+     */
+    router.route('/email/verify')
+        .post(function (req, res) {
+            return companyFunctions.verifyEmail(req.body.token, req, res);
+        });
+
+    /** Route: /companies/email/verify/resend
+     * Resend verification email to company
+     * 'email' must be passed in the req body
+     */
+    router.route('/email/verify/resend')
+        .post(function (req, res) {
+            return companyFunctions.resendVerificationEmail(req.body.email, req, res);
+        });
+
     return router;
 };
