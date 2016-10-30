@@ -114,6 +114,16 @@ describe('Projects Routes', function () {
                 });
         });
 
+        it('checks get company projects', function (done) {
+            request(url)
+                .get('/companies/' + companyId + '/projects')
+                .end(function (err, res) {
+                    console.log(res.body.message);
+                    res.body.message.length.should.equal(2);
+                    if (!err) done();
+                });
+        });
+
         it('get projects based on skills', function (done) {
             agent.get('/projects?skills=Data Analytics')
                 .end(function (err, res) {
