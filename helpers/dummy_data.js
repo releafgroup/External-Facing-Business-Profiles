@@ -54,9 +54,7 @@ var companyData2 = {
 
 var project1Data = {
     "project_name": "Masai Agro Reclaimation",
-    "short_description": 'Agrotech has patnered with the  Releaf group to source the best ' +
-    'consulting talent for their flagship Agro-development project in Nigeria',
-    "long_description": faker.lorem.sentence(),
+    "description": faker.lorem.sentence(),
     "project_background": '/img/masai-pic.png',
     "banner_project_img": '/img/banner-image.png',
     "core_skills": [
@@ -70,9 +68,7 @@ var project1Data = {
 };
 var project2Data = {
     "project_name": "IT Systems for Agri Growth",
-    "short_description": 'Tech Cabal has patnered with the  Releaf group to source the best ' +
-    'consulting talent for their IT Systems for Agri Growth project',
-    "long_description": faker.lorem.sentence(),
+    "description": faker.lorem.sentence(),
     "project_background": '/img/picture-tech-cabal-card.png',
     "banner_project_img": '/img/banner-image.png',
     "core_skills": [
