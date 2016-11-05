@@ -7,8 +7,8 @@ var mongoose = require('mongoose'),
 var OptionSchema = new Schema({
     key: {type: String, required: true},
     label: {type: String, required: true},
-    group: {type: String, required: false, default: "", index: true},
-    is_active: {type: Boolean, required: false, default: true}
+    group: {type: String, default: "", index: true},
+    is_active: {type: Boolean, default: true}
 }, {
     timestamps: true
 });

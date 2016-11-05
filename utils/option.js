@@ -6,7 +6,7 @@ var exports = module.exports = {};
  * @params: req, res
  */
 exports.getAll = function (req, res) {
-    Option.find({is_active: true}).then(function (options) {
+    Option.find({}).then(function (options) {
         responseHelper.sendSuccessWithFullData({options: options}, res);
     }).catch(function (err) {
         responseHelper.sendError(err.message, 500, res);
@@ -17,7 +17,7 @@ exports.getAll = function (req, res) {
  * Get Options by key / field
  */
 exports.getAllByKey = function (key, res) {
-    Option.find({is_active: true, key: key}).then(function (options) {
+    Option.find({key: key}).sort('+label').then(function (options) {
         responseHelper.sendSuccessWithFullData({options: options}, res);
     }).catch(function (err) {
         responseHelper.sendError(err.message, 500, res);
