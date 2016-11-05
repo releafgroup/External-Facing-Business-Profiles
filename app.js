@@ -88,6 +88,7 @@ app.use('/companies', companies);
 app.use('/admin', admin);
 app.use('/projects', projects);
 app.use('/messenger', messenger);
+app.use('/options', require('./routes/options'));
 app.use(authFunction);
 
 // Adds dummy projects

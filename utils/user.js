@@ -142,7 +142,7 @@ exports.updateUserById = function (user_id, req, res) {
  * Output: If successful, {success: true, message: list_of_users}
  * If not, {success: false, message: error_message}
  */
-exports.getAllUsers = function (req, res) {
+exports.getAll = function (req, res) {
 
     User.find(function (err, users) {
         if (err) return res.json({success: false, message: err.message});
