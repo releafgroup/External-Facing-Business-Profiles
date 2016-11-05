@@ -163,7 +163,7 @@ UserSchema.path('skills').validate(function (arr) {
         return skillsValidation(arr);
     }
     return true;
-}, validationMessages['data'][app.get('env')]);
+}, validationMessages['skills'][app.get('env')]);
 
 UserSchema.path('skill_ratings').validate(function (arr) {
     if (this.fullUserFormSumitted || this.signupType === 'local') {
