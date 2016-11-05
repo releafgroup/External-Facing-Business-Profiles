@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "prestart": "npm install",
+    "prestart": "npm install && node_modules/.bin/migrate",
     "start": "node ./bin/www",
-    "pretest": "npm install",
+    "pretest": "npm install && node_modules/.bin/migrate",
     "test": "nodemon ./bin/www",
     "mocha_test": "NODE_ENV=mocha_db mocha ./mocha_test"
   },
