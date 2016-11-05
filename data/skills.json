@@ -1,0 +1,107 @@
+[
+  {
+    "key": "skills",
+    "label": "Growth Strategy",
+    "group": "Strategy"
+  },
+  {
+    "key": "skills",
+    "label": "Business Plan Formulation",
+    "group": "Strategy"
+  },
+  {
+    "key": "skills",
+    "label": "Operations Improvement (discovering areas)",
+    "group": "Strategy"
+  },
+  {
+    "key": "skills",
+    "label": "Competitive Analysis",
+    "group": "Strategy"
+  },
+  {
+    "key": "skills",
+    "label": "Exit Plan Strategy",
+    "group": "Strategy"
+  },
+  {
+    "key": "skills",
+    "label": "New Market Entry",
+    "group": "Strategy"
+  },
+  {
+    "key": "skills",
+    "label": "Project Management",
+    "group": "Strategy"
+  },
+  {
+    "key": "skills",
+    "label": "Supply Chain Management",
+    "group": "Strategy"
+  },
+  {
+    "key": "skills",
+    "label": "Business Plan Formulation",
+    "group": "Finance"
+  },
+  {
+    "key": "skills",
+    "label": "Financial Operational analysis",
+    "group": "Finance"
+  },
+  {
+    "key": "skills",
+    "label": "Investor strategy",
+    "group": "Finance"
+  },
+  {
+    "key": "skills",
+    "label": "Legal/IP",
+    "group": "Finance"
+  },
+  {
+    "key": "skills",
+    "label": "Money Management",
+    "group": "Finance"
+  },
+  {
+    "key": "skills",
+    "label": "DCF Analysis",
+    "group": "Finance"
+  },
+  {
+    "key": "skills",
+    "label": "Brand management",
+    "group": "Design"
+  },
+  {
+    "key": "skills",
+    "label": "Social Media strategy",
+    "group": "Design"
+  },
+  {
+    "key": "skills",
+    "label": "Graphic Design",
+    "group": "Design"
+  },
+  {
+    "key": "skills",
+    "label": "Data Analytics",
+    "group": "Software"
+  },
+  {
+    "key": "skills",
+    "label": "Front-End Development",
+    "group": "Software"
+  },
+  {
+    "key": "skills",
+    "label": "Back-End Development",
+    "group": "Software"
+  },
+  {
+    "key": "skills",
+    "label": "Mobile Development",
+    "group": "Software"
+  }
+]
