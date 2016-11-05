@@ -1,0 +1,26 @@
+[
+  {
+    "key": "company_size",
+    "label": "Sole Proprietor"
+  },
+  {
+    "key": "company_size",
+    "label": "1 Partner"
+  },
+  {
+    "key": "company_size",
+    "label": "2 - 10 Employees"
+  },
+  {
+    "key": "company_size",
+    "label": "11 - 50 Employees"
+  },
+  {
+    "key": "company_size",
+    "label": "51 - 100 Employees"
+  },
+  {
+    "key": "company_size",
+    "label": "100 - 500 Employees"
+  }
+]

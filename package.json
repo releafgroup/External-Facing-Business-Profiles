@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "prestart": "npm install",
+    "prestart": "npm install && node_modules/.bin/migrate",
     "start": "node ./bin/www",
-    "pretest": "npm install",
+    "pretest": "npm install && node_modules/.bin/migrate",
     "test": "nodemon ./bin/www",
     "mocha_test": "NODE_ENV=mocha_db mocha ./mocha_test"
   },
@@ -25,8 +25,9 @@
     "feature-toggles": "^1.4.0",
     "jade": "~1.11.0",
     "jsonwebtoken": "^7.0.1",
-    "migrate-mongo": "^1.0.3",
+    "migrate": "^0.2.3",
     "moment": "^2.14.1",
+    "mongodb": "^2.2.11",
     "mongoose": "^4.5.3",
     "mongoose-timestamps": "0.0.1",
     "morgan": "~1.6.1",

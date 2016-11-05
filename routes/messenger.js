@@ -38,7 +38,7 @@ module.exports = function (io) {
      * See getAllUsers for more info
      */
     router.route('/volunteers').get(function (req, res) {
-        return user_functions.getAllUsers(req, res);
+        return user_functions.getAll(req, res);
     });
 
     /**
