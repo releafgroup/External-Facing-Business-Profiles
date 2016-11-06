@@ -3,6 +3,7 @@ var mongoose = require('mongoose'),
 
 var express = require('express');
 var app = express();
+var Task = require('./task');
 
 // Validation error messages
 var genericError = "There was an error saving the project";
@@ -81,7 +82,8 @@ var ProjectSchema = new Schema({
     core_skills: {type: [String], validate: coreSkillsValidation, index: true},
     industry_focus: {type: String, required: true, validate: industryFocusValidation},
     completion_time: {type: Number, required: true}, // TODO: figure out max and min
-    number_staffed: {type: Number, required: true} // TODO: add validation, also make sure to de-increment
+    number_staffed: {type: Number, required: true}, // TODO: add validation, also make sure to de-increment
+    tasks: [Task]
 }, {
     timestamps: true
 });

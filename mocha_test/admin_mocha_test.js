@@ -29,6 +29,8 @@ var project1 = testHelpers.project1;
 
 var project2 = testHelpers.project2;
 
+var taskId = -1;
+
 describe('Admin Routes', function () {
 
     before(function (done) {
@@ -291,4 +293,53 @@ describe('Admin Routes', function () {
                 })
         });
     });
+
+    describe('Project Tasks', function () {
+        it('Add Task to project', function (done) {
+            superAgentAdmin
+                .post('/projects/' + project2['_id'] + '/tasks')
+                .send({
+                    'title': 'Ensure project task is working',
+                    'due_on': new Date().toISOString().slice(0, 10),
+                    'assigned_to': user1Id
+                })
+                .expect(200)
+                .end(function (err, res) {
+                    res.body.success.should.equal(true);
+                    taskId = res.body.id;
+                    done();
+                })
+        });
+
+        it('Get project tasks', function (done) {
+            superAgentAdmin
+                .get('/projects/' + project2['_id'] + '/tasks')
+                .expect(200)
+                .end(function (err, res) {
+                    res.body.success.should.equal(true);
+                    done();
+                })
+        });
+
+        it('Complete project task', function (done) {
+            superAgentAdmin
+                .put('/projects/' + project2['_id'] + '/tasks/' + taskId)
+                .send({is_completed: true})
+                .expect(200)
+                .end(function (err, res) {
+                    res.body.success.should.equal(true);
+                    done();
+                })
+        });
+
+        it('Get project task', function (done) {
+            superAgentAdmin
+                .get('/projects/' + project2['_id'] + '/tasks/' + taskId)
+                .expect(200)
+                .end(function (err, res) {
+                    res.body.success.should.equal(true);
+                    done();
+                })
+        });
+    })
 });
