@@ -150,8 +150,8 @@ exports.addTask = function (project_id, req, res) {
     Project.findOne({
         '_id': req.params.id
     }, function (err, project) {
-        if (!project) return res.json({success: false, message: 'Project not found'});
-        if (err) return res.json({success: false, message: err.message});
+        if (!project) return responseHelper.sendError('Project not found', 404, res);
+        if (err) return responseHelper.sendError(err.message, 500, res);
 
         var task = {
             _id: mongoose.Types.ObjectId(),
@@ -163,7 +163,7 @@ exports.addTask = function (project_id, req, res) {
 
         project.save(function (err) {
             if (err) {
-                return res.json({success: false, message: handleProjectSaveError(err)});
+                return responseHelper.sendError(handleProjectSaveError(err), 500, res);
             }
             return responseHelper.sendSuccessWithFullData({id: task._id}, res);
         });
@@ -175,8 +175,8 @@ exports.getTasks = function (project_id, req, res) {
     Project.findOne({
         '_id': req.params.id
     }, function (err, project) {
-        if (!project) return res.json({success: false, message: 'Project not found'});
-        if (err) return res.json({success: false, message: err.message});
+        if (!project) return responseHelper.sendError('Project not found', 404, res);
+        if (err) return responseHelper.sendError(err.message, 500, res);
 
         return responseHelper.sendSuccessWithFullData(project.tasks, res);
     });
@@ -184,27 +184,27 @@ exports.getTasks = function (project_id, req, res) {
 
 exports.toggleTaskCompleteStatus = function (project_id, task_id, req, res) {
     Project.findById(project_id, function (err, project) {
-        if (!project) return res.json({success: false, message: 'Project not found'});
-        if (err) return res.json({success: false, message: err.message});
+        if (!project) return responseHelper.sendError('Project not found', 404, res);
+        if (err) return responseHelper.sendError(err.message, 500, res);
 
         var task = project.tasks.id(task_id);
-        if (!task) return res.json({success: false, message: 'Task not found'});
+        if (!task) return responseHelper.sendError('Task not found', 404, res);
         task.is_completed = req.body.is_completed;
 
         task.save(function (err) {
-            if (err) return res.json({success: false, message: err.message});
-            return res.json({success: true});
+            if (err) return responseHelper.sendError(err.message, 500, res);
+            return responseHelper.sendSuccess(true, res);
         });
     });
 };
 
 exports.getTask = function (project_id, task_id, req, res) {
     Project.findById(project_id, function (err, project) {
-        if (!project) return res.json({success: false, message: 'Project not found'});
-        if (err) return res.json({success: false, message: err.message});
+        if (!project) return responseHelper.sendError('Project not found', 404, res);
+        if (err) return responseHelper.sendError(err.message, 500, res);
 
         var task = project.tasks.id(task_id);
-        if (!task) return res.json({success: false, message: 'Task not found'});
+        if (!task) return responseHelper.sendError('Task not found', 404, res);
         return responseHelper.sendSuccessWithFullData(task, res);
     });
 };
