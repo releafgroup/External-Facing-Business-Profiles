@@ -2,6 +2,7 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 var express = require('express');
 var app = express();
+var moment = require('moment');
 
 
 /**
@@ -18,7 +19,7 @@ var validationMessages = {
 
 var dueOnValidation = {
     validator: function (value) {
-        return value.setHours(0, 0, 0, 0) >= (new Date()).setHours(0, 0, 0, 0);
+        return  moment().diff(value, 'days') >= 0;
     },
     message: validationMessages['due_on'][app.get('env')]
 };

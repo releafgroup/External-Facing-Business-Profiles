@@ -177,8 +177,7 @@ exports.getTasks = function (project_id, req, res) {
     }, function (err, project) {
         if (!project) return responseHelper.sendError('Project not found', 404, res);
         if (err) return responseHelper.sendError(err.message, 500, res);
-
-        return responseHelper.sendSuccessWithFullData(project.tasks, res);
+        return responseHelper.sendSuccess(project.tasks.toObject(), res);
     });
 };
 
@@ -205,6 +204,6 @@ exports.getTask = function (project_id, task_id, req, res) {
 
         var task = project.tasks.id(task_id);
         if (!task) return responseHelper.sendError('Task not found', 404, res);
-        return responseHelper.sendSuccessWithFullData(task, res);
+        return responseHelper.sendSuccess(task.toObject(), res);
     });
 };
