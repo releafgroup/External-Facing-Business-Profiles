@@ -1,5 +1,6 @@
 var Project = require('../models/project');
 var responseHelper = require('../helpers/response');
+var mongoose = require('mongoose');
 
 /** Function for project error handling in saving project info
  * @params: error from saving a project
@@ -142,5 +143,67 @@ exports.getProjectsBySkills = function (skills, req, res) {
             return responseHelper.sendError(err.message, 500, res);
         }
         return responseHelper.sendSuccess(projects, res);
+    });
+};
+
+exports.addTask = function (project_id, req, res) {
+    Project.findOne({
+        '_id': req.params.id
+    }, function (err, project) {
+        if (!project) return responseHelper.sendError('Project not found', 404, res);
+        if (err) return responseHelper.sendError(err.message, 500, res);
+
+        var task = {
+            _id: mongoose.Types.ObjectId(),
+            title: req.body.title,
+            assigned_to: req.body.assigned_to,
+            due_on: req.body.due_on
+        };
+        project.tasks.push(task);
+
+        project.save(function (err) {
+            if (err) {
+                return responseHelper.sendError(handleProjectSaveError(err), 500, res);
+            }
+            return responseHelper.sendSuccessWithFullData({id: task._id}, res);
+        });
+
+    });
+};
+
+exports.getTasks = function (project_id, req, res) {
+    Project.findOne({
+        '_id': req.params.id
+    }, function (err, project) {
+        if (!project) return responseHelper.sendError('Project not found', 404, res);
+        if (err) return responseHelper.sendError(err.message, 500, res);
+        return responseHelper.sendSuccess(project.tasks.toObject(), res);
+    });
+};
+
+exports.toggleTaskCompleteStatus = function (project_id, task_id, req, res) {
+    Project.findById(project_id, function (err, project) {
+        if (!project) return responseHelper.sendError('Project not found', 404, res);
+        if (err) return responseHelper.sendError(err.message, 500, res);
+
+        var task = project.tasks.id(task_id);
+        if (!task) return responseHelper.sendError('Task not found', 404, res);
+        task.is_completed = req.body.is_completed;
+
+        task.save(function (err) {
+            if (err) return responseHelper.sendError(err.message, 500, res);
+            return responseHelper.sendSuccess(true, res);
+        });
+    });
+};
+
+exports.getTask = function (project_id, task_id, req, res) {
+    Project.findById(project_id, function (err, project) {
+        if (!project) return responseHelper.sendError('Project not found', 404, res);
+        if (err) return responseHelper.sendError(err.message, 500, res);
+
+        var task = project.tasks.id(task_id);
+        if (!task) return responseHelper.sendError('Task not found', 404, res);
+        return responseHelper.sendSuccess(task.toObject(), res);
     });
 };
