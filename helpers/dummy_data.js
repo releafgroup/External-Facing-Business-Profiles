@@ -5,6 +5,8 @@ var exports = module.exports;
 var faker = require('faker');
 var Company = require('../models/company');
 var Project = require('../models/project');
+var optionsUtils = require('../utils/option');
+var skills = optionsUtils.getAllSkillLabels();
 
 var companyData = {
     "business_name": 'Agro Tech',
@@ -58,8 +60,8 @@ var project1Data = {
     "project_background": '/img/masai-pic.png',
     "banner_project_img": '/img/banner-image.png',
     "core_skills": [
-        "Consulting",
-        "Account Management"
+        faker.random.arrayElement(skills),
+        faker.random.arrayElement(skills)
     ],
     "industry_focus": "Storage",
     "completion_time": 10,
@@ -72,9 +74,8 @@ var project2Data = {
     "project_background": '/img/picture-tech-cabal-card.png',
     "banner_project_img": '/img/banner-image.png',
     "core_skills": [
-        "C#",
-        "JavaScript",
-        "AngularJS"
+        faker.random.arrayElement(skills),
+        faker.random.arrayElement(skills)
     ],
     "industry_focus": "Storage",
     "completion_time": 10,

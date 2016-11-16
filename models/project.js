@@ -4,6 +4,7 @@ var mongoose = require('mongoose'),
 var express = require('express');
 var app = express();
 var Task = require('./task');
+var optionFunctions = require('../utils/option');
 
 // Validation error messages
 var genericError = "There was an error saving the project";
@@ -38,12 +39,8 @@ var projectNameValidation = {
 };
 var companyIndustryOptions = ['Producer/Farmer', 'Processing', 'Transport', 'Storage', 'Manufacturing',
     'Trade', 'Distributor/Consumer'];
-var skillOptions = ['Data Analytics', 'Marketing', 'Web Development', 'App Development', 'Growth Strategy',
-    'Raising Capital', 'Business Plan', 'SWOT Analysis', 'Competitive Analysis', 'New Market Entry',
-    'Operations Improvement'];
 
-// TODO Remove dummy project core skills
-skillOptions = skillOptions.concat(['Consulting', 'Account Management', 'C#', 'JavaScript', 'AngularJS']);
+var skillOptions = optionFunctions.getAllSkillLabels();
 
 var descriptionValidation = {
     validator: function (r) {

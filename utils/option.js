@@ -23,3 +23,10 @@ exports.getAllByKey = function (key, res) {
         responseHelper.sendError(err.message, 500, res);
     });
 };
+
+exports.getAllSkillLabels = function () {
+    var skills = require("../data/skills.json");
+    return skills.map(function (skill) {
+        return skill.label;
+    })
+};

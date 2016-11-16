@@ -3,16 +3,30 @@
  */
 var exports = module.exports = {};
 var faker = require('faker');
+var optionsUtils = require('../utils/option');
 
 exports.url = 'http://localhost:3000';
+
+var skills = optionsUtils.getAllSkillLabels();
+
+var skill1 = faker.random.arrayElement(skills);
+var skill2 = faker.random.arrayElement(skills);
+exports.skill1 = skill1;
+exports.skill2 = skill2;
+
+var project1Skill3 = faker.random.arrayElement(skills);
+exports.project1Skill3 = project1Skill3;
+
+var project2Skill3 = faker.random.arrayElement(skills);
+exports.project2Skill3 = project2Skill3;
 
 exports.project1 = {
     'project_name': 'First Project',
     'description': faker.lorem.sentence(),
     'core_skills': [
-        'App Development',
-        'Growth Strategy',
-        'Business Plan'
+        skill1,
+        skill2,
+        project1Skill3
     ],
     'industry_focus': 'Storage',
     'completion_time': 10,
@@ -23,9 +37,9 @@ exports.project2 = {
     'project_name': 'Second Project',
     'description': faker.lorem.sentence(),
     'core_skills': [
-        'App Development',
-        'Growth Strategy',
-        'Data Analytics'
+        skill1,
+        skill2,
+        project2Skill3
     ],
     'industry_focus': 'Storage',
     'completion_time': 10,
@@ -37,9 +51,9 @@ exports.project3 = {
     'short_description': 'test_second',
     'long_description': faker.lorem.sentence(),
     'core_skills': [
-        'App Development',
-        'Growth Strategy',
-        'Social Media'
+        skill1,
+        skill2,
+        faker.random.arrayElement(skills)
     ],
     'industry_focus': 'Storage',
     'completion_time': 10,
