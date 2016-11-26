@@ -171,5 +171,19 @@ describe('Company routes', function () {
                         });
                 });
         });
+
+        describe('Password Reset', function () {
+            it('Send password reset email to company', function (done) {
+                superAgent
+                    .post('/password/reset/email')
+                    .send({email: company['email']})
+                    .expect(200)
+                    .end(function (err, res) {
+                        res.body.success.should.equal(true);
+                        done();
+                    });
+            });
+        });
+
     });
 });

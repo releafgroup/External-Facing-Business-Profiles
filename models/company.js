@@ -193,7 +193,8 @@ var CompanySchema = new Schema({
     dummy_data: {type: Boolean, default: false},
     is_email_verified: {type: Boolean, default: false},
     email_verification_token: {type: String, default: null},
-    verification_token_expires_at: {type: Number, default: 0}
+    verification_token_expires_at: {type: Number, default: 0},
+    password_reset_token: {type: String, default: null}
 }, {
     timestamps: true
 });
@@ -236,6 +237,23 @@ CompanySchema.methods.getEmailVerificationToken = function () {
 
     return company.email_verification_token;
 };
+
+/**
+ * Generate password reset token
+ * @returns {*}
+ */
+CompanySchema.methods.getPasswordResetToken = function () {
+    var company = this;
+    if (company.password_reset_token === null) {
+        company.password_reset_token = randToken.generate(40);
+        company.save(function (err) {
+            if (err) return false;
+        });
+    }
+
+    return company.password_reset_token;
+};
+
 
 module.exports = mongoose.model('Company', CompanySchema);
 

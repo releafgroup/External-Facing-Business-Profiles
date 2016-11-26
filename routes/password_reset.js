@@ -4,6 +4,7 @@ var User = require('../models/user');
 var Company = require('../models/company');
 var responseUtils = require('../helpers/response');
 var volunteerEmails = require('../emails/volunteer');
+var companyEmails = require('../emails/company');
 var config = require('../config');
 
 
@@ -34,13 +35,13 @@ router.route('/reset/email')
 function handleCompanyPasswordReset(email, res) {
     Company.findOne({'email': email}, function (err, company) {
         if (err) return responseUtils.sendError('An error occurred', 500, res);
+
         if (!company) return responseUtils.sendError('User not found', 400, res);
 
-        //TODO Get Password reset token for company - add this in Company Schema
-        //TODO Add company sendPasswordResetEmail to emails/company.js
-        //TODO send email reset password email to company
-        //TODO Send Success Response
-        //TODO Add test for company password reset
+        companyEmails.sendPasswordResetEmail(company, config.feBaseUrl + '/password/reset?token=' +
+                company.getPasswordResetToken(), "Releaf <noreply@releaf.ng>");
+
+        return responseUtils.sendSuccess(true, res);
     });
 }
 
