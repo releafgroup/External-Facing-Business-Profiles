@@ -174,9 +174,9 @@ describe('Company routes', function () {
 
         describe('Password Reset', function () {
             it('Send password reset email to company', function (done) {
-                superAgent
+                request(url)
                     .post('/password/reset/email')
-                    .send({email: company['email']})
+                    .send({email: company1['email']})
                     .expect(200)
                     .end(function (err, res) {
                         res.body.success.should.equal(true);

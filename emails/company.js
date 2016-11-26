@@ -18,6 +18,6 @@ exports.sendPasswordResetEmail = function (company, resetLink, from) {
         firstname: company.business_name,
         link: resetLink
     }, function (err, html) {
-        nodemailer.send('Releaf - Reset your Password', html, company.email, from);
+        nodemailer.send('Reset your Password', html, company.email, from);
     })
 };
