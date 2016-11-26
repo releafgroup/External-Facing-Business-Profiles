@@ -185,5 +185,46 @@ describe('Company routes', function () {
             });
         });
 
+        it('Fail Case: Verify invalid token', function (done) {
+            request(url)
+                .post('/password/reset/token/verify')
+                .send({token: 'invalid token'})
+                .expect(400)
+                .end(function (err, res) {
+                    res.body.success.should.equal(false);
+                    done();
+                });
+        });
+
+        it('Success Case: Verify reset token', function (done) {
+            Company.findOne({'_id': company1Id}, function (err, company) {
+                if(err) done(err);
+                if(!company) done('Company not found');
+                request.agent(url)
+                    .post('/password/reset/token/verify')
+                    .send({token: company.password_reset_token})
+                    .expect(200)
+                    .end(function (err, res) {
+                        res.body.success.should.equal(true);
+                        done();
+                    });
+            });
+        });
+
+        it('Success Case: Change Password', function (done) {
+            Company.findOne({'_id': company1Id}, function (err, company) {
+                if(err) done(err);
+                if(!company) done('Company not found');
+                request.agent(url)
+                    .post('/password/change')
+                    .send({token: company.password_reset_token, password: 'Abcd123456'})
+                    .expect(200)
+                    .end(function (err, res) {
+                        res.body.success.should.equal(true);
+                        done();
+                    });
+            });
+        });
+
     });
 });

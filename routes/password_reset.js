@@ -78,9 +78,9 @@ function handleCompanyVerifyToken(token, res) {
 /**
  * Verify reset token
  */
-router.route('/password/change')
+router.route('/change')
     .post(function (req, res) {
-        var token = req.body.reset_token;
+        var token = req.body.token;
         var newPassword = req.body.password;
 
         User.findOne({'password_reset_token': token}, function (err, user) {
@@ -91,7 +91,8 @@ router.route('/password/change')
                 return handleCompanyChangePassword(token, newPassword, res);
             }
 
-            user.password = user.generateHash(newPassword);
+            user.local.password = user.generateHash(newPassword);
+            user.password_reset_token = null;
 
             user.save(function (err) {
                 if(err) return responseUtils.sendError('An error occurred', 500, res);
@@ -108,6 +109,7 @@ function handleCompanyChangePassword(token, newPassword, res) {
         if (!company) return responseUtils.sendError('Invalid Reset Token', 400, res);
 
         company.password = company.generateHash(newPassword);
+        company.password_reset_token = null;
 
         company.save(function (err) {
             if(err) return responseUtils.sendError('An error occurred', 500, res);

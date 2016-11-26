@@ -520,6 +520,48 @@ describe('Volunteer Test Cases', function () {
                         done();
                     });
             });
+
+
+            it('Fail Case: Verify invalid token', function (done) {
+                superAgent
+                    .post('/password/reset/token/verify')
+                    .send({token: 'invalid token'})
+                    .expect(400)
+                    .end(function (err, res) {
+                        res.body.success.should.equal(false);
+                        done();
+                    });
+            });
+
+            it('Success Case: Verify reset token', function (done) {
+                User.findOne({'_id': user1Id}, function (err, user) {
+                    if(err) done(err);
+                    if(!user) done('User not found');
+                    request.agent(url)
+                        .post('/password/reset/token/verify')
+                        .send({token: user.password_reset_token})
+                        .expect(200)
+                        .end(function (err, res) {
+                            res.body.success.should.equal(true);
+                            done();
+                        });
+                });
+            });
+
+            it('Success Case: Change Password', function (done) {
+                User.findOne({'_id': user1Id}, function (err, user) {
+                    if(err) done(err);
+                    if(!user) done('User not found');
+                    request.agent(url)
+                        .post('/password/change')
+                        .send({token: user.password_reset_token, password: 'Abcd123456'})
+                        .expect(200)
+                        .end(function (err, res) {
+                            res.body.success.should.equal(true);
+                            done();
+                        });
+                });
+            });
         });
     });
 
