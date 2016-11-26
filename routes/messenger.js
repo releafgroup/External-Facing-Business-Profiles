@@ -7,7 +7,8 @@ module.exports = function (io) {
     var Message = require('./../models/message');
     var Groups = require('./../models/chat_groups');
     var helper = require('./../helpers/messenger');
-    var user_functions = require('../utils/user');
+    var userFunctions = require('../utils/user');
+    var companyFunctions = require('../utils/company');
     var nodemailer = require('./../utils/node_mailer');
     nodemailer.setupTransport(config.mailConfig.smtp);
 
@@ -38,7 +39,15 @@ module.exports = function (io) {
      * See getAllUsers for more info
      */
     router.route('/volunteers').get(function (req, res) {
-        return user_functions.getAllUsers(req, res);
+        return userFunctions.getAll(req, res);
+    });
+
+    /**
+     * Gets all companies
+     * TODO Secure endpoint
+     */
+    router.route('/companies').get(function (req, res) {
+        return companyFunctions.getAllCompanies(req, res);
     });
 
     /**

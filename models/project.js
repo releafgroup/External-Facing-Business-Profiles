@@ -3,6 +3,7 @@ var mongoose = require('mongoose'),
 
 var express = require('express');
 var app = express();
+var Task = require('./task');
 
 // Validation error messages
 var genericError = "There was an error saving the project";
@@ -12,8 +13,8 @@ var errorMessages = {
         'development': genericError,
         'production': genericError
     },
-    'long_description': {
-        'mocha_db': "long description must be less than 1000 characters",
+    'description': {
+        'mocha_db': "description must be less than 1000 characters",
         'development': genericError,
         'production': genericError
     },
@@ -44,16 +45,10 @@ var skillOptions = ['Data Analytics', 'Marketing', 'Web Development', 'App Devel
 // TODO Remove dummy project core skills
 skillOptions = skillOptions.concat(['Consulting', 'Account Management', 'C#', 'JavaScript', 'AngularJS']);
 
-var longDescriptionValidation = {
+var descriptionValidation = {
     validator: function (r) {
         return r.length <= 1000;
-    }, message: errorMessages['long_description'][app.get('env')]
-};
-
-var shortDescriptionValidation = {
-    validator: function (r) {
-        return r.length <= 140;
-    }, message: errorMessages['short_description'][app.get('env')]
+    }, message: errorMessages['description'][app.get('env')]
 };
 
 var coreSkillsValidation = {
@@ -79,16 +74,16 @@ var industryFocusValidation = {
 // Stores references to ids of the volunteer and project
 var ProjectSchema = new Schema({
     _company: {type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true},
-    is_verified: {type: Boolean, required: true},
+    is_verified: {type: Boolean, default: false},
     project_name: {type: String, required: true, validate: projectNameValidation},
-    long_description: {type: String, required: true, validate: longDescriptionValidation},
-    short_description: {type: String, required: true, validate: shortDescriptionValidation},
+    description: {type: String, required: true, validate: descriptionValidation},
     project_background: {type: String},
     banner_project_img: {type: String},
     core_skills: {type: [String], validate: coreSkillsValidation, index: true},
     industry_focus: {type: String, required: true, validate: industryFocusValidation},
     completion_time: {type: Number, required: true}, // TODO: figure out max and min
-    number_staffed: {type: Number, required: true} // TODO: add validation, also make sure to de-increment
+    number_staffed: {type: Number, required: true}, // TODO: add validation, also make sure to de-increment
+    tasks: [Task]
 }, {
     timestamps: true
 });

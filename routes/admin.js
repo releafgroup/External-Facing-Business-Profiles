@@ -55,7 +55,7 @@ module.exports = function (passport) {
     router.route('/volunteers')
         .get(function (req, res) {
             if (!permissionHelper.checkAdminProfilePermission(req)) return res.json({success: false, message: 'No permission'});
-            return userFunctions.getAllUsers(req, res);
+            return userFunctions.getAll(req, res);
 
         });
 

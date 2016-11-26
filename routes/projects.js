@@ -77,11 +77,27 @@ router.route('/:id')
 
             // TODO: delete from company's array and add unit test in mocha
             VolunteerAssignment.remove({'project': req.params.id}, function (err) {
-                if(err) return responseHelper.sendError();
+                if (err) return responseHelper.sendError();
 
                 return responseHelper.sendSuccess(true, res);
             });
         });
+    });
+
+router.route('/:id/tasks')
+    .post(function (req, res) {
+        return projectFunctions.addTask(req.params.id, req, res);
+    })
+    .get(function (req, res) {
+        return projectFunctions.getTasks(req.params.id, req, res);
+    });
+
+router.route('/:id/tasks/:task_id')
+    .put(function (req, res) {
+        return projectFunctions.toggleTaskCompleteStatus(req.params.id, req.params.task_id, req, res);
+    })
+    .get(function (req, res) {
+        return projectFunctions.getTask(req.params.id, req.params.task_id, req, res);
     });
 
 /**

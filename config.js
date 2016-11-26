@@ -1,6 +1,6 @@
 var env = require('dotenv').config();
 var featureToggles = require('feature-toggles');
-var toggles = require('./toggles');
+var toggles = require('./toggles.json');
 
 var database = process.env.MONGODB_URI || 'mongodb://localhost/first_test_db';
 var superSecret = '';
