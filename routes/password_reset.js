@@ -23,7 +23,7 @@ router.route('/reset/email')
                 return handleCompanyPasswordReset(email, res);
             }
 
-            volunteerEmails.sendPasswordResetEmail(user, config.feBaseUrl + '/password/reset?token=' +
+            volunteerEmails.sendPasswordResetEmail(user, config.feBaseUrl + '/forgotpassword/' +
                 user.getPasswordResetToken(), "Releaf <noreply@releaf.ng>");
 
             return responseUtils.sendSuccess(true, res);
@@ -38,7 +38,7 @@ function handleCompanyPasswordReset(email, res) {
 
         if (!company) return responseUtils.sendError('User not found', 400, res);
 
-        companyEmails.sendPasswordResetEmail(company, config.feBaseUrl + '/password/reset?token=' +
+        companyEmails.sendPasswordResetEmail(company, config.feBaseUrl + '/forgotpassword/' +
                 company.getPasswordResetToken(), "Releaf <noreply@releaf.ng>");
 
         return responseUtils.sendSuccess(true, res);
