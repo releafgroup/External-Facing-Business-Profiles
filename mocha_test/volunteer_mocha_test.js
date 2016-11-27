@@ -35,7 +35,7 @@ var company1Id = -1;
 var company1 = testHelpers.company1();
 
 var company2Id = -1;
-var company2 = JSON.parse(JSON.stringify(company1));
+var company2 = JSON.parse(JSON.stringify(testHelpers.company1()));
 
 // TODO: add test cases for user permissions
 // i.e. companies can't access this, users can't access other users data, etc.
@@ -561,6 +561,23 @@ describe('Volunteer Test Cases', function () {
                             done();
                         });
                 });
+            });
+
+            it('logs in with new password', function (done) {
+                superAgent
+                    .post('/users/auth/login')
+                    .expect(200)
+                    .send({'local.email':user1['local.email'], 'local.password': 'Abcd123456'})
+                    .end(function (err, res) {
+                        res.body.success.should.equal(true);
+                        superAgent
+                            .get('/users/')
+                            .end(function (err, res) {
+                                res.body.success.should.equal(true);
+                                done();
+                            });
+                    });
+
             });
         });
     });

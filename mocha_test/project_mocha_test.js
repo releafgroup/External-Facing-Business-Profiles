@@ -118,7 +118,6 @@ describe('Projects Routes', function () {
             request(url)
                 .get('/companies/' + companyId + '/projects')
                 .end(function (err, res) {
-                    console.log(res.body.message);
                     res.body.message.length.should.equal(2);
                     if (!err) done();
                 });
