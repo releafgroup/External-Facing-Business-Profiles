@@ -136,7 +136,7 @@ exports.sendVerificationEmail = function (company) {
     var token = company.getEmailVerificationToken();
     if (!config.featureToggles.isFeatureEnabled('emailVerification')) return;
     companyEmails.sendVerificationEmail(
-        config.feBaseUrl + "/business/verify/email?token=" + token,
+        config.feBaseUrl + "/business/verify/" + token,
         company.email,
         "Releaf <noreply@releaf.ng>"
     );
