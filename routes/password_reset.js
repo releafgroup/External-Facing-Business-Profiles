@@ -5,6 +5,7 @@ var Company = require('../models/company');
 var responseUtils = require('../helpers/response');
 var volunteerEmails = require('../emails/volunteer');
 var companyEmails = require('../emails/company');
+var companyUtils = require('../utils/company');
 var config = require('../config');
 
 
@@ -20,7 +21,7 @@ router.route('/reset/email')
             if (err) return responseUtils.sendError('An error occurred', 500, res);
 
             if (!user) {
-                return handleCompanyPasswordReset(email, res);
+                return companyUtils.handleCompanyPasswordReset(email, res);
             }
 
             volunteerEmails.sendPasswordResetEmail(user, config.feBaseUrl + '/forgotpassword/' +
@@ -30,20 +31,6 @@ router.route('/reset/email')
         });
 
     });
-
-
-function handleCompanyPasswordReset(email, res) {
-    Company.findOne({'email': email}, function (err, company) {
-        if (err) return responseUtils.sendError('An error occurred', 500, res);
-
-        if (!company) return responseUtils.sendError('User not found', 400, res);
-
-        companyEmails.sendPasswordResetEmail(company, config.feBaseUrl + '/forgotpassword/' +
-                company.getPasswordResetToken(), "Releaf <noreply@releaf.ng>");
-
-        return responseUtils.sendSuccess(true, res);
-    });
-}
 
 /**
  * Verify reset token
@@ -57,23 +44,13 @@ router.route('/reset/token/verify')
             if (err) return responseUtils.sendError('An error occurred', 500, res);
 
             if (!user) {
-                return handleCompanyVerifyToken(token, res);
+                return companyUtils.handleCompanyVerifyToken(token, res);
             }
 
             return responseUtils.sendSuccess(true, res);
         });
 
     });
-
-function handleCompanyVerifyToken(token, res) {
-    Company.findOne({'password_reset_token': token}, function (err, company) {
-        if (err) return responseUtils.sendError('An error occurred', 500, res);
-
-        if (!company) return responseUtils.sendError('Invalid Token', 400, res);
-
-        return responseUtils.sendSuccess(true, res);
-    });
-}
 
 /**
  * Verify reset token
@@ -88,37 +65,19 @@ router.route('/change')
             if (err) return responseUtils.sendError('An error occurred', 500, res);
 
             if (!user) {
-                return handleCompanyChangePassword(token, newPassword, res);
+                return companyUtils.handleCompanyChangePassword(token, newPassword, res);
             }
 
             user.local.password = user.generateHash(newPassword);
             user.password_reset_token = null;
 
             user.save(function (err) {
-                if(err) return responseUtils.sendError('An error occurred', 500, res);
+                if (err) return responseUtils.sendError('An error occurred', 500, res);
                 return responseUtils.sendSuccess(true, res);
             });
         });
 
     });
-
-function handleCompanyChangePassword(token, newPassword, res) {
-    Company.findOne({'password_reset_token': token}, function (err, company) {
-        if (err) return responseUtils.sendError('An error occurred', 500, res);
-
-        if (!company) return responseUtils.sendError('Invalid Reset Token', 400, res);
-
-        company.password = company.generateHash(newPassword);
-        company.password_reset_token = null;
-
-        company.save(function (err) {
-            if(err) return responseUtils.sendError('An error occurred', 500, res);
-            return responseUtils.sendSuccess(true, res);
-        });
-    });
-}
-
-
 
 module.exports = router;
 

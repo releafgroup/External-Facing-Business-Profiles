@@ -184,3 +184,43 @@ exports.resendVerificationEmail = function (email, req, res) {
         return responseUtils.sendSuccess(true, res);
     });
 };
+
+exports.handleCompanyPasswordReset = function (email, res) {
+    Company.findOne({'email': email}, function (err, company) {
+        if (err) return responseUtils.sendError('An error occurred', 500, res);
+
+        if (!company) return responseUtils.sendError('User not found', 400, res);
+
+        companyEmails.sendPasswordResetEmail(company, config.feBaseUrl + '/forgotpassword/' +
+            company.getPasswordResetToken(), "Releaf <noreply@releaf.ng>");
+
+        return responseUtils.sendSuccess(true, res);
+    });
+};
+
+exports.handleCompanyVerifyToken = function (token, res) {
+    Company.findOne({'password_reset_token': token}, function (err, company) {
+        if (err) return responseUtils.sendError('An error occurred', 500, res);
+
+        if (!company) return responseUtils.sendError('Invalid Token', 400, res);
+
+        return responseUtils.sendSuccess(true, res);
+    });
+};
+
+exports.handleCompanyChangePassword = function (token, newPassword, res) {
+    Company.findOne({'password_reset_token': token}, function (err, company) {
+        if (err) return responseUtils.sendError('An error occurred', 500, res);
+
+        if (!company) return responseUtils.sendError('Invalid Reset Token', 400, res);
+
+        company.password = company.generateHash(newPassword);
+        company.password_reset_token = null;
+
+        company.save(function (err) {
+            if (err) return responseUtils.sendError('An error occurred', 500, res);
+            return responseUtils.sendSuccess(true, res);
+        });
+    });
+}
+
