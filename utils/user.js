@@ -262,7 +262,7 @@ exports.sendVerificationEmail = function (user) {
     var token = user.getEmailVerificationToken();
     if (!config.featureToggles.isFeatureEnabled('emailVerification')) return;
     volunteerEmails.sendVerificationEmail(
-        config.feBaseUrl + "/user/verify/email?token=" + token,
+        config.feBaseUrl + "/volunteer/verify/" + token,
         user.local.email,
         "Releaf <noreply@releaf.ng>"
     );
