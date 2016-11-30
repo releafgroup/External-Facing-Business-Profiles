@@ -512,7 +512,7 @@ describe('Volunteer Test Cases', function () {
         describe('Password Reset', function () {
             it('Send password reset email to user', function (done) {
                 superAgent
-                    .post('/password/reset/email')
+                    .post('/users/password/reset/email')
                     .send({email: user1['local.email']})
                     .expect(200)
                     .end(function (err, res) {
@@ -524,7 +524,7 @@ describe('Volunteer Test Cases', function () {
 
             it('Fail Case: Verify invalid token', function (done) {
                 superAgent
-                    .post('/password/reset/token/verify')
+                    .post('/users/password/reset/token/verify')
                     .send({token: 'invalid token'})
                     .expect(400)
                     .end(function (err, res) {
@@ -538,7 +538,7 @@ describe('Volunteer Test Cases', function () {
                     if(err) done(err);
                     if(!user) done('User not found');
                     request.agent(url)
-                        .post('/password/reset/token/verify')
+                        .post('/users/password/reset/token/verify')
                         .send({token: user.password_reset_token})
                         .expect(200)
                         .end(function (err, res) {
@@ -553,7 +553,7 @@ describe('Volunteer Test Cases', function () {
                     if(err) done(err);
                     if(!user) done('User not found');
                     request.agent(url)
-                        .post('/password/change')
+                        .post('/users/password/change')
                         .send({token: user.password_reset_token, password: 'Abcd123456'})
                         .expect(200)
                         .end(function (err, res) {

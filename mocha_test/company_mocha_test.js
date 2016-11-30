@@ -187,7 +187,7 @@ describe('Company routes', function () {
 
             it('Fail Case: Verify invalid token', function (done) {
                 request(url)
-                    .post('/password/reset/token/verify')
+                    .post('/companies/password/reset/token/verify')
                     .send({token: 'invalid token'})
                     .expect(400)
                     .end(function (err, res) {
@@ -201,7 +201,7 @@ describe('Company routes', function () {
                     if(err) done(err);
                     if(!company) done('Company not found');
                     request.agent(url)
-                        .post('/password/reset/token/verify')
+                        .post('/companies/password/reset/token/verify')
                         .send({token: company.password_reset_token})
                         .expect(200)
                         .end(function (err, res) {
@@ -218,7 +218,7 @@ describe('Company routes', function () {
                     if(err) done(err);
                     if(!company) done('Company not found');
                     request.agent(url)
-                        .post('/password/change')
+                        .post('/companies/password/change')
                         .send({token: company.password_reset_token, password: 'Abcd123456'})
                         .expect(200)
                         .end(function (err, res) {
