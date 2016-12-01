@@ -118,22 +118,21 @@ describe('Projects Routes', function () {
             request(url)
                 .get('/companies/' + companyId + '/projects')
                 .end(function (err, res) {
-                    console.log(res.body.message);
                     res.body.message.length.should.equal(2);
                     if (!err) done();
                 });
         });
 
         it('get projects based on skills', function (done) {
-            agent.get('/projects?skills=Data Analytics')
+            agent.get('/projects?skills=' + testHelpers.project2Skill3)
                 .end(function (err, res) {
                     res.body.message.length.should.equal(1);
                 });
-            agent.get('/projects?skills=Business Plan')
+            agent.get('/projects?skills=' + testHelpers.project1Skill3)
                 .end(function (err, res) {
                     res.body.message.length.should.equal(1);
                 });
-            agent.get('/projects?skills=App Development')
+            agent.get('/projects?skills=' + testHelpers.skill1)
                 .end(function (err, res) {
                     res.body.message.length.should.equal(2);
                     done();
