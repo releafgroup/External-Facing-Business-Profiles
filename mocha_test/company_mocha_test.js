@@ -171,5 +171,76 @@ describe('Company routes', function () {
                         });
                 });
         });
+
+        describe('Password Reset', function () {
+            it('Send password reset email to company', function (done) {
+                request(url)
+                    .post('/password/reset/email')
+                    .send({email: company1['email']})
+                    .expect(200)
+                    .end(function (err, res) {
+                        res.body.success.should.equal(true);
+                        done();
+                    });
+            });
+
+
+            it('Fail Case: Verify invalid token', function (done) {
+                request(url)
+                    .post('/companies/password/reset/token/verify')
+                    .send({token: 'invalid token'})
+                    .expect(400)
+                    .end(function (err, res) {
+                        res.body.success.should.equal(false);
+                        done();
+                    });
+            });
+
+            it('Success Case: Verify reset token', function (done) {
+                Company.findOne({'_id': company1Id}, function (err, company) {
+                    if(err) done(err);
+                    if(!company) done('Company not found');
+                    request.agent(url)
+                        .post('/companies/password/reset/token/verify')
+                        .send({token: company.password_reset_token})
+                        .expect(200)
+                        .end(function (err, res) {
+                            res.body.success.should.equal(true);
+                            done();
+                        });
+                });
+            });
+
+            it('Success Case: Change Password', function (done) {
+                console.log(company1);
+                Company.findOne({'_id': company1Id}, function (err, company) {
+                    company1 = company;
+                    if(err) done(err);
+                    if(!company) done('Company not found');
+                    request.agent(url)
+                        .post('/companies/password/change')
+                        .send({token: company.password_reset_token, password: 'Abcd123456'})
+                        .expect(200)
+                        .end(function (err, res) {
+                            res.body.success.should.equal(true);
+                            done();
+                        });
+                });
+            });
+
+            it('logs in with new password', function (done) {
+                request.agent(url).post('/companies/auth/login')
+                    .send({email:company1['email'], password: 'Abcd123456'})
+                    .expect(200)
+                    .end(function (err, res) {
+                        res.body.success.should.equal(true);
+                        res.body.message.should.equal(company1Id);
+                        done();
+                    });
+
+            });
+        });
+
+
     });
 });

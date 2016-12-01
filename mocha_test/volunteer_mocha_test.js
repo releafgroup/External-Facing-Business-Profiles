@@ -35,7 +35,7 @@ var company1Id = -1;
 var company1 = testHelpers.company1();
 
 var company2Id = -1;
-var company2 = JSON.parse(JSON.stringify(company1));
+var company2 = JSON.parse(JSON.stringify(testHelpers.company1()));
 
 // TODO: add test cases for user permissions
 // i.e. companies can't access this, users can't access other users data, etc.
@@ -507,6 +507,78 @@ describe('Volunteer Test Cases', function () {
 
             });
 
+        });
+
+        describe('Password Reset', function () {
+            it('Send password reset email to user', function (done) {
+                superAgent
+                    .post('/users/password/reset/email')
+                    .send({email: user1['local.email']})
+                    .expect(200)
+                    .end(function (err, res) {
+                        res.body.success.should.equal(true);
+                        done();
+                    });
+            });
+
+
+            it('Fail Case: Verify invalid token', function (done) {
+                superAgent
+                    .post('/users/password/reset/token/verify')
+                    .send({token: 'invalid token'})
+                    .expect(400)
+                    .end(function (err, res) {
+                        res.body.success.should.equal(false);
+                        done();
+                    });
+            });
+
+            it('Success Case: Verify reset token', function (done) {
+                User.findOne({'_id': user1Id}, function (err, user) {
+                    if(err) done(err);
+                    if(!user) done('User not found');
+                    request.agent(url)
+                        .post('/users/password/reset/token/verify')
+                        .send({token: user.password_reset_token})
+                        .expect(200)
+                        .end(function (err, res) {
+                            res.body.success.should.equal(true);
+                            done();
+                        });
+                });
+            });
+
+            it('Success Case: Change Password', function (done) {
+                User.findOne({'_id': user1Id}, function (err, user) {
+                    if(err) done(err);
+                    if(!user) done('User not found');
+                    request.agent(url)
+                        .post('/users/password/change')
+                        .send({token: user.password_reset_token, password: 'Abcd123456'})
+                        .expect(200)
+                        .end(function (err, res) {
+                            res.body.success.should.equal(true);
+                            done();
+                        });
+                });
+            });
+
+            it('logs in with new password', function (done) {
+                superAgent
+                    .post('/users/auth/login')
+                    .expect(200)
+                    .send({'local.email':user1['local.email'], 'local.password': 'Abcd123456'})
+                    .end(function (err, res) {
+                        res.body.success.should.equal(true);
+                        superAgent
+                            .get('/users/')
+                            .end(function (err, res) {
+                                res.body.success.should.equal(true);
+                                done();
+                            });
+                    });
+
+            });
         });
     });
 

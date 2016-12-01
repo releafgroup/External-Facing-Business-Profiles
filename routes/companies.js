@@ -122,5 +122,34 @@ module.exports = function (passport) {
             return companyFunctions.resendVerificationEmail(req.body.email, req, res);
         });
 
+
+    /** Route: /companies/password/reset/email
+     * Sends password reset email
+     * 'email' must be passed in req body
+     */
+    router.route('/password/reset/email')
+        .post(function (req, res) {
+            return companyFunctions.handleCompanyPasswordReset(req.body.email, res);
+        });
+
+    /** Route: /companies/password/reset/token/verify
+     * Verify reset token
+     * 'token' must be passed in req body
+     */
+    router.route('/password/reset/token/verify')
+        .post(function (req, res) {
+            return companyFunctions.handleCompanyVerifyToken(req.body.token, res);
+
+        });
+
+    /** Route: /companies/password/change
+     * Verify reset token
+     */
+    router.route('/password/change')
+        .post(function (req, res) {
+            return companyFunctions.handleCompanyChangePassword(req.body.token, req.body.password, res);
+        });
+
+
     return router;
 };

@@ -150,7 +150,8 @@ var UserSchema = new Schema(
         favorite: {type: ObjectId, ref: 'Project'},
         is_email_verified: {type: Boolean, default: false},
         email_verification_token: {type: String, default: null},
-        verification_token_expires_at: {type: Number, default: 0}
+        verification_token_expires_at: {type: Number, default: 0},
+        password_reset_token: {type: String, default: null}
     },
 
     {
@@ -221,7 +222,7 @@ UserSchema.methods.getItem = function (key) {
 };
 
 /**
- * Generate email verification token and set expirty
+ * Generate email verification token and set expiry
  * @returns {*}
  */
 UserSchema.methods.getEmailVerificationToken = function () {
@@ -238,5 +239,22 @@ UserSchema.methods.getEmailVerificationToken = function () {
 
     return user.email_verification_token;
 };
+
+/**
+ * Generate password reset token
+ * @returns {*}
+ */
+UserSchema.methods.getPasswordResetToken = function () {
+    var user = this;
+    if (user.password_reset_token === null) {
+        user.password_reset_token = randToken.generate(40);
+        user.save(function (err) {
+            if (err) return false;
+        });
+    }
+
+    return user.password_reset_token;
+};
+
 
 module.exports = mongoose.model('User', UserSchema);

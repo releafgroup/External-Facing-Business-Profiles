@@ -12,3 +12,12 @@ exports.sendVerificationEmail = function (verificationUrl, to, from) {
         nodemailer.send('Welcome to the Releaf Family!', html, to, from);
     })
 };
+
+exports.sendPasswordResetEmail = function (company, resetLink, from) {
+    templates.render('password_reset.html', {
+        firstname: company.business_name,
+        link: resetLink
+    }, function (err, html) {
+        nodemailer.send('Reset your Password', html, company.email, from);
+    })
+};
