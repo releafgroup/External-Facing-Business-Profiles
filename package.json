@@ -23,7 +23,6 @@
     "express-session": "~1.0.0",
     "faker": "^3.1.0",
     "feature-toggles": "^1.4.0",
-    "jade": "~1.11.0",
     "jsonwebtoken": "^7.0.1",
     "migrate": "^0.2.3",
     "moment": "^2.15.2",
