@@ -1,23 +1,17 @@
-var EmailTemplates = require('swig-email-templates');
 var nodemailer = require('./../utils/node_mailer');
 
 var exports = module.exports = {};
 
-var templates = new EmailTemplates({
-    root: './emails/templates'
-});
-
-exports.sendVerificationEmail = function (verificationUrl, to, from) {
-    templates.render('business_email_verification.html', {verification_url: verificationUrl}, function (err, html) {
-        nodemailer.send('Welcome to the Releaf Family!', html, to, from);
-    })
+exports.sendVerificationEmail = function (verificationUrl, company, from) {
+    nodemailer.send('88c9c6c8-dbc1-4834-8488-0e5131d52761', 'Welcome to the Releaf Family!', company.email, from, {
+        '%verification_url%': verificationUrl,
+        '%name%': company.business_name
+    });
 };
 
 exports.sendPasswordResetEmail = function (company, resetLink, from) {
-    templates.render('password_reset.html', {
-        firstname: company.business_name,
-        link: resetLink
-    }, function (err, html) {
-        nodemailer.send('Reset your Password', html, company.email, from);
-    })
+    nodemailer.send('04697caf-b447-4210-806f-5bb3383c991a', 'Reset your Password', company.email, from, {
+        '%firstname%': company.business_name,
+        '%link%': resetLink
+    });
 };

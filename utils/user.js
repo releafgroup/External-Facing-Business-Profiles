@@ -263,7 +263,7 @@ exports.sendVerificationEmail = function (user) {
     if (!config.featureToggles.isFeatureEnabled('emailVerification')) return;
     volunteerEmails.sendVerificationEmail(
         config.feBaseUrl + "/volunteer/verify/" + token,
-        user.local.email,
+        user,
         "Releaf <noreply@releaf.ng>"
     );
 };

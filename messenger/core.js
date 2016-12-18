@@ -5,12 +5,10 @@ module.exports = function (io) {
     var debug = require('debug')('server:io');
     var Message = require('./../models/message');
     var helper = require('./../helpers/messenger');
-    var nodemailer = require('./../utils/node_mailer');
     require('./../utils/messenger_mail_scheduler')();
     var usersOnline = [];
     var userSockets = {};
 
-    nodemailer.setupTransport(config.mailConfig.smtp);
     console.log('-Messenger Socket Server running...');
 
     /**

@@ -137,7 +137,7 @@ exports.sendVerificationEmail = function (company) {
     if (!config.featureToggles.isFeatureEnabled('emailVerification')) return;
     companyEmails.sendVerificationEmail(
         config.feBaseUrl + "/business/verify/" + token,
-        company.email,
+        company,
         "Releaf <noreply@releaf.ng>"
     );
 };
@@ -222,5 +222,5 @@ exports.handleCompanyChangePassword = function (token, newPassword, res) {
             return responseUtils.sendSuccess(true, res);
         });
     });
-}
+};
 
