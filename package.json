@@ -46,7 +46,8 @@
     "socket.io-client": "^1.4.8",
     "swig-email-templates": "^4.0.0",
     "underscore": "^1.8.3",
-    "zombie": "^4.2.1"
+    "zombie": "^4.2.1",
+    "sendgrid": "latest"
   },
   "devDependencies": {
     "debug": "~2.2.0",

@@ -11,7 +11,7 @@ var Message = require('./../models/message');
 var Groups = require('./../models/chat_groups');
 
 var nodemailer = require('./../utils/node_mailer');
-nodemailer.setupTransport(config.mailConfig.smtp);
+//nodemailer.setupTransport(config.mailConfig.smtp);
 exports.msgQ = [];
 
 /**

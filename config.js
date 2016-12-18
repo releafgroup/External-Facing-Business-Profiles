@@ -9,14 +9,12 @@ module.exports = {"database":database, "superSecret": superSecret, "mocha_databa
 
 module.exports.mailConfig = {
     smtp: {
-        pool: true,
-        host: env.MAILER_HOST,
-        port: env.MAILER_PORT,
         auth: {
-            user: env.MAILER_SMTP_USER,
-            pass: env.MAILER_SMTP_PASS
+            api_user: env.MAILER_SMTP_USER,
+            api_key: env.MAILER_SMTP_PASS
         }
     },
+    sendgrid_api_key: env.SENDGRID_API_KEY,
     sendingEmailFrom: {
       name:"Releaf Group",
       email:"tester0715@gmail.com"

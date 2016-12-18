@@ -9,8 +9,6 @@ module.exports = function (io) {
     var helper = require('./../helpers/messenger');
     var userFunctions = require('../utils/user');
     var companyFunctions = require('../utils/company');
-    var nodemailer = require('./../utils/node_mailer');
-    nodemailer.setupTransport(config.mailConfig.smtp);
 
     router.get('/messages/:room', function (req, res) {
         debug(' got messages request ', req.params);
