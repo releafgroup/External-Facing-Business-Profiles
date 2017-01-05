@@ -19,7 +19,6 @@ var session = require('express-session');
 var dummyData = require('./helpers/dummy_data');
 
 
-
 var MongoStore = require('connect-mongo')(session);
 
 var app = express();
@@ -38,7 +37,15 @@ if (app.get('env') == 'mocha_db' || app.get('env') == 'development') {
 // TODO: maybe switch to cors plugin
 app.use(function (req, res, next) {
     // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', domainAllowed);
+    var domains = domainAllowed.split(',');
+
+    var origin = req.headers.origin;
+
+    domains.forEach(function (domain) {
+        if (origin.indexOf(domain) > -1) {
+            res.setHeader('Access-Control-Allow-Origin', origin);
+        }
+    });
 
     // Request methods you wish to allow
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
