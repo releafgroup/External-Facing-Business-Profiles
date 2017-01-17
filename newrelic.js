@@ -12,7 +12,7 @@ exports.config = {
   /**
    * Array of application names.
    */
-  app_name: ['Ikeora V2 Backend - ' + environment],
+  app_name: ['Ikeora V3 Backend - ' + environment],
   /**
    * Your New Relic license key.
    */

@@ -1,0 +1,13 @@
+{
+  "deploy": {
+    "staging": {
+      "user": "******",
+      "host": "******",
+      "key": "**********",
+      "ref": "origin/master",
+      "repo": "git@github.com:releafgroup/ikeora-back-end.git",
+      "path": "/data/node_apps/ikeora-back-end",
+      "post-deploy": "echo 'Deployed'"
+    }
+  }
+}

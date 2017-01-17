@@ -1,0 +1,15 @@
+{
+  "apps": [
+    {
+      "name": "ikeora-back-end",
+      "script": "app.js",
+      "env": {
+        "NODE_ENV": "true"
+      },
+      "env_production": {
+        "NODE_ENV": "production",
+        "PORT": 5000
+      }
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+staging:
+    host:   *************
+    user:   ubuntu
+    stage:  staging
+    pem_file: "*********"
+    deploy_path:   "/data/node_apps/ikeora-back-end"
+    branch: dev
