@@ -13,10 +13,5 @@ module.exports = Object.freeze({
     },
     tests: {
         TEST_URL: process.env.TEST_URL
-    },
-    socket: {
-        protocol: process.env.SOCKET_PROTOCOL || 'http',
-        host: process.env.SOCKET_HOST || 'localhost',
-        port: process.env.SOCKET_PORT || 6464
     }
 });
