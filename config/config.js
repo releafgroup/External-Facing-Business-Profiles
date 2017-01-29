@@ -9,7 +9,11 @@ module.exports = Object.freeze({
     APPLICATION_ENV: process.env.APPLICATION_ENV,
     database: {
         MONGODB_URI: process.env.MONGODB_URI,
-        MONGODB_TEST_URI: process.env.MONGODB_TEST_URI
+        MONGODB_TEST_URI: process.env.MONGODB_TEST_URI,
+        DB_HOST: process.env.DB_HOST,
+        DB_NAME: process.env.DB_NAME,
+        DB_PASSWORD: process.env.DB_PASSWORD,
+        DB_USERNAME: process.env.DB_USERNAME
     },
     tests: {
         TEST_URL: process.env.TEST_URL
