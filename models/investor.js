@@ -1,8 +1,9 @@
 "use strict";
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     return sequelize.define("Investor", {
-        username: DataTypes.STRING
+        email: DataTypes.STRING
     }, {
+        tableName: 'investors'
     });
 };
