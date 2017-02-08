@@ -4,14 +4,12 @@ const config = require('../../config/config');
 
 const URL = config.tests.TEST_URL;
 
-describe('Index', function () {
-    it('Test Index Works', (done) => {
-        request(URL).get('/')
-            .send({})
+describe('Factors', function () {
+    it('Test Get Factors', (done) => {
+        request(URL).get('/factors')
             .expect(200)
             .end(function (err, res) {
                 res.body.status.should.equal('success');
-                res.body.data.should.equal(true);
                 done();
             });
     });
