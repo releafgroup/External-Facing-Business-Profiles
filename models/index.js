@@ -10,12 +10,14 @@ var sequelize = new Sequelize(config.database.DB_NAME, config.database.DB_USERNA
     dialect: 'mysql'
 });
 
+var models = ['user_credential.js', 'investor.js'];
+
 var db = {};
 
 fs
     .readdirSync(__dirname)
     .filter(function (file) {
-        return (file.indexOf(".") !== 0) && (file !== "index.js");
+        return (file.indexOf(".") !== 0) && (models.indexOf(file) !== -1);
     })
     .forEach(function (file) {
         var model = sequelize.import(path.join(__dirname, file));

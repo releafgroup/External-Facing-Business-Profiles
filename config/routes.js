@@ -7,6 +7,7 @@ const router = express.Router();
 const indexController = require('../controllers/index');
 const loginController = require('../controllers/login');
 const factorController = require('../controllers/factor');
+const companyController = require('../controllers/company');
 
 
 /**
@@ -23,5 +24,10 @@ router.post('/login', loginController.authenticate);
  * Sub Factors Routes
  */
 router.get('/factors', factorController.getAll);
+
+/**
+ * Companies Routes
+ */
+router.get('/companies', companyController.getAll);
 
 module.exports = router;
