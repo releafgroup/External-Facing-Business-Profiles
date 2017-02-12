@@ -34,7 +34,6 @@ module.exports = {
 
                 var limit = requestParams.limit || ((companies.length > 5) ? 5 : companies.length);
                 companies = (companies.length > 1) ? companies.slice(0, limit - 1) : companies;
-                console.log(companies);
                 return jsendRepsonse.sendSuccess(companies, res);
             });
         });
