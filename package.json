@@ -4,7 +4,7 @@
   "description": "Ikeora Backend",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha -r 'app.js' ./tests/acceptance",
+    "test": "./node_modules/.bin/mocha -r app.js ./tests/acceptance",
     "start": "node_modules/.bin/nodemon app.js"
   },
   "repository": {

@@ -14,8 +14,7 @@ module.exports = {
                     for (var j = 0; j < subFactors.length; j++) {
                         var subFactor = subFactors[j];
                         var companySubFactor = companySubFactors[subFactor.sub_factor];
-                        const weight = requestParams[subFactor.sub_factor.factor] || subFactor.weight;
-
+                        const weight = requestParams[subFactor.factor] || subFactor.weight;
                         if (companySubFactor) {
                             const scoreRating = subFactor['score_' + companySubFactor.score + '_rating'];
                             const weightedScore = Number(weight) * Number(scoreRating);
@@ -35,6 +34,7 @@ module.exports = {
 
                 var limit = requestParams.limit || ((companies.length > 5) ? 5 : companies.length);
                 companies = (companies.length > 1) ? companies.slice(0, limit - 1) : companies;
+                console.log(companies);
                 return jsendRepsonse.sendSuccess(companies, res);
             });
         });
