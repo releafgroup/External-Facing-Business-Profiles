@@ -21,7 +21,6 @@ module.exports = {
                             rScore += weightedScore;
                             companySubFactors[subFactor.sub_factor].weighted_score = weightedScore;
                             companySubFactors[subFactor.sub_factor].score_rating = scoreRating;
-                            console.log(scoreRating);
                             companySubFactors[subFactor.sub_factor].weight = weight;
                         }
                     }
