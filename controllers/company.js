@@ -10,7 +10,7 @@ module.exports = {
             Company.find().then((companyInputs) => {
                 for (var i = 0; i < companyInputs.length; i++) {
                     var companySubFactors = companyInputs[i].toObject();
-                    let rScore = 0;
+                    var rScore = 0;
                     for (var j = 0; j < subFactors.length; j++) {
                         var subFactor = subFactors[j];
                         var companySubFactor = companySubFactors[subFactor.sub_factor];
@@ -21,6 +21,7 @@ module.exports = {
                             rScore += weightedScore;
                             companySubFactors[subFactor.sub_factor].weighted_score = weightedScore;
                             companySubFactors[subFactor.sub_factor].score_rating = scoreRating;
+                            console.log(scoreRating);
                             companySubFactors[subFactor.sub_factor].weight = weight;
                         }
                     }
@@ -33,7 +34,7 @@ module.exports = {
                 });
 
                 var limit = requestParams.limit || ((companies.length > 5) ? 5 : companies.length);
-                companies = (companies.length > 1) ? companies.slice(0, limit - 1) : companies;
+                companies = (companies.length > 1) ? companies.slice(0, limit) : companies;
                 return jsendRepsonse.sendSuccess(companies, res);
             });
         });
@@ -48,7 +49,7 @@ module.exports = {
             if (!company) {
                 return jsendRepsonse.sendError('Company not found', 404, res);
             }
-            
+
             return jsendRepsonse.sendSuccess(company.toObject(), res);
         });
     }
