@@ -6,7 +6,16 @@ const URL = config.tests.TEST_URL;
 
 describe('Company', function () {
     it('Test Get Companies', (done) => {
-        request(URL).get('/companies?business_model=0.009708737864077669&growth_plan=0.019417475728155338&legal_factor=0.1941747572815534&financial_factor=0.1941747572815534&market_factor=0.1941747572815534&team_factor=0.1941747572815534&social_factor=0.1941747572815534')
+        request(URL).get('/companies?business_model=0.02')
+            .expect(200)
+            .end(function (err, res) {
+                res.body.status.should.equal('success');
+                done();
+            });
+    });
+
+    it('Test Get Company', (done) => {
+        request(URL).get('/companies/589be08a341a018b0e2b0c42')
             .expect(200)
             .end(function (err, res) {
                 res.body.status.should.equal('success');

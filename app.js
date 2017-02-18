@@ -4,8 +4,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const chalk = require('chalk');
+const cors = require('cors');
 
 const app = express();
+
+/**
+ * Access Control
+ */
+app.use(cors());
 
 /**
  * Express configuration.
@@ -17,6 +23,7 @@ app.use(bodyParser.json());
  * Load routes
  */
 app.use('/', require('./config/routes'));
+
 
 /**
  * Configure MongoDB connection

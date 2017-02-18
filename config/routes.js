@@ -29,5 +29,6 @@ router.get('/factors', factorController.getAll);
  * Companies Routes
  */
 router.get('/companies', companyController.getAll);
+router.get('/companies/:id', companyController.get);
 
 module.exports = router;

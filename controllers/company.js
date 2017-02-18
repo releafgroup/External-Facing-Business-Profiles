@@ -15,7 +15,7 @@ module.exports = {
                     for (var j = 0; j < subFactors.length; j++) {
                         var subFactor = subFactors[j];
                         var companySubFactor = companySubFactors[subFactor.sub_factor];
-                        const weight = Number(requestParams[subFactor.factor]) || (1 / subFactors.length);
+                        const weight = Number(requestParams[subFactor.factor]) || subFactor.weight;
                         if (companySubFactor) {
                             const scoreRating = subFactor['score_' + companySubFactor.score + '_rating'];
                             rScore += Number(weight) * companySubFactors[subFactor.sub_factor].weighted_score;
@@ -39,9 +39,22 @@ module.exports = {
 
                 var limit = requestParams.limit || ((companies.length > 5) ? 5 : companies.length);
                 companies = (companies.length > 1) ? companies.slice(0, limit - 1) : companies;
-                console.log(companies);
                 return jsendRepsonse.sendSuccess(companies, res);
             });
+        });
+    },
+
+    get: (req, res) => {
+        if (!req.params.id) {
+            return jsendRepsonse.sendError('Company not found', 404, res);
+        }
+
+        Company.findById(req.params.id, function (err, company) {
+            if (!company) {
+                return jsendRepsonse.sendError('Company not found', 404, res);
+            }
+
+            return jsendRepsonse.sendSuccess(company.toObject(), res);
         });
     }
 };
