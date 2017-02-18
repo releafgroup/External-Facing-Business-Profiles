@@ -10,6 +10,7 @@ module.exports = {
             Company.find().then((companyInputs) => {
                 for (var i = 0; i < companyInputs.length; i++) {
                     var companySubFactors = companyInputs[i].toObject();
+
                     let rScore = 0;
                     let stats = {};
                     for (var j = 0; j < subFactors.length; j++) {
@@ -38,7 +39,7 @@ module.exports = {
                 });
 
                 var limit = requestParams.limit || ((companies.length > 5) ? 5 : companies.length);
-                companies = (companies.length > 1) ? companies.slice(0, limit - 1) : companies;
+                companies = (companies.length > 1) ? companies.slice(0, limit) : companies;
                 return jsendRepsonse.sendSuccess(companies, res);
             });
         });
