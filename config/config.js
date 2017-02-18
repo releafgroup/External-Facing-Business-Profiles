@@ -15,7 +15,11 @@ module.exports = Object.freeze({
         DB_PASSWORD: process.env.DB_PASSWORD,
         DB_USERNAME: process.env.DB_USERNAME
     },
+    
     tests: {
         TEST_URL: process.env.TEST_URL
-    }
+    },
+    
+    query_limit : 50,
+
 });

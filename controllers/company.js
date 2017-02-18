@@ -1,6 +1,7 @@
 const jsendRepsonse = require('../helpers/jsend_response');
 const SubFactor = require('../models/sub_factor');
 const Company = require('../models/company');
+const config = require('../config/config');
 
 module.exports = {
     getAll: (req, res) => {
@@ -50,6 +51,38 @@ module.exports = {
             }
             
             return jsendRepsonse.sendSuccess(company.toObject(), res);
+        });
+    },
+
+    search: (req, res) => {
+
+        var query = req.query;
+
+        var sort = {};
+        var sort_key = query.sort_by || false;
+        if(sort_key) sort[sort_key] = -1;
+
+        var size    = query.size || config.query_limit;
+
+        var page    = query.page || 1;
+
+        var user_query = {};
+        for(var key in query){
+            if(key == "size" || key == "sort_by") continue;
+            if(query.hasOwnProperty(key))
+                user_query[key] = query[key];
+        }
+
+        Company.count(user_query, function(err, total) {
+            Company.find(user_query).sort(sort).limit(parseInt(size)).skip((page - 1)*size).exec(function(err, company){
+                if(!company){
+                    return jsendRepsonse.sendError('Error occured', 400, res);
+                }
+                company['total'] = total;
+                company['page']  = page;
+                company['size']  = size;
+                return jsendRepsonse.sendSuccess(company, res);
+            });
         });
     }
 };

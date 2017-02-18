@@ -30,5 +30,6 @@ router.get('/factors', factorController.getAll);
  */
 router.get('/companies', companyController.getAll);
 router.get('/companies/:id', companyController.get);
+router.get('/companies/search',companyController.search);
 
 module.exports = router;
