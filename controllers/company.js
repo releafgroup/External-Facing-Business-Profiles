@@ -11,20 +11,25 @@ module.exports = {
                 for (var i = 0; i < companyInputs.length; i++) {
                     var companySubFactors = companyInputs[i].toObject();
                     let rScore = 0;
+                    let stats = {};
                     for (var j = 0; j < subFactors.length; j++) {
                         var subFactor = subFactors[j];
                         var companySubFactor = companySubFactors[subFactor.sub_factor];
                         const weight = Number(requestParams[subFactor.factor]) || subFactor.weight;
                         if (companySubFactor) {
                             const scoreRating = subFactor['score_' + companySubFactor.score + '_rating'];
-                            const weightedScore = Number(weight) * Number(scoreRating);
-                            rScore += weightedScore;
-                            companySubFactors[subFactor.sub_factor].weighted_score = weightedScore;
+                            rScore += Number(weight) * companySubFactors[subFactor.sub_factor].weighted_score;
                             companySubFactors[subFactor.sub_factor].score_rating = scoreRating;
-                            companySubFactors[subFactor.sub_factor].weight = weight;
+
+                            if (typeof stats[subFactor.factor] == 'undefined') {
+                                stats[subFactor.factor] = 0;
+                            }
+
+                            stats[subFactor.factor] += companySubFactors[subFactor.sub_factor].weighted_score;
                         }
                     }
                     companySubFactors.r_score = Math.floor(rScore);
+                    companySubFactors.stats = stats;
                     companies.push(companySubFactors);
                 }
 
@@ -48,7 +53,7 @@ module.exports = {
             if (!company) {
                 return jsendRepsonse.sendError('Company not found', 404, res);
             }
-            
+
             return jsendRepsonse.sendSuccess(company.toObject(), res);
         });
     }
