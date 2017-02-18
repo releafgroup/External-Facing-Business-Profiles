@@ -62,7 +62,7 @@ module.exports = {
         var sort_key = query.sort_by || false;
         if(sort_key) sort[sort_key] = -1;
 
-        var size    = query.size || config.query_limit;
+        var size    = query.size || config.QUERY_LIMIT;
 
         var page    = query.page || 1;
 

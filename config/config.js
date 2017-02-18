@@ -20,6 +20,6 @@ module.exports = Object.freeze({
         TEST_URL: process.env.TEST_URL
     },
     
-    query_limit : 50,
+    QUERY_LIMIT : 50,
 
 });
