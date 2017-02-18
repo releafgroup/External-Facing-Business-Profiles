@@ -29,7 +29,7 @@ router.get('/factors', factorController.getAll);
  * Companies Routes
  */
 router.get('/companies', companyController.getAll);
-router.get('/companies/:id', companyController.get);
 router.get('/companies/search',companyController.search);
+router.get('/companies/:id', companyController.get);
 
 module.exports = router;
