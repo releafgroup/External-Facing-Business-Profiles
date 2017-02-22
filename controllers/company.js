@@ -60,7 +60,9 @@ module.exports = {
 
         var sort = {};
         var sort_key = query.sort_by || false;
-        if(sort_key) sort[sort_key] = -1;
+        if(sort_key){
+             sort[sort_key] = -1;
+        }
 
         var size    = query.size || config.QUERY_LIMIT;
 
@@ -68,9 +70,12 @@ module.exports = {
 
         var user_query = {};
         for(var key in query){
-            if(key == "size" || key == "sort_by") continue;
-            if(query.hasOwnProperty(key))
+            if(key == "size" || key == "sort_by"){
+                continue;
+            }
+            if(query.hasOwnProperty(key)){
                 user_query[key] = query[key];
+            }
         }
 
         Company.count(user_query, function(err, total) {

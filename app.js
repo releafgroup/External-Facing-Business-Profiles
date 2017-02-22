@@ -33,6 +33,7 @@ require('./config/db')();
 /**
  * Start Express server.
  */
+
 app.listen(app.get('port'), () => {
     console.log('%s Express server listening on port %d in %s mode.', chalk.green('✓'), app.get('port'), app.get('env'));
 });
