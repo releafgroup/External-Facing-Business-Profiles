@@ -9,3 +9,7 @@ dependencies:
 test:
   override:
     - npm run-script test
+
+checkout:
+  post:
+    - cp config/.env.sample config/.env
