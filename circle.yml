@@ -12,4 +12,4 @@ test:
 
 checkout:
   post:
-    - cp config/.env.sample config/.env
+    - cp env/.env.sample env/.env
