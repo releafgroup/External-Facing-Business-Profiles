@@ -55,31 +55,28 @@ module.exports = {
     },
 
     search: (req, res) => {
-
         var query = req.query;
-
         var sort = {};
-        var sort_key = query.sort_by || false;
-        if(sort_key){
-             sort[sort_key] = -1;
+        var sortKey = query.sort_by || false;
+        if(sortKey){
+             sort[sortKey] = -1;
         }
 
         var size    = query.size || config.QUERY_LIMIT;
-
         var page    = query.page || 1;
 
-        var user_query = {};
+        var userQuery = {};
         for(var key in query){
             if(key == "size" || key == "sort_by"){
                 continue;
             }
             if(query.hasOwnProperty(key)){
-                user_query[key] = query[key];
+                userQuery[key] = query[key];
             }
         }
 
-        Company.count(user_query, function(err, total) {
-            Company.find(user_query).sort(sort).limit(parseInt(size)).skip((page - 1)*size).exec(function(err, company){
+        Company.count(userQuery, function(err, total) {
+            Company.find(userQuery).sort(sort).limit(parseInt(size)).skip((page - 1)*size).exec(function(err, company){
                 if(!company){
                     return jsendRepsonse.sendError('Error occured', 400, res);
                 }
@@ -89,5 +86,6 @@ module.exports = {
                 return jsendRepsonse.sendSuccess(company, res);
             });
         });
+
     }
 };
