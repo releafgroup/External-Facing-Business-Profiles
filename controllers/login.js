@@ -20,7 +20,7 @@ module.exports = {
                             return jsendRepsonse.sendError('Investor not found!', 404, res);
                         }
                         investor.email = user.email;
-                        var investorCopy = investor;
+                        var investorCopy = JSON.parse(JSON.stringify(investor));
                         investorCopy.token = jwt.sign(investor, config.SECRET, {
                             expiresIn: "2 days" // expires in 48 hours
                         });

@@ -20,7 +20,7 @@ app.use(cors());
 app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.json());
 
-app.use('/companies/*',function(req,res,next){
+app.use('/companies/?*',function(req,res,next){
     var token = req.body.token || req.query.token || req.headers['x-access-token'];
     var isAdmin = function() {
         return (config.ADMIN_SECRET_KEY == token);
