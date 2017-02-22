@@ -3,11 +3,12 @@
  */
 const express = require('express');
 const bodyParser = require('body-parser');
-const chalk = require('chalk');
-const cors = require('cors');
+const chalk     = require('chalk');
+const cors      = require('cors');
+const jwt       = require('jsonwebtoken');
 
 const app = express();
-
+const config = require('./config/config');
 /**
  * Access Control
  */
@@ -18,6 +19,34 @@ app.use(cors());
  */
 app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.json());
+
+app.use('/companies/*',function(req,res,next){
+    var token = req.body.token || req.query.token || req.headers['x-access-token'];
+    var isAdmin = function() {
+        return (config.ADMIN_SECRET_KEY == token);
+    };
+    if(isAdmin()){
+        next();
+        return;
+    }
+    // decode token
+    if (token) {
+        // verifies secret and checks exp
+        jwt.verify(token, config.SECRET, function (err, decoded) {
+            if (err) {
+                return res.json({success: false, message: 'Failed to authenticate token.'});
+            } else {
+                if(req.method != 'GET'){
+                    console.log(req.method);
+                    return res.json({"error":"sorry you are not authorized to perform this operation"});
+                }
+                next();
+            }
+        });
+    } else {
+        return res.json({"error":"sorry please you don't have access"});
+    }
+});
 
 /**
  * Load routes
