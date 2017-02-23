@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const chalk     = require('chalk');
 const cors      = require('cors');
 const jwt       = require('jsonwebtoken');
-
+const jsendRepsonse = require('./helpers/jsend_response');
 const app = express();
 const config = require('./config/config');
 /**
@@ -25,6 +25,7 @@ app.use('/companies/?*',function(req,res,next){
     var isAdmin = function() {
         return (config.ADMIN_SECRET_KEY == token);
     };
+
     if(isAdmin()){
         next();
         return;
@@ -37,14 +38,14 @@ app.use('/companies/?*',function(req,res,next){
                 return res.json({success: false, message: 'Failed to authenticate token.'});
             } else {
                 if(req.method != 'GET'){
-                    console.log(req.method);
-                    return res.json({"error":"sorry you are not authorized to perform this operation"});
+                    return jsendRepsonse.sendError("sorry you are not authorized to perform this operation",
+                        400, res)
                 }
                 next();
             }
         });
     } else {
-        return res.json({"error":"sorry please you don't have access"});
+        return jsendRepsonse.sendError("sorry please you don't have access", 400, res);
     }
 });
 
