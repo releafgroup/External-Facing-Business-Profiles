@@ -71,7 +71,7 @@ module.exports = {
                 continue;
             }
             if(query.hasOwnProperty(key)){
-                userQuery[key] = query[key];
+                userQuery[key] = {'$regex' : '.*' + query[key] + '.*'};
             }
         }
 
