@@ -22,9 +22,9 @@ module.exports = Object.freeze({
     
     QUERY_LIMIT : 50,
     // to be changed before pushed to production
-    ADMIN_SECRET_KEY: 'RiO$3Ej3G435eE3',
+    ADMIN_SECRET_KEY: 'abcd',
     // to be changed before pushed to production
-    SECRET: '67CFDF83F4D8E6F8C76C6358A3365',
+    SECRET: 'abcd',
 
 
 });
