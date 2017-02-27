@@ -20,6 +20,7 @@ module.exports = {
                         investor.email = user.email;
                         return jsendRepsonse.sendSuccess(investor, res);
                     });
+                    
             }).catch(function (err) {
             return jsendRepsonse.sendError(err.message, 500, res);
         });

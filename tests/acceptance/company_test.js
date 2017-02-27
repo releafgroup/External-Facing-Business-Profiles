@@ -22,4 +22,13 @@ describe('Company', function () {
                 done();
             });
     });
+
+    it('Test Search Companies',(done) =>{
+        request(URL).get('/companies/search')
+        .expect(200)
+        .end(function (err, res) {
+            res.body.status.should.equal('success');
+            done();
+        });
+    })
 });
