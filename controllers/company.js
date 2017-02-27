@@ -73,11 +73,11 @@ module.exports = {
 
         var userQuery = {};
         for(var key in query){
-            if(key == "size" || key == "sort_by"){
+            if(key == "size" || key == "sort_by" || key == "page"){
                 continue;
             }
             if(query.hasOwnProperty(key)){
-                userQuery[key] = query[key];
+                userQuery[key] = {'$regex' : '.*' + query[key] + '.*', '$options' : 'i' };
             }
         }
 
@@ -86,10 +86,16 @@ module.exports = {
                 if(!company){
                     return jsendRepsonse.sendError('Error occured', 400, res);
                 }
-                company['total'] = total;
-                company['page']  = page;
-                company['size']  = size;
-                return jsendRepsonse.sendSuccess(company, res);
+
+                var result = {
+                    result : company,
+                    total : total,
+                    page : page,
+                    size: size,
+                };
+
+                return jsendRepsonse.sendSuccess(result, res);
+
             });
         });
 

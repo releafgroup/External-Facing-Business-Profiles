@@ -21,5 +21,10 @@ module.exports = Object.freeze({
     },
     
     QUERY_LIMIT : 50,
+    // to be changed before pushed to production
+    ADMIN_SECRET_KEY: 'abcd',
+    // to be changed before pushed to production
+    SECRET: 'abcd',
+
 
 });
