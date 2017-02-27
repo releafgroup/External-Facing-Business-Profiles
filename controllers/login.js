@@ -2,6 +2,8 @@ const Investor = require('../models').Investor;
 const UserCredential = require('../models').UserCredential;
 const jsendRepsonse = require('../helpers/jsend_response');
 const sha1 = require('locutus/php/strings/sha1');
+const config = require('../config/config');
+const jwt    = require('jsonwebtoken');
 
 module.exports = {
     authenticate: (req, res) => {
@@ -18,8 +20,13 @@ module.exports = {
                             return jsendRepsonse.sendError('Investor not found!', 404, res);
                         }
                         investor.email = user.email;
-                        return jsendRepsonse.sendSuccess(investor, res);
+                        var investorCopy = JSON.parse(JSON.stringify(investor));
+                        investorCopy.token = jwt.sign(investor, config.SECRET, {
+                            expiresIn: "2 days" // expires in 48 hours
+                        });
+                        return jsendRepsonse.sendSuccess(investorCopy, res);
                     });
+                    
             }).catch(function (err) {
             return jsendRepsonse.sendError(err.message, 500, res);
         });
