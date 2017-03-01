@@ -14,17 +14,16 @@ module.exports = {
                     return jsendRepsonse.sendFail('Invalid username or password', 400, res);
                 }
 
-                Investor.findOne({where: {id: user.id}, attributes: ['id', 'website']})
+                Investor.findOne({where: {id: user.id}, raw: true ,attributes: ['id', 'website']})
                     .then(function (investor) {
                         if (!investor) {
                             return jsendRepsonse.sendError('Investor not found!', 404, res);
                         }
                         investor.email = user.email;
-                        var investorCopy = JSON.parse(JSON.stringify(investor));
-                        investorCopy.token = jwt.sign(investor, config.SECRET, {
+                        investor.token = jwt.sign(investor, config.SECRET, {
                             expiresIn: "2 days" // expires in 48 hours
                         });
-                        return jsendRepsonse.sendSuccess(investorCopy, res);
+                        return jsendRepsonse.sendSuccess(investor, res);
                     });
                     
             }).catch(function (err) {
