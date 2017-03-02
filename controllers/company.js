@@ -73,7 +73,7 @@ module.exports = {
 
         var userQuery = {};
         for(var key in query){
-            if(key == "size" || key == "sort_by" || key == "page"){
+            if(["size", "sort_by", "page", "token"].indexOf(key) >= 0){
                 continue;
             }
             if(query.hasOwnProperty(key)){
