@@ -26,5 +26,16 @@ module.exports = {
         }).catch((error) => {
             jsendResponse.sendError(error, 500, res);
         });
+    },
+    getFactorQuery: (req, res) => {
+        FactorQuery.findOne({_id: req.params.id}).then((query) => {
+            if (!query) {
+                jsendResponse.sendError("Query not found", 404, res);
+            } else {
+                jsendResponse.sendSuccess(query, res);
+            }
+        }).catch((error) => {
+            jsendResponse.sendError(error.message, 500, res);
+        });
     }
 };
