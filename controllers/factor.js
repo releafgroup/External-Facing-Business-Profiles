@@ -1,5 +1,6 @@
 const jsendResponse = require('../helpers/jsend_response');
 const SubFactor = require('../models/sub_factor');
+const FactorQuery = require('../models/factor_query');
 
 module.exports = {
     getAll: (req, res) => {
@@ -18,5 +19,12 @@ module.exports = {
             });
             jsendResponse.sendSuccess(factors, res);
         })
+    },
+    getFactorQueries: (req, res) => {
+        FactorQuery.find({r_factor: req.params.factor}).then((queries) => {
+            jsendResponse.sendSuccess(queries, res);
+        }).catch((error) => {
+            jsendResponse.sendError(error, 500, res);
+        });
     }
 };

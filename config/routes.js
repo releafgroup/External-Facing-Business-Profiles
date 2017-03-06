@@ -24,12 +24,13 @@ router.post('/login', loginController.authenticate);
  * Sub Factors Routes
  */
 router.get('/factors', factorController.getAll);
+router.get('/factors/:factor/queries', factorController.getFactorQueries);
 
 /**
  * Companies Routes
  */
 router.get('/companies', companyController.getAll);
-router.get('/companies/search',companyController.search);
+router.get('/companies/search', companyController.search);
 router.get('/companies/:id', companyController.get);
 
 module.exports = router;
