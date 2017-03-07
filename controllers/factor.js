@@ -53,9 +53,7 @@ module.exports = {
                         const investorName = req.body.investor_name;
                         const investorCompany = req.body.investor_company;
                         const businessEmail = req.body.business_email;
-                        const html = `Hi ${businessName},<br/> My name is ${investorName} from ${investorCompany}.<br/>
-                I'm interested in learning more about your business could you ${query.content} <br/>
-                Thank you , looking forward to hearing back.`;
+                        const html = `x`;
 
                         nodeMailer.send(
                             'Hello There from Releaf',

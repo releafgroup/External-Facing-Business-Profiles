@@ -30,7 +30,7 @@ router.get('/factors', factorController.getAll);
  */
 router.get('/factors/:factor/queries', factorController.getFactorQueries);
 router.get('/factors/queries/:id', factorController.getFactorQuery);
-router.get('/factors/queries/:id/email/send', factorController.sendQueryEmail);
+router.post('/factors/queries/:id/email/send', factorController.sendQueryEmail);
 
 /**
  * Companies Routes
