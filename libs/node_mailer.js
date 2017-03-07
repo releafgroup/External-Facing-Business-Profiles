@@ -1,4 +1,4 @@
-var config = require('./../config');
+var config = require('./../config/config');
 var nodeMailer = require('nodemailer');
 // create reusable transporter object using SMTP transport
 
