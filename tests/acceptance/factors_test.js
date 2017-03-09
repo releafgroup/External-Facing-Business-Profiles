@@ -13,4 +13,13 @@ describe('Factors', function () {
                 done();
             });
     });
+
+    it('Test Get Factors Queries', (done) => {
+        request(URL).get('/factors/legal_factor/queries')
+            .expect(200)
+            .end(function (err, res) {
+                res.body.status.should.equal('success');
+                done();
+            });
+    });
 });

@@ -30,7 +30,9 @@
     "mongoose": "^4.6.5",
     "mysql": "^2.13.0",
     "newrelic": "^1.33.0",
-    "sequelize": "^3.30.0"
+    "sequelize": "^3.30.0",
+    "nodemailer": "^2.5.0",
+    "nodemailer-smtp-transport": "^2.6.0"
   },
   "devDependencies": {
     "debug": "~2.2.0",
