@@ -56,7 +56,17 @@ module.exports = {
                 return jsendRepsonse.sendError('Company not found', 404, res);
             }
 
-            return jsendRepsonse.sendSuccess(company.toObject(), res);
+            company = company.toObject();
+            let companyAvailableSubFactors = 0;
+            let totalSubFactors = 0;
+            SubFactor.find().then((subFactors) => {
+                totalSubFactors = subFactors.length;
+                subFactors.forEach((subFactor) => {
+                    companyAvailableSubFactors += Number(company.hasOwnProperty(subFactor.sub_factor));
+                });
+                company.profile_completion_level = parseFloat((companyAvailableSubFactors / totalSubFactors) * 100).toFixed(2);
+                return jsendRepsonse.sendSuccess(company, res);
+            });
         });
     },
 
@@ -64,33 +74,33 @@ module.exports = {
         var query = req.query;
         var sort = {};
         var sortKey = query.sort_by || false;
-        if(sortKey){
-             sort[sortKey] = -1;
+        if (sortKey) {
+            sort[sortKey] = -1;
         }
 
-        var size    = query.size || config.QUERY_LIMIT;
-        var page    = query.page || 1;
+        var size = query.size || config.QUERY_LIMIT;
+        var page = query.page || 1;
 
         var userQuery = {};
-        for(var key in query){
-            if(["size", "sort_by", "page", "token"].indexOf(key) >= 0){
+        for (var key in query) {
+            if (["size", "sort_by", "page", "token"].indexOf(key) >= 0) {
                 continue;
             }
-            if(query.hasOwnProperty(key)){
-                userQuery[key] = {'$regex' : '.*' + query[key] + '.*', '$options' : 'i' };
+            if (query.hasOwnProperty(key)) {
+                userQuery[key] = {'$regex': '.*' + query[key] + '.*', '$options': 'i'};
             }
         }
 
-        Company.count(userQuery, function(err, total) {
-            Company.find(userQuery).sort(sort).limit(parseInt(size)).skip((page - 1)*size).exec(function(err, company){
-                if(!company){
+        Company.count(userQuery, function (err, total) {
+            Company.find(userQuery).sort(sort).limit(parseInt(size)).skip((page - 1) * size).exec(function (err, company) {
+                if (!company) {
                     return jsendRepsonse.sendError('Error occured', 400, res);
                 }
 
                 var result = {
-                    result : company,
-                    total : total,
-                    page : page,
+                    result: company,
+                    total: total,
+                    page: page,
                     size: size,
                 };
 
