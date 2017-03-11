@@ -29,7 +29,7 @@ module.exports = {
             factors.forEach((factor) => {
                 factorString += factor += " "
             });
-            company.find().select(factorString).then((businessItems) => {
+            company.find({'business_type': businessType}).select(factorString).then((businessItems) => {
                 let scores = {};
                 businessItems.forEach((businessItem) => {
                     businessItem = businessItem.toObject();
