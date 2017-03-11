@@ -24,7 +24,7 @@ router.post('/login', loginController.authenticate);
  * Sub Factors Routes
  */
 router.get('/factors', factorController.getAll);
-
+router.get('/rfactors', factorController.rFactor);
 /**
  * Companies Routes
  */
