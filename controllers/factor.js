@@ -3,7 +3,7 @@ const SubFactor = require('../models/sub_factor');
 const FactorQuery = require('../models/factor_query');
 const nodeMailer = require('../libs/node_mailer');
 const sendFactorQueryEmailValidation = require('../validations/send_factor_query_email_validation');
-const company       = require('../models/company');
+const company = require('../models/company');
 
 module.exports = {
     getAll: (req, res) => {
@@ -75,7 +75,7 @@ module.exports = {
         });
     },
 
-    rFactor : (req, res) => {
+    rFactor: (req, res) => {
 
         SubFactor.find().distinct('factor').then((factors) => {
             let factorString = "";
@@ -103,7 +103,7 @@ module.exports = {
 
                 let size = businessItems.length;
 
-                for(key in scores) {
+                for (var key in scores) {
                     scores[key] /= size;
                     scores[key] = Math.round(scores[key]);
                 }
