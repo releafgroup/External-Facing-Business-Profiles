@@ -3,6 +3,7 @@ const SubFactor = require('../models/sub_factor');
 const FactorQuery = require('../models/factor_query');
 const nodeMailer = require('../libs/node_mailer');
 const sendFactorQueryEmailValidation = require('../validations/send_factor_query_email_validation');
+const Company = require('../models/company');
 
 module.exports = {
     getAll: (req, res) => {
@@ -53,10 +54,12 @@ module.exports = {
                         const investorName = req.body.investor_name;
                         const investorCompany = req.body.investor_company;
                         const businessEmail = req.body.business_email;
-                        const html = `x`;
+                        const html = `Hi ${businessName},<br/> My name is ${investorName} from ${investorCompany}.<br/>
+                I'm interested in learning more about your business could you ${query.content} <br/>
+                Thank you , looking forward to hearing back.`;
 
                         nodeMailer.send(
-                            'Hello There from Releaf',
+                            'Inquiries from Releaf',
                             html,
                             businessEmail,
                             [],
@@ -70,5 +73,45 @@ module.exports = {
                 });
             }
         });
+    },
+
+    rFactor: (req, res) => {
+
+        SubFactor.find().distinct('factor').then((factors) => {
+            let factorString = "";
+            factors.forEach((factor) => {
+                factorString += factor += " "
+            });
+            Company.find().select(factorString).then((businessItems) => {
+                let scores = {};
+                businessItems.forEach((businessItem) => {
+                    businessItem = businessItem.toObject();
+                    factors.forEach((factor) => {
+                        let currentFactor = factor;
+                        if (businessItem.hasOwnProperty(currentFactor)) {
+                            let currentScore = businessItem[currentFactor];
+                            if (scores.hasOwnProperty(currentFactor)) {
+                                scores[currentFactor] += currentScore;
+                            } else {
+                                scores[currentFactor] = currentScore;
+                            }
+                        } else {
+                            scores[currentFactor] = 0;
+                        }
+                    });
+                });
+
+                let size = businessItems.length;
+
+                for (var key in scores) {
+                    scores[key] /= size;
+                    scores[key] = Math.round(scores[key]);
+                }
+
+                jsendResponse.sendSuccess(scores, res);
+            });
+        });
+
+
     }
 };
