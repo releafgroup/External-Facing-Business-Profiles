@@ -56,46 +56,74 @@ module.exports = {
                 return jsendRepsonse.sendError('Company not found', 404, res);
             }
 
-            return jsendRepsonse.sendSuccess(company.toObject(), res);
+            company = company.toObject();
+            let companyAvailableSubFactors = 0;
+            let totalSubFactors = 0;
+            SubFactor.find().then((subFactors) => {
+                totalSubFactors = subFactors.length;
+                subFactors.forEach((subFactor) => {
+                    companyAvailableSubFactors += Number(company.hasOwnProperty(subFactor.sub_factor));
+                });
+                company.profile_completion_level = parseFloat((companyAvailableSubFactors / totalSubFactors) * 100).toFixed(2);
+                return jsendRepsonse.sendSuccess(company, res);
+            });
         });
     },
 
     search: (req, res) => {
-        var query = req.query;
-        var sort = {};
-        var sortKey = query.sort_by || false;
-        if(sortKey){
-             sort[sortKey] = -1;
+        let query = req.query;
+        let sort = {};
+        let sortKey = query.sort_by || false;
+        if (sortKey) {
+            sort[sortKey] = -1;
         }
 
-        var size    = query.size || config.QUERY_LIMIT;
-        var page    = query.page || 1;
+        let size = query.size || config.QUERY_LIMIT;
+        let page = query.page || 1;
 
-        var userQuery = {};
-        for(var key in query){
-            if(key == "size" || key == "sort_by" || key == "page"){
-                continue;
-            }
-            if(query.hasOwnProperty(key)){
-                userQuery[key] = {'$regex' : '.*' + query[key] + '.*', '$options' : 'i' };
-            }
-        }
+        let userQuery = {};
 
-        Company.count(userQuery, function(err, total) {
-            Company.find(userQuery).sort(sort).limit(parseInt(size)).skip((page - 1)*size).exec(function(err, company){
-                if(!company){
-                    return jsendRepsonse.sendError('Error occured', 400, res);
+        SubFactor.find().distinct('factor').then(function (factors) {
+            for (let key in query) {
+                if (["size", "sort_by", "page", "token"].indexOf(key) >= 0) {
+                    continue;
                 }
 
-                var result = {
-                    result : company,
-                    total : total,
-                    page : page,
-                    size: size,
-                };
+                if (query.hasOwnProperty(key) && factors.indexOf(key) == -1) {
+                    // Other business property
+                    userQuery[key] = {'$regex': '.*' + query[key] + '.*', '$options': 'i'};
+                } else if (factors.indexOf(key) > -1) {
+                    // Filtering by range of r-factor scores
+                    const minMaxQuery = query[key].split(',');
+                    if (minMaxQuery.length == 2) {
+                        const minQuery = minMaxQuery[0];
+                        const maxQuery = minMaxQuery[1];
+                        userQuery[key] = {};
+                        if (minQuery.length > 0) {
+                            userQuery[key]['$gte'] = Number(minQuery);
+                        }
+                        if (maxQuery.length > 0) {
+                            userQuery[key]['$lte'] = Number(maxQuery);
+                        }
+                    }
+                }
+            }
 
-                return jsendRepsonse.sendSuccess(result, res);
+            Company.count(userQuery, function (err, total) {
+                Company.find(userQuery).sort(sort).limit(parseInt(size)).skip((page - 1) * size).exec(function (err, company) {
+                    if (!company) {
+                        return jsendRepsonse.sendError('Error occured', 400, res);
+                    }
 
+                    let result = {
+                        result: company,
+                        total: total,
+                        page: page,
+                        size: size,
+                    };
+                    return jsendRepsonse.sendSuccess(result, res);
+
+                });
             });
         });
 
