@@ -3,7 +3,7 @@ const SubFactor = require('../models/sub_factor');
 const FactorQuery = require('../models/factor_query');
 const nodeMailer = require('../libs/node_mailer');
 const sendFactorQueryEmailValidation = require('../validations/send_factor_query_email_validation');
-const company = require('../models/company');
+const Company = require('../models/company');
 
 module.exports = {
     getAll: (req, res) => {
@@ -82,7 +82,7 @@ module.exports = {
             factors.forEach((factor) => {
                 factorString += factor += " "
             });
-            company.find().select(factorString).then((businessItems) => {
+            Company.find().select(factorString).then((businessItems) => {
                 let scores = {};
                 businessItems.forEach((businessItem) => {
                     businessItem = businessItem.toObject();
