@@ -24,13 +24,14 @@ router.post('/login', loginController.authenticate);
  * Sub Factors Routes
  */
 router.get('/factors', factorController.getAll);
-router.get('/rfactors', factorController.rFactor);
+
 /**
  * Factors Routes
  */
 router.get('/factors/:factor/queries', factorController.getFactorQueries);
 router.get('/factors/queries/:id', factorController.getFactorQuery);
 router.post('/factors/queries/:id/email/send', factorController.sendQueryEmail);
+router.get('/factors/overview', factorController.rFactor);
 
 /**
  * Companies Routes
