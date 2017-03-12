@@ -22,14 +22,13 @@ module.exports = {
     },
 
     rFactor : (req, res) => {
-        let requestParams = req.query;
-        let businessType = requestParams['business_type'];
+
         SubFactor.find().distinct('factor').then((factors) => {
             let factorString = "";
             factors.forEach((factor) => {
                 factorString += factor += " "
             });
-            company.find({'business_type': businessType}).select(factorString).then((businessItems) => {
+            company.find().select(factorString).then((businessItems) => {
                 let scores = {};
                 businessItems.forEach((businessItem) => {
                     businessItem = businessItem.toObject();
