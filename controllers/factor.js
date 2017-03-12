@@ -3,7 +3,6 @@ const SubFactor = require('../models/sub_factor');
 const FactorQuery = require('../models/factor_query');
 const nodeMailer = require('../libs/node_mailer');
 const sendFactorQueryEmailValidation = require('../validations/send_factor_query_email_validation');
-const SubFactor     = require('../models/sub_factor');
 const company       = require('../models/company');
 
 module.exports = {
@@ -55,10 +54,12 @@ module.exports = {
                         const investorName = req.body.investor_name;
                         const investorCompany = req.body.investor_company;
                         const businessEmail = req.body.business_email;
-                        const html = `x`;
+                        const html = `Hi ${businessName},<br/> My name is ${investorName} from ${investorCompany}.<br/>
+                I'm interested in learning more about your business could you ${query.content} <br/>
+                Thank you , looking forward to hearing back.`;
 
                         nodeMailer.send(
-                            'Hello There from Releaf',
+                            'Inquiries from Releaf',
                             html,
                             businessEmail,
                             [],
