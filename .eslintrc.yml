@@ -79,7 +79,7 @@ rules:
   no-caller: 2
   no-catch-shadow: 2
   no-confusing-arrow: 2
-  no-continue: 2
+  no-continue: 0
   no-div-regex: 2
   no-else-return: 0
   no-eq-null: 2
@@ -161,7 +161,7 @@ rules:
   operator-linebreak: 0
   padded-blocks: 0
   prefer-arrow-callback: 0
-  prefer-const: 2
+  prefer-const: 0
   prefer-reflect: 0
   prefer-rest-params: 2
   prefer-spread: 2

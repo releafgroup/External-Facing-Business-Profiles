@@ -26,10 +26,18 @@ router.post('/login', loginController.authenticate);
 router.get('/factors', factorController.getAll);
 
 /**
+ * Factors Routes
+ */
+router.get('/factors/:factor/queries', factorController.getFactorQueries);
+router.get('/factors/queries/:id', factorController.getFactorQuery);
+router.post('/factors/queries/:id/email/send', factorController.sendQueryEmail);
+router.get('/factors/overview', factorController.rFactor);
+
+/**
  * Companies Routes
  */
 router.get('/companies', companyController.getAll);
-router.get('/companies/search',companyController.search);
+router.get('/companies/search', companyController.search);
 router.get('/companies/:id', companyController.get);
 
 module.exports = router;
