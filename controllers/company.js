@@ -39,7 +39,7 @@ module.exports = {
                     return parseFloat(a.r_score) - parseFloat(b.r_score);
                 });
 
-                var limit = requestParams.limit || ((companies.length > 5) ? 5 : companies.length);
+                var limit = requestParams.limit || ((companies.length > 6) ? 6 : companies.length);
                 companies = (companies.length > 1) ? companies.slice(0, limit) : companies;
                 return jsendRepsonse.sendSuccess(companies, res);
             });
