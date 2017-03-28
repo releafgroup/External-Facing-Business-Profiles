@@ -63,7 +63,7 @@ module.exports = {
                 totalSubFactors = subFactors.length;
                 subFactors.forEach((subFactor) => {
                     let current_score = Number(company.hasOwnProperty(subFactor.sub_factor));
-                    if(current_score != 2){
+                    if(current_score != -1){
                         companyAvailableSubFactors += current_score;
                     }
                 });
