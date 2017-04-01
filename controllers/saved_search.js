@@ -77,7 +77,7 @@ module.exports = {
         	if(err){
         		return jsendResponse.sendError('Could not delete',400,res);
         	}
-        	jsendResponse.sendSuccess(response, res);
+        	jsendResponse.sendSuccess(true, res);
         });
 	},
 
