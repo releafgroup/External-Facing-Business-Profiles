@@ -46,8 +46,8 @@ router.get('/companies/:id', companyController.get);
 
  router.post('/search/save',savedController.create);
  router.get('/search/save',savedController.getAll);
- router.get('/search/save/delete', savedController.remove);
- router.get('/search/save/edit', savedController.edit);
+ router.post('/search/save/delete', savedController.remove);
+ router.post('/search/save/edit', savedController.edit);
 
 
 

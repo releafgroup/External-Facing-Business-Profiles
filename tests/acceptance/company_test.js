@@ -35,4 +35,16 @@ describe('Company', function () {
             done();
         });
     })
+
+    describe('Login', function () {
+    it('Test Login Fails with Invalid Creds', (done) => {
+        request(URL).post('/save/search')
+            .send({password: 'password', email: 'username'})
+            .expect(400)
+            .end(function (err, res) {
+                res.body.status.should.equal('fail');
+                done();
+            });
+    });
+
 });
