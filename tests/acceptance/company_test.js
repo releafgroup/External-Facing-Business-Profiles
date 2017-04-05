@@ -6,7 +6,7 @@ const URL = config.tests.TEST_URL;
 
 describe('Company', function () {
     it('Test Get Companies', (done) => {
-        request(URL).get('/companies?business_model=0.02')
+        request(URL).get('/companies')
             .set('x-access-token', config.ADMIN_SECRET_KEY)
             .expect(200)
             .end(function (err, res) {
@@ -35,16 +35,5 @@ describe('Company', function () {
             done();
         });
     })
-
-    describe('Login', function () {
-    it('Test Login Fails with Invalid Creds', (done) => {
-        request(URL).post('/save/search')
-            .send({password: 'password', email: 'username'})
-            .expect(400)
-            .end(function (err, res) {
-                res.body.status.should.equal('fail');
-                done();
-            });
-    });
 
 });

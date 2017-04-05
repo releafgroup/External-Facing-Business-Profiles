@@ -2,31 +2,31 @@ const jsendResponse = require('../helpers/jsend_response');
 const SavedSearch 	= require('../models/saved_search');
 const savedSearchValidation = require('../validations/saved_search_validation');
 const config = require('../config/config');
+const mongoose = require('mongoose');
 
 module.exports = {
 	create : function(req, res){
 		let requestParams = req.body;
-		console.log(req.body);
 		savedSearchValidation(req.body, (err, value) => {
 			if(err){
 				return jsendResponse.sendError(err, 400, res);
 			}
 
-			let user_id = requestParams.user_id;
-			let title   = requestParams.title;
+			let userId 		= requestParams.user_id;
+			let title   	= requestParams.title;
 			let description = requestParams.description;
-			let link = requestParams.link;
+			let link 		= requestParams.link;
 
-			var user_data = {
-				'user_id' : user_id,
-				'title': title,
-				'description': description,
-				'link': link
+			var userData 	= {
+				'user_id' 		: userId,
+				'title'			: title,
+				'description'	: description,
+				'link'			: link
 			};
 
-			var user_save = new SavedSearch(user_data);
+			var userSave = new SavedSearch(userData);
 			
-			user_save.save(function(err){
+			userSave.save(function(err){
 				if(err){
 					return jsendResponse.sendError(err,400,res);
 				}
@@ -37,20 +37,20 @@ module.exports = {
 	},
 
 	getAll : function(req, res){
-		let query = req.query;
+		let query = req.params;
 
 		let size = query.size || config.QUERY_LIMIT;
         let page = query.page || 1;
 
         let errors = [];
 
-        let user_id = query.user_id ? query.user_id : errors.push({'user_id':'missing user id'});
+        let userId = query.userId ? query.userId : errors.push({'user_id':'missing user id'});
 
         if(errors.length != 0){
         	return jsendResponse.sendError('Missing userid',400,res);
         }
 
-        SavedSearch.find({'user_id': user_id}).limit(parseInt(size)).skip((page - 1) * size).exec(function(err, saved_searches) {
+        SavedSearch.find({'user_id': userId}).limit(parseInt(size)).skip((page - 1) * size).exec(function(err, saved_searches) {
     		if (err) {
                 return jsendResponse.sendError('Error occured', 400, res);
             }
@@ -62,18 +62,17 @@ module.exports = {
 	},
 
 	remove : function(req, res){
-		let requestParams = req.body;
+		let requestParams = req.params;
 		let errors = [];
 
         let id = requestParams.id ? requestParams.id : errors.push({'id':'missing id'});
 
         if(errors.length != 0){
-        	return jsendResponse.sendError('Missing userid',400,res);
+        	return jsendResponse.sendError('Missing id',400,res);
         }
 
-        condition = {'_id': id};
-
-        SavedSearch.remove(condition, function(err, response){
+        SavedSearch.findByIdAndRemove(id, function(err, response){
+        	console.log(err);
         	if(err){
         		return jsendResponse.sendError('Could not delete',400,res);
         	}
