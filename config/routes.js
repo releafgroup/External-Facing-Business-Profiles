@@ -44,10 +44,10 @@ router.get('/companies/:id', companyController.get);
  * Save search Routes
  */
 
- router.post('/saved-search',savedSearchController.create);
- router.get('/saved-search/:userId',savedSearchController.getAll);
- router.delete('/saved-search/:id', savedSearchController.remove);
- router.put('/saved-search', savedSearchController.edit);
+ router.post('/saved-searches',savedSearchController.create);
+ router.get('/investors/:userId/saved-searches',savedSearchController.getAll);
+ router.delete('/saved-searches/:id', savedSearchController.remove);
+ router.put('/saved-searches', savedSearchController.edit);
 
 
 
