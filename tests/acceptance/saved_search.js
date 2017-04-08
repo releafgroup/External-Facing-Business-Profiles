@@ -7,7 +7,7 @@ const URL = config.tests.TEST_URL;
 describe('SavedSearch', function () {
 
     it('Test Create SavedSearch', (done) => {
-        request(URL).post('/saved-search')
+        request(URL).post('/saved-searches')
         .set('x-access-token', config.ADMIN_SECRET_KEY)
             .send({
             "user_id":"1",
@@ -23,14 +23,15 @@ describe('SavedSearch', function () {
     });
 
 
+
     it('Test Get SavedSearch', (done) => {
-        request(URL).get('/saved-search/1')
+        request(URL).get('/saved-searches/1')
         .set('x-access-token', config.ADMIN_SECRET_KEY)
-            .expect(200)
-            .end(function(err, res){
-                res.body.status.should.equal('success');
-                done();
-            })
+        .expect(200)
+        .end(function(err, res){
+            res.body.status.should.equal('success');
+            done();
+        })
     });
 
 });
