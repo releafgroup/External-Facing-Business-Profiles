@@ -100,11 +100,11 @@ module.exports = {
 				'link': link
 			};
 
-			var user_edit_data = {
+			let user_edit_data = {
 				'$set': new_data
 			};
 
-        	condition = {'user_id':user_id, '_id': id};
+        	let condition = {'user_id':user_id, '_id': id};
 
 			SavedSearch.update(condition,user_edit_data, function(err, response){
 				if(err){
