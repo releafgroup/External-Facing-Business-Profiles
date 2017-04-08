@@ -25,7 +25,7 @@ describe('SavedSearch', function () {
 
 
     it('Test Get SavedSearch', (done) => {
-        request(URL).get('/saved-searches/1')
+        request(URL).get('/investors/1/saved-searches')
         .set('x-access-token', config.ADMIN_SECRET_KEY)
         .expect(200)
         .end(function(err, res){
