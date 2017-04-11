@@ -36,7 +36,7 @@ module.exports = {
                 }
 
                 companies.sort(function (a, b) {
-                    return parseFloat(a.r_score) - parseFloat(b.r_score);
+                    return parseFloat(b.r_score) - parseFloat(a.r_score);
                 });
 
                 var limit = requestParams.limit || ((companies.length > 6) ? 6 : companies.length);
