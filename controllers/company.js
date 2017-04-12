@@ -39,10 +39,11 @@ module.exports = {
                     return parseFloat(b.r_score) - parseFloat(a.r_score);
                 });
 
-			/* Commented out limit to return all companies by default for pagination @clive
-			*/ 
-               //  var limit = requestParams.limit || ((companies.length > 6) ? 6 : companies.length);
-//                 companies = (companies.length > 1) ? companies.slice(0, limit) : companies;
+                var limit = requestParams.limit || ((companies.length > 6) ? 6 : companies.length);
+                var start_index = requestParams.start_index || 0;
+                var end = start_index + limit;
+                var end_index = (end < companies.length) ? end : companies.length;
+                 companies = (companies.length > 1) ? companies.slice(start_index, end_index) : companies;
                 return jsendRepsonse.sendSuccess(companies, res);
             });
         });
