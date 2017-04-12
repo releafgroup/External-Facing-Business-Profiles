@@ -38,9 +38,10 @@ module.exports = {
 
 	getAll : function(req, res){
 		let query = req.params;
-
-		let size = query.size || config.QUERY_LIMIT;
-        let page = query.page || 1;
+		let get_query = req.query;
+		
+		let size = get_query.size || config.QUERY_LIMIT;
+        let page = get_query.page || 1;
 
         let errors = [];
 
@@ -50,14 +51,23 @@ module.exports = {
         	return jsendResponse.sendError('Missing userid',400,res);
         }
 
-        SavedSearch.find({'user_id': userId}).limit(parseInt(size)).skip((page - 1) * size).exec(function(err, saved_searches) {
-    		if (err) {
-                return jsendResponse.sendError('Error occured', 400, res);
-            }
+        SavedSearch.count({'user_id': userId}, function (err, total){
+	        SavedSearch.find({'user_id': userId}).limit(parseInt(size)).skip((page - 1) * size).exec(function(err, saved_searches) {
+	    		if (err) {
+	                return jsendResponse.sendError('Error occured', 400, res);
+	            }
 
-        	jsendResponse.sendSuccess(saved_searches, res);
-        
-        });
+	            let result = {
+	                result: saved_searches,
+	                total: total,
+	                page: page,
+	                size: size,
+	            };
+
+	        	jsendResponse.sendSuccess(result, res);
+	        
+	        });
+	    });
 
 	},
 
@@ -74,7 +84,7 @@ module.exports = {
         SavedSearch.findByIdAndRemove(id, function(err, response){
         	console.log(err);
         	if(err){
-        		return jsendResponse.sendError('Could not delete',400,res);
+        		return jsendResponse.sendError('Could not delete invalid id',400,res);
         	}
         	jsendResponse.sendSuccess(true, res);
         });
