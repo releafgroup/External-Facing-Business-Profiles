@@ -8,7 +8,7 @@ var SavedSchema = new Schema({
 	"link": {type: String, required: true},
 	"created_at": {type: Date},
 	"updated_at":{type: Date}
-},{collection: 'sub_factors'});
+},{collection: 'saved_schema'});
 
 SavedSchema.pre('save',function(next){
 	var current_date = new Date();
