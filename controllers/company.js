@@ -41,9 +41,8 @@ module.exports = {
 
                 var limit = requestParams.limit || ((companies.length > 6) ? 6 : companies.length);
                 var start_index = requestParams.start_index || 0;
-                var end = start_index + limit;
-                var end_index = (end < companies.length) ? end : companies.length;
-                 companies = (companies.length > 1) ? companies.slice(start_index, end_index) : companies;
+                
+                companies.skip(start_index).limit(limit);
                 return jsendRepsonse.sendSuccess(companies, res);
             });
         });
