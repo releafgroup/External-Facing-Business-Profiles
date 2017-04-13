@@ -7,8 +7,10 @@ module.exports = {
     getAll: (req, res) => {
         var requestParams = req.query;
         var companies = [];
+        var start_index = Number(requestParams.start_index) || 0;
+        var limit = Number(requestParams.limit) || 6;
         SubFactor.find().then((subFactors) => {
-            Company.find().then((companyInputs) => {
+            Company.find().skip(start_index).limit(limit).then((companyInputs) => {
                 for (var i = 0; i < companyInputs.length; i++) {
                     var companySubFactors = companyInputs[i].toObject();
 
@@ -39,10 +41,6 @@ module.exports = {
                     return parseFloat(b.r_score) - parseFloat(a.r_score);
                 });
 
-                var limit = requestParams.limit || ((companies.length > 6) ? 6 : companies.length);
-                var start_index = requestParams.start_index || 0;
-                
-                companies.skip(start_index).limit(limit);
                 return jsendRepsonse.sendSuccess(companies, res);
             });
         });
@@ -65,7 +63,7 @@ module.exports = {
                 totalSubFactors = subFactors.length;
                 subFactors.forEach((subFactor) => {
                     let current_score = Number(company.hasOwnProperty(subFactor.sub_factor));
-                    if(current_score != -1){
+                    if (current_score != -1) {
                         companyAvailableSubFactors += current_score;
                     }
                 });
