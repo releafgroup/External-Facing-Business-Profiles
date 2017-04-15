@@ -39,7 +39,7 @@ module.exports = {
                     return parseFloat(a.r_score) - parseFloat(b.r_score);
                 });
 
-                var limit = requestParams.limit || ((companies.length > 5) ? 5 : companies.length);
+                var limit = requestParams.limit || ((companies.length > 6) ? 6 : companies.length);
                 companies = (companies.length > 1) ? companies.slice(0, limit) : companies;
                 return jsendRepsonse.sendSuccess(companies, res);
             });
@@ -62,7 +62,10 @@ module.exports = {
             SubFactor.find().then((subFactors) => {
                 totalSubFactors = subFactors.length;
                 subFactors.forEach((subFactor) => {
-                    companyAvailableSubFactors += Number(company.hasOwnProperty(subFactor.sub_factor));
+                    let current_score = Number(company.hasOwnProperty(subFactor.sub_factor));
+                    if(current_score != -1){
+                        companyAvailableSubFactors += current_score;
+                    }
                 });
                 company.profile_completion_level = parseFloat((companyAvailableSubFactors / totalSubFactors) * 100).toFixed(2);
                 return jsendRepsonse.sendSuccess(company, res);
