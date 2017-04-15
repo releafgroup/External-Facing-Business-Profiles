@@ -8,7 +8,7 @@ const indexController = require('../controllers/index');
 const loginController = require('../controllers/login');
 const factorController = require('../controllers/factor');
 const companyController = require('../controllers/company');
-
+const savedSearchController = require('../controllers/saved_search');
 
 /**
  * Home routes
@@ -39,5 +39,18 @@ router.get('/factors/overview', factorController.rFactor);
 router.get('/companies', companyController.getAll);
 router.get('/companies/search', companyController.search);
 router.get('/companies/:id', companyController.get);
+
+/**
+ * Save search Routes
+ */
+
+ router.post('/saved-searches',savedSearchController.create);
+ router.get('/investors/:userId/saved-searches',savedSearchController.getAll);
+ router.delete('/saved-searches/:id', savedSearchController.remove);
+ router.put('/saved-searches', savedSearchController.edit);
+
+
+
+
 
 module.exports = router;
