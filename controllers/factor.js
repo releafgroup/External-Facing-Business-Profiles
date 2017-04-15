@@ -95,7 +95,7 @@ module.exports = {
                             } else {
                                 scores[currentFactor] = currentScore;
                             }
-                        } else {
+                        } else if (!scores.hasOwnProperty(currentFactor)) {
                             scores[currentFactor] = 0;
                         }
                     });
