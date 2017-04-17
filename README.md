@@ -83,3 +83,6 @@ So to deploy the staging environment run `dep deploy staging`
 [3]: http://blog.teamtreehouse.com/install-node-js-npm-mac "teamtreehouse Blog"
 [4]: https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-16-04 "Digital Ocean"
 [5]: http://blog.teamtreehouse.com/install-node-js-npm-windows "team teamtreehouse blog"
+
+## API Documentation
+[Ikeora V3 API Documentation](https://docs.google.com/document/d/14pLvADTtZq051Ox9g0z6qh1JI7I9xKoAfrFBhMa4Gvs/edit#)
