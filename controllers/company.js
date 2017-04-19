@@ -7,14 +7,16 @@ module.exports = {
     getAll: (req, res) => {
         var requestParams = req.query;
         var companies = [];
-        var limit = requestParams.limit ;
-        var start_index = requestParams.start_index || 0;
+
+        var start_index = Number(requestParams.start_index) || 0;
+        var limit = Number(requestParams.limit) || 6;
         
         SubFactor.find().then((subFactors) => {
         
             Company.find().then((companyInputs) => {
             
             //NB --> Didn't change r_score update
+
                 for (var i = 0; i < companyInputs.length; i++) {
                     let rScore = 0;
                     let stats = {};
@@ -36,12 +38,14 @@ module.exports = {
                     companyInputs[i].toObject().r_score = Math.floor(rScore);
                     companyInputs[i].toObject().stats = stats;
 
+
                 }              
-            }).sort({ r_score: 1 }).limit(limit).skip(start_index).then((companyInputs) => {
+            }).sort({ r_score: 1 }).skip(start_index).limit(limit).then((companyInputs) => {
     
                 for (var i = 0; i < companyInputs.length; i++) {
                     companies.push(companyInputs[i].toObject());
                 }
+
                 return jsendRepsonse.sendSuccess(companies, res);
             });
         });
@@ -64,7 +68,7 @@ module.exports = {
                 totalSubFactors = subFactors.length;
                 subFactors.forEach((subFactor) => {
                     let current_score = Number(company.hasOwnProperty(subFactor.sub_factor));
-                    if(current_score != -1){
+                    if (current_score != -1) {
                         companyAvailableSubFactors += current_score;
                     }
                 });
