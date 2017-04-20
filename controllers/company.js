@@ -2,6 +2,9 @@ const jsendRepsonse = require('../helpers/jsend_response');
 const SubFactor = require('../models/sub_factor');
 const Company = require('../models/company');
 const config = require('../config/config');
+const rates = require('open-exchange-rates');
+const money = require('money');
+rates.set({ app_id: 'd91f500a5b494c4a98b1f6c39fee47a0' })  //Temporarily putting app ID(ope exchange rates) here but will move to .env after testing
 
 module.exports = {
     getAll: (req, res) => {
@@ -130,6 +133,26 @@ module.exports = {
             });
         });
 
+    },
+    
+    convertMoney: (req, res) => {
+        var requestParams = req.query;
+        var value = 0;		
+
+		rates.latest(function() {
+		money.rates = rates.rates;
+		money.base = rates.base;
+	
+		// USD to Naira
+		if(requestParams.from == 'USD'){
+		value = money(Number(requestParams.value)).from('USD').to('NGN');
+		}else{		
+		//Naira to USD
+		value = money(Number(requestParams.value)).from('NGN').to('USD');
+		}
+		return jsendRepsonse.sendSuccess(value, res);
+});
+      
     },
 
 
