@@ -7,44 +7,39 @@ module.exports = {
     getAll: (req, res) => {
         var requestParams = req.query;
         var companies = [];
-
         var start_index = Number(requestParams.start_index) || 0;
         var limit = Number(requestParams.limit) || 6;
-        
         SubFactor.find().then((subFactors) => {
-        
-            Company.find().then((companyInputs) => {
-            
-            //NB --> Didn't change r_score update
-
+            Company.find().sort({r_score : 1}).skip(start_index).limit(limit).then((companyInputs) => {
                 for (var i = 0; i < companyInputs.length; i++) {
+                    var companySubFactors = companyInputs[i].toObject();
+
                     let rScore = 0;
                     let stats = {};
                     for (var j = 0; j < subFactors.length; j++) {
                         var subFactor = subFactors[j];
-                        var companySubFactor = companyInputs[i].toObject()[subFactor.sub_factor];
+                        var companySubFactor = companySubFactors[subFactor.sub_factor];
                         const weight = Number(requestParams[subFactor.factor]) || subFactor.weight;
                         if (companySubFactor) {
                             const scoreRating = subFactor['score_' + companySubFactor.score + '_rating'];
-                            rScore += Number(weight) * companyInputs[i].toObject()[subFactor.sub_factor].weighted_score;            
-                            companyInputs[i].toObject()[subFactor.sub_factor].score_rating = scoreRating;
+                            rScore += Number(weight) * companySubFactors[subFactor.sub_factor].weighted_score;
+                            companySubFactors[subFactor.sub_factor].score_rating = scoreRating;
 
                             if (typeof stats[subFactor.factor] == 'undefined') {
                                 stats[subFactor.factor] = 0;
                             }
-                            stats[subFactor.factor] += companyInputs[i].toObject()[subFactor.sub_factor].weighted_score;
+
+                            stats[subFactor.factor] += companySubFactors[subFactor.sub_factor].weighted_score;
                         }
                     }
-                    companyInputs[i].toObject().r_score = Math.floor(rScore);
-                    companyInputs[i].toObject().stats = stats;
-
-
-                }              
-            }).sort({ r_score: 1 }).skip(start_index).limit(limit).then((companyInputs) => {
-    
-                for (var i = 0; i < companyInputs.length; i++) {
-                    companies.push(companyInputs[i].toObject());
+                    companySubFactors.r_score = Math.floor(rScore);
+                    companySubFactors.stats = stats;
+                    companies.push(companySubFactors);
                 }
+
+                companies.sort(function (a, b) {
+                    return parseFloat(b.r_score) - parseFloat(a.r_score);
+                });
 
                 return jsendRepsonse.sendSuccess(companies, res);
             });
