@@ -20,7 +20,9 @@ module.exports = {
                         const weight = Number(requestParams[subFactor.factor]) || subFactor.weight;
                         if (companySubFactor) {
                             const scoreRating = subFactor['score_' + companySubFactor.score + '_rating'];
-                            rScore += Number(weight) * companySubFactors[subFactor.sub_factor].weighted_score;
+                            const weightedScore = companySubFactors[subFactor.sub_factor].weighted_score ?
+                                companySubFactors[subFactor.sub_factor].weighted_score : 0;
+                            rScore += weight * weightedScore;
                             companySubFactors[subFactor.sub_factor].score_rating = scoreRating;
 
                             if (typeof stats[subFactor.factor] == 'undefined') {
