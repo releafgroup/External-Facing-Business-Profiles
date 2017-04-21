@@ -151,33 +151,5 @@ module.exports = {
 
     },
 
-    requestMore : (req, res) => {
-        let requestParams = req.body;
-
-        let investorId = requestParams['investor_id'];
-        let body       = requestParams['body'];
-        let subject    = requestParams['subject'];
-
-        UserCredential.findOne({where: {id: investorId}, attributes: ['id', 'email']})
-            .then(function (user) {
-                if (!user) {
-                    return jsendRepsonse.sendFail('Invalid Investor Id', 400, res);
-                }
-
-
-
-
-                
-                
-                // let investorFundName =  investor['name'];
-
-                // let title      = `[Releaf] request for Information from ${investorFundName}`; 
-                
-
-            });
-
-       
-    },
-
 
 };
