@@ -1,7 +1,12 @@
 const jsendRepsonse = require('../helpers/jsend_response');
-const SubFactor = require('../models/sub_factor');
-const Company = require('../models/company');
-const config = require('../config/config');
+const SubFactor     = require('../models/sub_factor');
+const company       = require('../models/company');
+const config        = require('../config/config');
+const node_mailer   = require('../libs/node_mailer');
+const RequestMore   = require('../models/request_more');
+
+//validations 
+const requestMoreValidation = require('../validations/send_request_more_email_validation');
 
 module.exports = {
     getAll: (req, res) => {
@@ -131,6 +136,40 @@ module.exports = {
         });
 
     },
+
+    requestMore : (req, res) => {
+        let requestParams = req.body;
+        requestMoreValidation(requestParams, (err, value) => {
+            if(err){
+                return jsendResponse.sendError(err, 400, res);
+            }
+
+            let investorEmail = requestParams['investor_email'];
+            let body          = requestParams['body'];
+            let subject       = requestParams['subject'];
+            let businessEmail = requestParams['business_email'];
+
+            let input_data = {
+                'investor_email' : investorEmail,
+                'body' : body,
+                'subject' : subject,
+                'business_email' : businessEmail
+            };
+
+            let requestSave = new RequestMore(input_data);
+            requestSave.save(function(err){
+                nodeMailer.send(
+                    subject,
+                    body,
+                    businessEmail,
+                    [],
+                    ['releaffounders@mit.edu'],
+                    investorEmail
+                );
+            });
+        });
+    },
+
 
 
 };
