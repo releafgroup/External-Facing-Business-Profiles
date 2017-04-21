@@ -1,7 +1,9 @@
 const jsendRepsonse = require('../helpers/jsend_response');
-const SubFactor = require('../models/sub_factor');
-const Company = require('../models/company');
-const config = require('../config/config');
+const SubFactor     = require('../models/sub_factor');
+const Company       = require('../models/company');
+const config        = require('../config/config');
+const Investor      = require('../models').Investor;
+const 
 
 module.exports = {
     getAll: (req, res) => {
@@ -87,17 +89,30 @@ module.exports = {
         let userQuery = {};
 
         SubFactor.find().distinct('factor').then(function (factors) {
+
             for (let key in query) {
+
                 if (["size", "sort_by", "page", "token"].indexOf(key) >= 0) {
                     continue;
                 }
 
                 if (query.hasOwnProperty(key) && factors.indexOf(key) == -1) {
                     // Other business property
-                    userQuery[key] = {'$regex': '.*' + query[key] + '.*', '$options': 'i'};
+                    let valueKey = query[key];
+
+                    let rangeQuery = valueKey.split(',');
+
+                    if(rangeQuery.length == 1){
+                        userQuery[key] = {'$regex': '.*' + query[key] + '.*', '$options': 'i'};
+                    } else {
+                        userQuery[key] = {$in : rangeQuery}
+                    }
+
                 } else if (factors.indexOf(key) > -1) {
                     // Filtering by range of r-factor scores
+
                     const minMaxQuery = query[key].split(',');
+
                     if (minMaxQuery.length == 2) {
                         const minQuery = minMaxQuery[0];
                         const maxQuery = minMaxQuery[1];
@@ -108,7 +123,11 @@ module.exports = {
                         if (maxQuery.length > 0) {
                             userQuery[key]['$lte'] = Number(maxQuery);
                         }
+                    } else {
+
                     }
+
+
                 }
             }
 
@@ -130,6 +149,34 @@ module.exports = {
             });
         });
 
+    },
+
+    requestMore : (req, res) => {
+        let requestParams = req.body;
+
+        let investorId = requestParams['investor_id'];
+        let body       = requestParams['body'];
+        let subject    = requestParams['subject'];
+
+        UserCredential.findOne({where: {id: investorId}, attributes: ['id', 'email']})
+            .then(function (user) {
+                if (!user) {
+                    return jsendRepsonse.sendFail('Invalid Investor Id', 400, res);
+                }
+
+
+
+
+                
+                
+                // let investorFundName =  investor['name'];
+
+                // let title      = `[Releaf] request for Information from ${investorFundName}`; 
+                
+
+            });
+
+       
     },
 
 
