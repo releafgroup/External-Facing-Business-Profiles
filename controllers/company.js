@@ -2,7 +2,7 @@ const jsendRepsonse = require('../helpers/jsend_response');
 const SubFactor     = require('../models/sub_factor');
 const company       = require('../models/company');
 const config        = require('../config/config');
-const node_mailer   = require('../libs/node_mailer');
+const nodeMailer   = require('../libs/node_mailer');
 const RequestMore   = require('../models/request_more');
 
 //validations 
@@ -157,7 +157,7 @@ module.exports = {
             };
 
             let requestSave = new RequestMore(input_data);
-            requestSave.save(function(err){
+            requestSave.save( (err) => {
                 nodeMailer.send(
                     subject,
                     body,
@@ -166,6 +166,7 @@ module.exports = {
                     ['releaffounders@mit.edu'],
                     investorEmail
                 );
+                return jsendRepsonse.sendSuccess(true, res);
             });
         });
     },
