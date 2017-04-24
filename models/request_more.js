@@ -15,7 +15,7 @@ var RequestMore = new Schema({
 
 	"updated_at": {type: Date}
 
-},{collection: 'request_more'});
+},{collection: 'investor_requests_more'});
 
 RequestMore.pre('save',function(next){
 	var current_date = new Date();
