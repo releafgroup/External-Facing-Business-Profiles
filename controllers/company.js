@@ -1,9 +1,7 @@
 const jsendRepsonse = require('../helpers/jsend_response');
-const SubFactor     = require('../models/sub_factor');
-const Company       = require('../models/company');
-const config        = require('../config/config');
-const Investor      = require('../models').Investor;
-const 
+const SubFactor = require('../models/sub_factor');
+const Company = require('../models/company');
+const config = require('../config/config');
 
 module.exports = {
     getAll: (req, res) => {
@@ -65,7 +63,7 @@ module.exports = {
                 totalSubFactors = subFactors.length;
                 subFactors.forEach((subFactor) => {
                     let current_score = Number(company.hasOwnProperty(subFactor.sub_factor));
-                    if(current_score != -1){
+                    if (current_score != -1) {
                         companyAvailableSubFactors += current_score;
                     }
                 });
@@ -100,20 +98,33 @@ module.exports = {
                     // Other business property
                     let valueKey = query[key];
 
-                    let rangeQuery = valueKey.split(',');
+                    // Options Query
+                    let optionsQuery = valueKey.split(',');
+                    let rangeQuery = valueKey.split('-');
+                    // Range Query
+                    const minQuery = Number(rangeQuery[0]);
+                    const maxQuery = Number(rangeQuery[1]);
 
-                    if(rangeQuery.length == 1){
-                        userQuery[key] = {'$regex': '.*' + query[key] + '.*', '$options': 'i'};
+                    if (rangeQuery.length === 2 && !(isNaN(minQuery) || isNaN(maxQuery))) {
+                        userQuery[key] = {};
+                        if (minQuery.length > 0) {
+                            userQuery[key]['$gte'] = Number(minQuery);
+                        }
+                        if (maxQuery.length > 0) {
+                            userQuery[key]['$lte'] = Number(maxQuery);
+                        }
+                    } else if (optionsQuery.length > 1) {
+                        // Options Query
+                        userQuery[key] = {$in: optionsQuery}
                     } else {
-                        userQuery[key] = {$in : rangeQuery}
+                        userQuery[key] = {'$regex': '.*' + query[key] + '.*', '$options': 'i'};
                     }
-
                 } else if (factors.indexOf(key) > -1) {
                     // Filtering by range of r-factor scores
 
                     const minMaxQuery = query[key].split(',');
 
-                    if (minMaxQuery.length == 2) {
+                    if (minMaxQuery.length === 2) {
                         const minQuery = minMaxQuery[0];
                         const maxQuery = minMaxQuery[1];
                         userQuery[key] = {};
@@ -123,11 +134,7 @@ module.exports = {
                         if (maxQuery.length > 0) {
                             userQuery[key]['$lte'] = Number(maxQuery);
                         }
-                    } else {
-
                     }
-
-
                 }
             }
 
