@@ -40,6 +40,7 @@ router.get('/factors/overview', factorController.rFactor);
 router.get('/companies', companyController.getAll);
 router.get('/companies/search', companyController.search);
 router.get('/companies/:id', companyController.get);
+router.post('/companies/request-more',companyController.requestMore);
 
 /**
  * Save search Routes

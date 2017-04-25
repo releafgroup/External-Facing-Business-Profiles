@@ -14,7 +14,7 @@ module.exports = {
                     return jsendRepsonse.sendFail('Invalid username or password', 400, res);
                 }
 
-                Investor.findOne({where: {user_auth_id: user.id}, raw: true ,attributes: ['id', 'website']})
+                Investor.findOne({where: {user_auth_id: user.id}, raw: true ,attributes: ['name', 'id', 'website']})
                     .then(function (investor) {
                         if (!investor) {
                             return jsendRepsonse.sendError('Investor not found!', 404, res);
