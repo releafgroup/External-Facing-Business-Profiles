@@ -94,18 +94,44 @@ module.exports = {
         let userQuery = {};
 
         SubFactor.find().distinct('factor').then(function (factors) {
+
             for (let key in query) {
+
                 if (["size", "sort_by", "page", "token"].indexOf(key) >= 0) {
                     continue;
                 }
 
                 if (query.hasOwnProperty(key) && factors.indexOf(key) == -1) {
                     // Other business property
-                    userQuery[key] = {'$regex': '.*' + query[key] + '.*', '$options': 'i'};
+                    let valueKey = query[key];
+
+                    // Options Query
+                    let optionsQuery = valueKey.split(',');
+                    let rangeQuery = valueKey.split('-');
+                    // Range Query
+                    const minQuery = Number(rangeQuery[0]);
+                    const maxQuery = Number(rangeQuery[1]);
+
+                    if (rangeQuery.length === 2 && !(isNaN(minQuery) || isNaN(maxQuery))) {
+                        userQuery[key] = {};
+                        if (minQuery.length > 0) {
+                            userQuery[key]['$gte'] = Number(minQuery);
+                        }
+                        if (maxQuery.length > 0) {
+                            userQuery[key]['$lte'] = Number(maxQuery);
+                        }
+                    } else if (optionsQuery.length > 1) {
+                        // Options Query
+                        userQuery[key] = {$in: optionsQuery}
+                    } else {
+                        userQuery[key] = {'$regex': '.*' + query[key] + '.*', '$options': 'i'};
+                    }
                 } else if (factors.indexOf(key) > -1) {
                     // Filtering by range of r-factor scores
+
                     const minMaxQuery = query[key].split(',');
-                    if (minMaxQuery.length == 2) {
+
+                    if (minMaxQuery.length === 2) {
                         const minQuery = minMaxQuery[0];
                         const maxQuery = minMaxQuery[1];
                         userQuery[key] = {};
