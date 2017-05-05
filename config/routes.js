@@ -9,6 +9,7 @@ const loginController = require('../controllers/login');
 const factorController = require('../controllers/factor');
 const companyController = require('../controllers/company');
 const savedSearchController = require('../controllers/saved_search');
+const watchlistController = require('../controllers/watchlist');
 
 /**
  * Home routes
@@ -44,13 +45,16 @@ router.post('/companies/request-more',companyController.requestMore);
 /**
  * Save search Routes
  */
+router.post('/saved-searches', savedSearchController.create);
+router.get('/investors/:userId/saved-searches', savedSearchController.getAll);
+router.delete('/saved-searches/:id', savedSearchController.remove);
+router.put('/saved-searches', savedSearchController.edit);
 
- router.post('/saved-searches',savedSearchController.create);
- router.get('/investors/:userId/saved-searches',savedSearchController.getAll);
- router.delete('/saved-searches/:id', savedSearchController.remove);
- router.put('/saved-searches', savedSearchController.edit);
-
-
-
+/**
+ * Watchlist Routes
+ */
+router.post('/investors/:investorId/watched-companies', watchlistController.add);
+router.get('/investors/:investorId/watched-companies', watchlistController.getAll);
+router.delete('/investors/watched-companies/:id', watchlistController.remove);
 
 module.exports = router;
