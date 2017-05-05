@@ -31,6 +31,7 @@ module.exports = {
                 }
                 return jsendResponse.sendSuccess(true, res);
             });
+
         });
 
     },
