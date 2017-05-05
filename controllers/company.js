@@ -5,24 +5,24 @@ const config = require('../config/config');
 const currency = require('y-currency');
 module.exports = {
 	getAll: (req, res) => {
-        var requestParams = req.query;
-        var companies = [];
-        var start_index = Number(requestParams.start_index) || 0;
-        var limit = Number(requestParams.limit) || 6;
+        let requestParams = req.query;
+        let companies = [];
         SubFactor.find().then((subFactors) => {
-            Company.find().skip(start_index).limit(limit).then((companyInputs) => {
-                for (var i = 0; i < companyInputs.length; i++) {
-                    var companySubFactors = companyInputs[i].toObject();
+            Company.find().then((companyInputs) => {
+                for (let i = 0; i < companyInputs.length; i++) {
+                    let companySubFactors = companyInputs[i].toObject();
 
                     let rScore = 0;
                     let stats = {};
-                    for (var j = 0; j < subFactors.length; j++) {
-                        var subFactor = subFactors[j];
-                        var companySubFactor = companySubFactors[subFactor.sub_factor];
+                    for (let j = 0; j < subFactors.length; j++) {
+                        let subFactor = subFactors[j];
+                        let companySubFactor = companySubFactors[subFactor.sub_factor];
                         const weight = Number(requestParams[subFactor.factor]) || subFactor.weight;
                         if (companySubFactor) {
                             const scoreRating = subFactor['score_' + companySubFactor.score + '_rating'];
-                            rScore += Number(weight) * companySubFactors[subFactor.sub_factor].weighted_score;
+                            const weightedScore = companySubFactors[subFactor.sub_factor].weighted_score ?
+                                companySubFactors[subFactor.sub_factor].weighted_score : 0;
+                            rScore += weight * weightedScore;
                             companySubFactors[subFactor.sub_factor].score_rating = scoreRating;
 
                             if (typeof stats[subFactor.factor] == 'undefined') {
@@ -41,7 +41,9 @@ module.exports = {
                     return parseFloat(b.r_score) - parseFloat(a.r_score);
                 });
 
-                return jsendRepsonse.sendSuccess(companies, res);
+                let limit = requestParams.limit || ((companies.length > 6) ? 6 : companies.length);
+                companies = (companies.length > 1) ? companies.slice(0, limit) : companies;
+                return jsendResponse.sendSuccess(companies, res);
             });
         });
     },
