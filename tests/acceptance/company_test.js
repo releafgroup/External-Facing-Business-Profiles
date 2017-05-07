@@ -15,14 +15,16 @@ describe('Company', function () {
             });
     });
 
-    // it('Test Get Company', (done) => {
-    //     request(URL).get('/companies/589be08a341a018b0e2b0c42')
-    //         .expect(200)
-    //         .end(function (err, res) {
-    //             res.body.status.should.equal('success');
-    //             done();
-    //         });
-    // });
+     it('Test Money Conversion', (done) => {
+        request(URL).get('/companies/convertMoney?value=10000&from=NGN')
+            .set('x-access-token', config.ADMIN_SECRET_KEY)
+            .expect(200)
+            .end(function (err, res) {
+               res.body.status.should.equal('success');
+                done();
+            });
+    });
+
 
     it('Test Search Companies',(done) => {
         request(URL)
@@ -30,7 +32,7 @@ describe('Company', function () {
         .set('x-access-token', config.ADMIN_SECRET_KEY)
         .expect(200)
         .end(function (err, res) {
-            console.log(res.body);
+          //  console.log(res.body);
             res.body.status.should.equal('success');
             done();
         });

@@ -134,7 +134,7 @@ module.exports = {
 		}
 		currency.convert(value, from, to, function(err, converted) {
 			if (err) {
-				throw err;
+				return jsendRepsonse.sendError('Not Converted', 404, res);;
 			} else {
 				return jsendRepsonse.sendSuccess(converted, res);
 			}

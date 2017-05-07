@@ -37,6 +37,7 @@ router.get('/factors/overview', factorController.rFactor);
  * Companies Routes
  */
 router.get('/companies', companyController.getAll);
+router.get('/companies/convertMoney', companyController.convertMoney);
 router.get('/companies/search', companyController.search);
 router.get('/companies/:id', companyController.get);
 
