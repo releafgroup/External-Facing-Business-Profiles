@@ -208,16 +208,16 @@ module.exports = {
 
     },
     convertMoney: (req, res) => {
-        var requestParams = req.query;
-        var value = Number(requestParams.value);
-        var to = '';
-        var from = requestParams.from;
+        let requestParams = req.query;
+        let value = Number(requestParams.value);
+        let to = '';
+        let from = requestParams.from;
         if (from == 'USD') {
             to = 'NGN';
         } else {
             to = 'USD';
         }
-        currency.convert(value, from, to, function(err, converted) {
+        currency.convert(value, from, to, function (err, converted) {
             if (err) {
                 return jsendResponse.sendError('Not Converted', 404, res);
             } else {
