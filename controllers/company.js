@@ -4,7 +4,6 @@ const Company = require('../models/company');
 const config = require('../config/config');
 const nodeMailer = require('../libs/node_mailer');
 const CompanyInfoRequest = require('../models/company_info_request');
-const currency = require('y-currency');
 
 //validations
 const requestMoreValidation = require('../validations/send_request_more_email_validation');
@@ -206,23 +205,5 @@ module.exports = {
             });
         });
 
-    },
-    convertMoney: (req, res) => {
-        let requestParams = req.query;
-        let value = Number(requestParams.value);
-        let to = '';
-        let from = requestParams.from;
-        if (from == 'USD') {
-            to = 'NGN';
-        } else {
-            to = 'USD';
-        }
-        currency.convert(value, from, to, function (err, converted) {
-            if (err) {
-                return jsendResponse.sendError('Not Converted', 404, res);
-            } else {
-                return jsendResponse.sendSuccess(converted, res);
-            }
-        });
     }
 };
