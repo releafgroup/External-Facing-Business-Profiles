@@ -8,6 +8,7 @@ const indexController = require('../controllers/index');
 const loginController = require('../controllers/login');
 const factorController = require('../controllers/factor');
 const companyController = require('../controllers/company');
+const currencyController = require('../controllers/currency');
 const savedSearchController = require('../controllers/saved_search');
 const watchlistController = require('../controllers/watchlist');
 
@@ -40,7 +41,7 @@ router.get('/factors/overview', factorController.rFactor);
 router.get('/companies', companyController.getAll);
 router.get('/companies/search', companyController.search);
 router.get('/companies/:id', companyController.get);
-router.post('/companies/request-more',companyController.requestMore);
+router.post('/companies/request-more', companyController.requestMore);
 
 /**
  * Save search Routes
@@ -56,5 +57,10 @@ router.put('/saved-searches', savedSearchController.edit);
 router.post('/investors/:investorId/watched-companies', watchlistController.add);
 router.get('/investors/:investorId/watched-companies', watchlistController.getAll);
 router.delete('/investors/watched-companies/:id', watchlistController.remove);
+
+/**
+ * Currency Routes
+ */
+router.get('/currencies/:from/:value', currencyController.convertMoney);
 
 module.exports = router;

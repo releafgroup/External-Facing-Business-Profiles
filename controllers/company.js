@@ -5,7 +5,7 @@ const config = require('../config/config');
 const nodeMailer = require('../libs/node_mailer');
 const CompanyInfoRequest = require('../models/company_info_request');
 
-//validations 
+//validations
 const requestMoreValidation = require('../validations/send_request_more_email_validation');
 
 module.exports = {
@@ -205,7 +205,5 @@ module.exports = {
             });
         });
 
-    },
-
-
+    }
 };
