@@ -13,5 +13,5 @@ describe('Currency', function () {
                 res.body.status.should.equal('success');
                 done();
             });
-    });
+    }).timeout(20000);
 });

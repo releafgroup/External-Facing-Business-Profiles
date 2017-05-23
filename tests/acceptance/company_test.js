@@ -25,5 +25,5 @@ describe('Company', function () {
                 res.body.status.should.equal('success');
                 done();
             });
-    })
+    });
 });
