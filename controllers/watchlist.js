@@ -52,15 +52,17 @@ module.exports = {
         });
     },
     remove: (req, res) => {
-        let id = req.params.id;
-        WatchedCompany.findByIdAndRemove(id).then((status) => {
-            if (!status) {
-                return jsendResponse.sendError("Watched company does not exists", 404, res);
-            }
-            return jsendResponse.sendSuccess(true, res);
-        }).catch((err) => {
-            return jsendResponse.sendError(err.message, 500, res);
-        });
+        let company_id = req.params.id;
+        let investor_id = req.params.investorId;
+        WatchedCompany.findOneAndRemove(
+            {'investor_id': investor_id,'company_id': company_id}).then((status)=>{
+                if(!status){
+                    return jsendResponse.sendError(err.message,500,res);
+                }
+                return jsendResponse.sendSuccess(true, res);
+            }).catch((err)=>{
+                return jsendResponse.sendError(err.message,500,res);
+            });
     },
     getAll: (req, res) => {
         let size = req.query.size || config.QUERY_LIMIT;

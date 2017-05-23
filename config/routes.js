@@ -55,6 +55,6 @@ router.put('/saved-searches', savedSearchController.edit);
  */
 router.post('/investors/:investorId/watched-companies', watchlistController.add);
 router.get('/investors/:investorId/watched-companies', watchlistController.getAll);
-router.delete('/investors/watched-companies/:id', watchlistController.remove);
+router.delete('/investors/:investorId/watched-companies/:id', watchlistController.remove);
 
 module.exports = router;
