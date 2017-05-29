@@ -6,7 +6,8 @@ module.exports = function () {
     /**
      * Connect to MongoDB.
      */
-    mongoose.Promise = global.Promise;
+    // Use bluebird promise
+    mongoose.Promise = require('bluebird');
     if (process.env.TEST) {
         mongoose.connect(config.database.MONGODB_TEST_URI, () => {
             /* Drop the DB */
