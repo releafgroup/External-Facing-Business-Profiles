@@ -9,8 +9,10 @@ module.exports = {
         var companies = [];
         var start_index = Number(requestParams.start_index) || 0;
         var limit = Number(requestParams.limit) || 6;
+        var end = start_index + limit;
+        var end_index = 0;
         SubFactor.find().then((subFactors) => {
-            Company.find().sort({r_score : 1}).skip(start_index).limit(limit).then((companyInputs) => {
+            Company.find().then((companyInputs) => {
                 for (var i = 0; i < companyInputs.length; i++) {
                     var companySubFactors = companyInputs[i].toObject();
 
@@ -40,7 +42,8 @@ module.exports = {
                 companies.sort(function (a, b) {
                     return parseFloat(b.r_score) - parseFloat(a.r_score);
                 });
-
+                end_index = (end < companies.length) ? end : companies.length;
+				companies = (companies.length > 1) ? companies.slice(start_index, end_index) : companies;
                 return jsendRepsonse.sendSuccess(companies, res);
             });
         });
