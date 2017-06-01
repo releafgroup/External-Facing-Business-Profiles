@@ -12,7 +12,7 @@ module.exports = {
 		var end = start_index + limit;
         var end_index = 0;
         
-         SubFactor.find().then((subFactors) => {
+          SubFactor.find().then((subFactors) => {
             Company.find().then((companyInputs) => {
                 for (var i = 0; i < companyInputs.length; i++) {
                     var companySubFactors = companyInputs[i].toObject();
@@ -47,7 +47,8 @@ module.exports = {
 				companies = (companies.length > 1) ? companies.slice(start_index, end_index) : companies;
                 return jsendRepsonse.sendSuccess(companies, res);
             });
-        });,
+        });
+    },
 
     get: (req, res) => {
         if (!req.params.id) {
