@@ -34,7 +34,7 @@ router.get('/factors', factorController.getAll);
 router.get('/factors/:factor/queries', factorController.getFactorQueries);
 router.get('/factors/queries/:id', factorController.getFactorQuery);
 router.post('/factors/queries/:id/email/send', factorController.sendQueryEmail);
-router.get('/factors/overview', factorController.rFactor);
+router.get('/factors/overview', factorController.factorAverage);
 
 /**
  * Companies Routes
