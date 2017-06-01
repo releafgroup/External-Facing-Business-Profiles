@@ -12,6 +12,13 @@ module.exports = {
     getAll: (req, res) => {
         let requestParams = req.query;
         let companies = [];
+
+        // Count Only
+        if (req.query.count_only) {
+            Company.count().then((count) => {
+                return jsendResponse.sendSuccess(count, res);
+            });
+        }
         SubFactor.find().then((subFactors) => {
             Company.find().then((companyInputs) => {
                 for (let i = 0; i < companyInputs.length; i++) {
