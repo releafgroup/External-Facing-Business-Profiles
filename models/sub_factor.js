@@ -1,7 +1,7 @@
 const mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
-var SubFactorSchema = new Schema({
+let SubFactorSchema = new Schema({
     "sub_factor": {type: String, required: true},
     "sub_factor_label": {type: String, required: true},
     "factor": {type: String, required: true},

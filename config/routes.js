@@ -11,6 +11,7 @@ const companyController = require('../controllers/company');
 const currencyController = require('../controllers/currency');
 const savedSearchController = require('../controllers/saved_search');
 const watchlistController = require('../controllers/watchlist');
+const investorController = require('../controllers/investor');
 
 /**
  * Home routes
@@ -62,5 +63,11 @@ router.delete('/investors/:investorId/watched-companies/:id', watchlistControlle
  * Currency Routes
  */
 router.get('/currencies/:from/:value', currencyController.convertMoney);
+
+/**
+ * Preferences Routes
+ */
+router.put('/investors/:investorId/preferences', investorController.savePreference);
+router.get('/investors/:investorId/preferences', investorController.getPreference);
 
 module.exports = router;
