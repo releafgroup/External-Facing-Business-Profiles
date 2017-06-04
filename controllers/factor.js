@@ -74,40 +74,42 @@ module.exports = {
             }
         });
     },
-
-    rFactor: (req, res) => {
-
+    factorAverage: (req, res) => {
         SubFactor.find().distinct('factor').then((factors) => {
             let factorString = "";
+            let scores = {};
+
+            /**
+             * 1. Build factors string for selection
+             * 2. Initialize scores object
+             */
             factors.forEach((factor) => {
-                factorString += factor += " "
+                const currentFactor = factor;
+                factorString += factor += " ";
+                scores[currentFactor] = 0;
             });
+            let size = 0;
             Company.find().select(factorString).then((businessItems) => {
-                let scores = {};
                 businessItems.forEach((businessItem) => {
                     businessItem = businessItem.toObject();
-                    factors.forEach((factor) => {
-                        let currentFactor = factor;
-                        if (businessItem.hasOwnProperty(currentFactor)) {
-                            let currentScore = businessItem[currentFactor];
-                            if (scores.hasOwnProperty(currentFactor)) {
-                                scores[currentFactor] += currentScore;
-                            } else {
-                                scores[currentFactor] = currentScore;
+                    /**
+                     * If company has all factors
+                     * Adding 1 caters for company _id property
+                     */
+                    if (Object.keys(businessItem).length === (factors.length + 1)) {
+                        size++;
+                        factors.forEach((factor) => {
+                            const currentFactor = factor;
+                            if (businessItem.hasOwnProperty(currentFactor)) {
+                                scores[factor] += businessItem[currentFactor];
                             }
-                        } else {
-                            scores[currentFactor] = 0;
-                        }
-                    });
+                        });
+                    }
                 });
-
-                let size = businessItems.length;
-
-                for (var key in scores) {
+                for (let key in scores) {
                     scores[key] /= size;
                     scores[key] = Math.round(scores[key]);
                 }
-
                 jsendResponse.sendSuccess(scores, res);
             });
         });
