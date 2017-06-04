@@ -7,6 +7,7 @@ const URL = config.tests.TEST_URL;
 describe('Factors', function () {
     it('Test Get Factors', (done) => {
         request(URL).get('/factors')
+            .set('x-access-token', config.ADMIN_SECRET_KEY)
             .expect(200)
             .end(function (err, res) {
                 res.body.status.should.equal('success');
