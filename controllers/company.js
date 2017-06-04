@@ -19,6 +19,8 @@ module.exports = {
                 return jsendResponse.sendSuccess(count, res);
             });
         }
+
+        let startIndex = Number(requestParams.start_index) || 0;
         SubFactor.find().then((subFactors) => {
             Company.find().then((companyInputs) => {
                 for (let i = 0; i < companyInputs.length; i++) {
@@ -37,7 +39,7 @@ module.exports = {
                             rScore += weight * weightedScore;
                             companySubFactors[subFactor.sub_factor].score_rating = scoreRating;
 
-                            if (typeof stats[subFactor.factor] == 'undefined') {
+                            if (typeof stats[subFactor.factor] === 'undefined') {
                                 stats[subFactor.factor] = 0;
                             }
 
@@ -54,7 +56,7 @@ module.exports = {
                 });
 
                 let limit = requestParams.limit || ((companies.length > 6) ? 6 : companies.length);
-                companies = (companies.length > 1) ? companies.slice(0, limit) : companies;
+                companies = (companies.length > 1) ? companies.slice(startIndex, startIndex + limit) : companies;
                 return jsendResponse.sendSuccess(companies, res);
             });
         });
