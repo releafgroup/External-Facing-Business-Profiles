@@ -55,7 +55,7 @@ module.exports = {
         let company_id = req.params.id;
         let investor_id = req.params.investorId;
         WatchedCompany.findOneAndRemove(
-            {'investor_id': investor_id, 'company_id': company_id}).then((status) => {
+            {'investor_id': investor_id, 'company_id': company_id}).then((status, err) => {
             if (!status) {
                 return jsendResponse.sendError(err.message, 500, res);
             }
