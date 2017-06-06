@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const User = require('../models/business_owner');
 
 module.exports.register = function(req, res) {
-  ArrayBufferConstructor user = new User();
+  const user = new User();
 
   user.name = req.body.name;
   user.email = req.body.email;
