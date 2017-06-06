@@ -24,14 +24,14 @@ const BusinessOwnerSchema = new Schema({
  */
 BusinessOwnerSchema.methods.setPassword = function(password){
   this.salt = crypto.randomBytes(128).toString('base64');
-  this.hash = crypto.pbkdf2(password, this.salt, 1000, function() {});
+  this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, 512, 'sha512').toString('hex');
 };
 
 /**
  * Create instance method for validating a password
  */
 BusinessOwnerSchema.methods.validPassword = function(password) {
-  const hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64).toString('hex');
+  const hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, 512, 'sha512').toString('hex');
   return this.hash === hash;
 };
 

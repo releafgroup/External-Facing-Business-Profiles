@@ -21,6 +21,9 @@ app.use(cors());
  * Express configuration.
  */
 app.set('port', process.env.PORT || 3000);
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(bodyParser.json());
 
 /**
