@@ -31,18 +31,19 @@ app.use('/currencies/?*', requestAuth);
 
 
 /**
+ * Load routes
+ */
+app.use('/', require('./config/routes'));
+
+
+/**
  * Configure MongoDB connection
  */
 require('./config/db')();
 
-// Configure and initialize Passport
+// Configure Passport
 require('./config/passport');
 app.use(passport.initialize());
-
-/**
- * Load routes
- */
-app.use('/', require('./config/routes'));
 
 /**
  * Start Express server.

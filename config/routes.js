@@ -12,6 +12,7 @@ const currencyController = require('../controllers/currency');
 const savedSearchController = require('../controllers/saved_search');
 const watchlistController = require('../controllers/watchlist');
 const investorController = require('../controllers/investor');
+const businessOwnerController = require('../controllers/authentication');
 
 /**
  * Home routes
@@ -70,4 +71,7 @@ router.get('/currencies/:from/:value', currencyController.convertMoney);
 router.put('/investors/:investorId/preferences', investorController.savePreference);
 router.get('/investors/:investorId/preferences', investorController.getPreference);
 
+
+router.post('/business-register', businessOwnerController.register);
+router.post('/business-login', businessOwnerController.login);
 module.exports = router;
