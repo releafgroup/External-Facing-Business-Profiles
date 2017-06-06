@@ -23,8 +23,8 @@ const BusinessOwnerSchema = new Schema({
  * Create instance method for hashing a password
  */
 BusinessOwnerSchema.methods.setPassword = function(password){
-  this.salt = crypto.randomBytes(16).toString('hex');
-  this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64).toString('hex');
+  this.salt = crypto.randomBytes(128).toString('base64');
+  this.hash = crypto.pbkdf2(password, this.salt, 1000, function() {});
 };
 
 /**

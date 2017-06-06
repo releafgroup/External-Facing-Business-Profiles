@@ -1,7 +1,7 @@
 const passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
     mongoose = require('mongoose'),
-    BusinessOwner = mongoose.model('BusinessOwner');
+    User = require('../models/business_owner');
 
 
 // Serialize sessions
@@ -11,7 +11,7 @@ passport.serializeUser((user, done) => {
 
 // Deserialize sessions
 passport.deserializeUser((id, done) => {
-    BusinessOwner.findOne({
+    User.findOne({
         _id: id
     }, '-salt -hash', (err, user) => {
         done(err, user);
@@ -22,7 +22,7 @@ passport.use(new LocalStrategy({
     usernameField: 'email'
   },
   (username, password, done) => {
-    BusinessOwner.findOne({ email: username }, function (err, user) {
+    User.findOne({ email: username }, function (err, user) {
       if (err) { return done(err); }
       // Return if user not found in database
       if (!user) {

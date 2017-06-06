@@ -23,12 +23,19 @@ app.use(cors());
 app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.json());
 
+/**
+ * Configure MongoDB connection
+ */
+require('./config/db')();
+
 app.use('/companies/?*', requestAuth);
 app.use('/saved-search/?*', requestAuth);
 app.use('/factors/?*', requestAuth);
 app.use('/investors/?*', requestAuth);
 app.use('/currencies/?*', requestAuth);
 
+require('./config/passport');
+app.use(passport.initialize());
 
 /**
  * Load routes
@@ -36,14 +43,9 @@ app.use('/currencies/?*', requestAuth);
 app.use('/', require('./config/routes'));
 
 
-/**
- * Configure MongoDB connection
- */
-require('./config/db')();
+
 
 // Configure Passport
-require('./config/passport');
-app.use(passport.initialize());
 
 /**
  * Start Express server.
