@@ -3,8 +3,8 @@
  */
 const express = require('express');
 const bodyParser = require('body-parser');
-const chalk     = require('chalk');
-const cors      = require('cors');
+const chalk = require('chalk');
+const cors = require('cors');
 const jsendRepsonse = require('./helpers/jsend_response');
 const app = express();
 const config = require('./config/config');
@@ -22,8 +22,11 @@ app.use(cors());
 app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.json());
 
-app.use('/companies/?*',requestAuth);
+app.use('/companies/?*', requestAuth);
 app.use('/saved-search/?*', requestAuth);
+app.use('/factors/?*', requestAuth);
+app.use('/investors/?*', requestAuth);
+app.use('/currencies/?*', requestAuth);
 
 
 /**
