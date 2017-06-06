@@ -8,6 +8,7 @@ const cors = require('cors');
 const jsendRepsonse = require('./helpers/jsend_response');
 const app = express();
 const config = require('./config/config');
+const passport = require('passport')
 
 const requestAuth = require('./helpers/request_auth');
 
@@ -30,15 +31,18 @@ app.use('/currencies/?*', requestAuth);
 
 
 /**
- * Load routes
- */
-app.use('/', require('./config/routes'));
-
-
-/**
  * Configure MongoDB connection
  */
 require('./config/db')();
+
+// Configure and initialize Passport
+require('./config/passport');
+app.use(passport.initialize());
+
+/**
+ * Load routes
+ */
+app.use('/', require('./config/routes'));
 
 /**
  * Start Express server.

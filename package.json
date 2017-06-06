@@ -34,6 +34,8 @@
     "newrelic": "^1.33.0",
     "nodemailer": "^2.5.0",
     "nodemailer-smtp-transport": "^2.6.0",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
     "sequelize": "^3.30.0",
     "y-currency": "^1.0.3"
   },
