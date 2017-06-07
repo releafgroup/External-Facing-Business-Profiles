@@ -1,6 +1,7 @@
 const passport = require('passport');
 const mongoose = require('mongoose');
 const User = require('../models/business_owner');
+const jsendResponse = require('../helpers/jsend_response');
 
 module.exports.register = function (req, res) {
 
@@ -35,11 +36,17 @@ module.exports.login = (req, res) => {
 
         // If a user is found
         if (user) {
-            token = user.generateJwt();
-            res.status(200);
-            res.json({
-                "token": token
-            });
+            if(user.isApproved) {
+                token = user.generateJwt();
+                res.status(200);
+                res.json({
+                    "token": token
+                });
+            } else {
+                res.status(400).json({
+                    "message": "You account is yet to be approved"
+                })
+            }
         } else {
             // If user is not found
             res.status(401).json(info);
@@ -69,7 +76,19 @@ module.exports.approve = (req, res) => {
         }
 
         if (user) {
-            res.status(200).json({user});
+            // var approvedUser = {}
+            // approvedUser.isApproved = true;
+            user.isApproved = true;
+            user.save().then(function() {
+                // Todo: send a mail after approval
+                res.status(200);
+                return res.json({
+                    "user": user
+                })
+            }, function(err) {
+                return res.status(400).json(err);
+            });
+            // res.status(200).json({user});
         }
     })
 
