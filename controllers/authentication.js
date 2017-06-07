@@ -43,13 +43,13 @@ module.exports.login = (req, res) => {
                     "token": token
                 });
             } else {
-                res.status(400).json({
+                res.status(401).json({
                     "message": "You account is yet to be approved"
                 })
             }
         } else {
             // If user is not found
-            res.status(401).json(info);
+            res.status(404).json(info);
         }
     })(req, res);
 
