@@ -47,3 +47,30 @@ module.exports.login = (req, res) => {
     })(req, res);
 
 };
+
+module.exports.findAll = (req, res) => {
+    User.find({}, (err, users) => {
+        if (err) {
+            res.status(404).json(err);
+            return;
+        }
+
+        if (users) res.status(200).json({users});
+    })
+};
+
+module.exports.approve = (req, res) => {
+    const id = req.params.id;
+
+    User.findById({_id: id}, (err, user) => {
+        if (err) {
+            res.status(404).json(err);
+            return;
+        }
+
+        if (user) {
+            res.status(200).json({user});
+        }
+    })
+
+};

@@ -15,6 +15,10 @@ const BusinessOwnerSchema = new Schema({
         type: String,
         required: true
     },
+    isApproved: {
+        type: Boolean,
+        default: false
+    },
     hash: String,
     salt: String
 });
