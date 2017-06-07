@@ -1,7 +1,7 @@
 const request = require('supertest');
 const should = require('should');
 const config = require('../../config/config');
-// const utils = require('./utils');
+const User = require('../../models/business_owner');
 
 const URL = config.tests.TEST_URL;
 
@@ -16,37 +16,43 @@ describe('Business Owner', function () {
         name: 'Tayo Jax',
         email: 'tayo@example.com',
         password: 'password'
-    }
+    };
     it('registers business owners', (done) => {
 
-        request(URL).post('/business-register')
+        request(URL)
+            .post('/business-register')
             .set('Content-Type', 'application/json')
             .send(user1)
             .expect(200)
             .end(function (err, res) {
                 res.status.should.equal(200);
-                request(URL).post('/business-register')
-                    .set('Content-Type', 'application/json')
-                    .send(user2)
-                    .expect(200)
-                    .end(function (err, res) {
-                        res.status.should.equal(200);
-                        done();
-                    });
                 // done();
+            });
+        request(URL)
+            .post('/business-register')
+            .set('Content-Type', 'application/json')
+            .send(user2)
+            .expect(200)
+            .end(function (err, res) {
+                res.status.should.equal(200);
+                done();
             });
         
     });
 
     it('approves business owners', (done) => {
-        request(URL).post('/approve-business-owner/5938682270d3d5af878254c9')
-           .set('x-access-token', config.ADMIN_SECRET_KEY)
+        User.find({email: 'deji@example.com'}, function(err, user){
+            request(URL)
+            .post('/approve-business-owner/' + user[0]._id)
+            .set('x-access-token', config.ADMIN_SECRET_KEY)
             .set('Content-Type', 'application/json')
             .expect(200)
             .end(function (err, res) {
                 res.status.should.equal(200);
                 done();
             });
+        })
+        
     });
 
     it('should login approved business owners', (done) => {
@@ -54,7 +60,8 @@ describe('Business Owner', function () {
             email: 'deji@example.com',
             password: 'password'
         }
-        request(URL).post('/business-login')
+        request(URL)
+            .post('/business-login')
             .set('Content-Type', 'application/json')
             .send(body)
             .expect(200)
@@ -69,7 +76,8 @@ describe('Business Owner', function () {
             email: 'tayo@example.com',
             password: 'password'
         }
-        request(URL).post('/business-login')
+        request(URL)
+            .post('/business-login')
             .set('Content-Type', 'application/json')
             .send(body)
             .expect(401)
@@ -84,7 +92,8 @@ describe('Business Owner', function () {
             email: 'tayo@mail.com',
             password: 'password'
         }
-        request(URL).post('/business-login')
+        request(URL)
+            .post('/business-login')
             .set('Content-Type', 'application/json')
             .send(body)
             .expect(404)
@@ -95,7 +104,8 @@ describe('Business Owner', function () {
     });
 
     it('Get all business owners', (done) => {
-        request(URL).get('/get-business-owners')
+        request(URL)
+            .get('/get-business-owners')
             .set('x-access-token', config.ADMIN_SECRET_KEY)
             .expect(200)
             .end(function (err, res) {       
@@ -105,7 +115,8 @@ describe('Business Owner', function () {
     });
 
     it('should not get user without admin access', (done) => {
-        request(URL).get('/get-business-owners')
+        request(URL)
+            .get('/get-business-owners')
             .expect(400)
             .end(function (err, res) {       
                 res.status.should.equal(400);
