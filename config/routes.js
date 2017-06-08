@@ -73,8 +73,8 @@ router.put('/investors/:investorId/preferences', investorController.savePreferen
 router.get('/investors/:investorId/preferences', investorController.getPreference);
 
 
-router.post('/business-register', businessOwnerController.register);
-router.post('/business-login', businessOwnerController.login);
-router.get('/get-business-owners', requestAuth, businessOwnerController.findAll);
-router.post('/approve-business-owner/:id', requestAuth, businessOwnerController.approve);
+router.post('/businesses', businessOwnerController.register);
+router.post('/businesses/sessions', businessOwnerController.login);
+router.get('/businesses', requestAuth, businessOwnerController.findAll);
+router.post('/businesses/:id/approval', requestAuth, businessOwnerController.approve);
 module.exports = router;

@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 const User = require('../models/business_owner');
 const jsendResponse = require('../helpers/jsend_response');
 
-module.exports.register = function (req, res) {
+module.exports.register = (req, res) => {
 
-    var user = new User();
+    const user = new User();
 
     user.name = req.body.name;
     user.email = req.body.email;
@@ -13,12 +13,10 @@ module.exports.register = function (req, res) {
     user.setPassword(req.body.password);
 
     user.save(function (err) {
-        var token;
-        token = user.generateJwt();
-        res.status(200);
-        res.json({
-            "token": token
-        });
+        if (err) return jsendResponse.sendError('Email already exist', 400, res);
+        var data = {}
+        data.token = user.generateJwt();
+        return jsendResponse.sendSuccess(data, res);
     });
 };
 
@@ -26,30 +24,28 @@ module.exports.register = function (req, res) {
 module.exports.login = (req, res) => {
 
     passport.authenticate('local', (err, user, info) => {
-        var token;
 
         // If Passport throws/catches an error
         if (err) {
-            res.status(404).json(err);
-            return;
+            return jsendResponse.sendError('Something went wrong', 401, info);
         }
 
         // If a user is found
         if (user) {
             if(user.isApproved) {
-                token = user.generateJwt();
-                res.status(200);
-                res.json({
-                    "token": token
-                });
+                const data = {
+                    token: user.generateJwt(),
+                    id: user._id,
+                    name: user.name,
+                    email: user.email
+                };
+                return jsendResponse.sendSuccess(data, res)
             } else {
-                res.status(401).json({
-                    "message": "You account is yet to be approved"
-                })
+                return jsendResponse.sendFail('Account needs approval', 401, res);
             }
         } else {
             // If user is not found
-            res.status(404).json(info);
+            return jsendResponse.sendError('User not found', 404, res);
         }
     })(req, res);
 
@@ -58,11 +54,10 @@ module.exports.login = (req, res) => {
 module.exports.findAll = (req, res) => {
     User.find({}, (err, users) => {
         if (err) {
-            res.status(404).json(err);
-            return;
+            return jsendResponse.sendError('Something went wrong', 404, res)
         }
 
-        if (users) res.status(200).json({users});
+        if (users) return jsendResponse.sendSuccess(users, res);
     })
 };
 
@@ -71,25 +66,22 @@ module.exports.approve = (req, res) => {
 
     User.findById({_id: id}, (err, user) => {
         if (err) {
-            res.status(404).json(err);
-            return;
+            return jsendResponse.sendError('Something went wrong', 400, res)
         }
 
         if (user) {
-            // var approvedUser = {}
-            // approvedUser.isApproved = true;
+            if(user.isApproved) return jsendResponse.sendError('User is already approved', 400, res);
+
             user.isApproved = true;
             user.save().then(function() {
                 // Todo: send a mail after approval
-                res.status(200);
-                return res.json({
-                    "user": user
-                })
+               
+                return jsendResponse.sendSuccess(user, res);
             }, function(err) {
-                return res.status(400).json(err);
+                return jsendResponse.sendError('Something went wrong', 400, res);
             });
             // res.status(200).json({user});
-        }
+        } else return jsendResponse.sendError('User not found', 404, res);
     })
 
 };
