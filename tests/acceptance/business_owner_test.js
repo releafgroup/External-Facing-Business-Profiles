@@ -8,8 +8,8 @@ const URL = config.tests.TEST_URL;
 describe('Business Owner', function () {
 
     const user1 = {
-        name: 'Chun li',
-        email: 'chun@example.com',
+        name: 'ken chan',
+        email: 'ken@example.com',
         password: 'password'
     };
     it('registers business owners', (done) => {
@@ -41,7 +41,7 @@ describe('Business Owner', function () {
     });
 
     it('approves business owners', (done) => {
-        User.find({email: 'chun@example.com'}, function(err, user){
+        User.find({email: 'ken@example.com'}, function(err, user){
             request(URL)
             .post('/businesses/' + user[0]._id + '/approval')
             .set('x-access-token', config.ADMIN_SECRET_KEY)
@@ -56,7 +56,7 @@ describe('Business Owner', function () {
     });
 
     it('approve should throw error if business owners is already approved', (done) => {
-        User.find({email: 'chun@example.com'}, function(err, user){
+        User.find({email: 'ken@example.com'}, function(err, user){
             request(URL)
             .post('/businesses/' + user[0]._id + '/approval')
             .set('x-access-token', config.ADMIN_SECRET_KEY)
@@ -71,7 +71,7 @@ describe('Business Owner', function () {
 
     it('should login approved business owners' , (done) => {
         const body = {
-            email: 'chun@example.com',
+            email: 'ken@example.com',
             password: 'password'
         }
         request(URL)
