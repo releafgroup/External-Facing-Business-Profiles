@@ -2,6 +2,7 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const User = require('../models/business_owner');
 const jsendResponse = require('../helpers/jsend_response');
+const nodeMailer = require('../libs/node_mailer');
 
 module.exports.register = (req, res) => {
 
@@ -75,6 +76,17 @@ module.exports.approve = (req, res) => {
             user.isApproved = true;
             user.save().then(function() {
                 // Todo: send a mail after approval
+                const subject = 'Account approval';
+                const body = `Hello ${user.name}, \n This is to inform you that your account has been approved. You can now login to your account to view our Market Tool.\n The platform can be accessed at https://ikeora.releaf.ng/#/business-login`
+
+                nodeMailer.send(
+                    subject,
+                    body,
+                    user.email,
+                    [],
+                    ['releaffounders@mit.edu'],
+                    'info@releaf.ng'
+                );
                
                 return jsendResponse.sendSuccess(user, res);
             }, function(err) {
