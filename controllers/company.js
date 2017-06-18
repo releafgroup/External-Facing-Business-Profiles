@@ -79,7 +79,7 @@ module.exports = {
                 totalSubFactors = subFactors.length;
                 subFactors.forEach((subFactor) => {
                     let current_score = Number(company.hasOwnProperty(subFactor.sub_factor));
-                    if (current_score != -1) {
+                    if (current_score !== -1) {
                         companyAvailableSubFactors += current_score;
                     }
                 });
@@ -91,14 +91,9 @@ module.exports = {
 
     search: (req, res) => {
         let query = req.query;
-        let sort = {};
-        let sortKey = query.sort_by || false;
-        if (sortKey) {
-            sort[sortKey] = -1;
-        }
 
-        let size = query.size || config.QUERY_LIMIT;
-        let page = query.page || 1;
+        let size = Number(query.size) || config.QUERY_LIMIT;
+        let page = Number(query.page) || 1;
 
         let userQuery = {};
 
@@ -106,11 +101,11 @@ module.exports = {
 
             for (let key in query) {
 
-                if (["size", "sort_by", "page", "token"].indexOf(key) >= 0) {
+                if (["size", "page", "token"].indexOf(key) >= 0) {
                     continue;
                 }
 
-                if (query.hasOwnProperty(key) && factors.indexOf(key) == -1) {
+                if (query.hasOwnProperty(key) && factors.indexOf(key) === -1) {
                     // Other business property
                     let valueKey = query[key];
 
@@ -154,21 +149,48 @@ module.exports = {
                 }
             }
 
-            Company.count(userQuery, function (err, total) {
-                Company.find(userQuery).sort(sort).limit(parseInt(size)).skip((page - 1) * size).exec(function (err, company) {
-                    if (!company) {
-                        return jsendResponse.sendError('Error occured', 400, res);
-                    }
+            Company.find(userQuery).exec(function (err, companies) {
+                if (!companies) {
+                    return jsendResponse.sendError('Error occurred', 400, res);
+                }
 
-                    let result = {
-                        result: company,
-                        total: total,
-                        page: page,
-                        size: size,
-                    };
-                    return jsendResponse.sendSuccess(result, res);
-
+                // Calculate R factors
+                let companiesWithRFactors = [];
+                companies.forEach(function (company) {
+                    company = company.toObject();
+                    let rFactor = 0;
+                    const weight = 1 / factors.length;
+                    factors.forEach(function (factor) {
+                        if (company.hasOwnProperty(factor)) {
+                            rFactor += company[factor] * weight;
+                        }
+                    });
+                    company.r_factor = Math.floor(rFactor);
+                    companiesWithRFactors.push(company);
                 });
+
+                // Sorting
+                companiesWithRFactors.sort(function (a, b) {
+                    // Sort by alphabetical order if rfactor is the same
+                    if (parseFloat(b.r_factor) === parseFloat(a.r_factor)) {
+                        return b.business_name > a.business_name ? -1 : 1;
+                    }
+                    // Default sort by rfactor
+                    return parseFloat(b.r_factor) - parseFloat(a.r_factor);
+                });
+
+                // Return actual result slice
+                const startIndex = (page - 1) * size;
+                const endIndex = startIndex + size;
+                companiesWithRFactors = (companiesWithRFactors.length > 1) ? companiesWithRFactors.slice(startIndex, endIndex) : companiesWithRFactors;
+
+                let result = {
+                    result: companiesWithRFactors,
+                    total: companies.length,
+                    page: page,
+                    size: size,
+                };
+                return jsendResponse.sendSuccess(result, res);
             });
         });
 
