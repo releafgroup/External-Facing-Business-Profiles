@@ -79,7 +79,7 @@ module.exports = {
                 totalSubFactors = subFactors.length;
                 subFactors.forEach((subFactor) => {
                     let current_score = Number(company.hasOwnProperty(subFactor.sub_factor));
-                    if (current_score != -1) {
+                    if (current_score !== -1) {
                         companyAvailableSubFactors += current_score;
                     }
                 });
@@ -91,14 +91,15 @@ module.exports = {
 
     search: (req, res) => {
         let query = req.query;
+
         let sort = {};
         let sortKey = query.sort_by || false;
         if (sortKey) {
             sort[sortKey] = -1;
         }
 
-        let size = query.size || config.QUERY_LIMIT;
-        let page = query.page || 1;
+        let size = Number(query.size) || config.QUERY_LIMIT;
+        let page = Number(query.page) || 1;
 
         let userQuery = {};
 
@@ -110,7 +111,7 @@ module.exports = {
                     continue;
                 }
 
-                if (query.hasOwnProperty(key) && factors.indexOf(key) == -1) {
+                if (query.hasOwnProperty(key) && factors.indexOf(key) === -1) {
                     // Other business property
                     let valueKey = query[key];
 
