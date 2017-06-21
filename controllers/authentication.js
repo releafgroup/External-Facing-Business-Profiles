@@ -58,38 +58,3 @@ module.exports.findAll = (req, res) => {
     })
 };
 
-module.exports.approve = (req, res) => {
-    const id = req.params.id;
-
-    User.findById({_id: id}, (err, user) => {
-        if (err) {
-            return jsendResponse.sendError('Something went wrong', 400, res)
-        }
-
-        if (user) {
-            if(user.isApproved) return jsendResponse.sendError('User is already approved', 400, res);
-
-            user.isApproved = true;
-            user.save().then(function() {
-                // Todo: send a mail after approval
-                const subject = 'Account approval';
-                const body = `Hello ${user.name}, \n This is to inform you that your account has been approved. You can now login to your account to view our Market Tool.\n The platform can be accessed at https://ikeora.releaf.ng/#/business-login`
-
-                nodeMailer.send(
-                    subject,
-                    body,
-                    user.email,
-                    [],
-                    ['releaffounders@mit.edu'],
-                    'info@releaf.ng'
-                );
-               
-                return jsendResponse.sendSuccess(user, res);
-            }, function(err) {
-                return jsendResponse.sendError('Something went wrong', 400, res);
-            });
-            // res.status(200).json({user});
-        } else return jsendResponse.sendError('User not found', 404, res);
-    })
-
-};
