@@ -33,17 +33,13 @@ module.exports.login = (req, res) => {
 
         // If a user is found
         if (user) {
-            if(user.isApproved) {
-                const data = {
-                    token: user.generateJwt(),
-                    id: user._id,
-                    name: user.name,
-                    email: user.email
-                };
-                return jsendResponse.sendSuccess(data, res)
-            } else {
-                return jsendResponse.sendFail('Account needs approval', 401, res);
-            }
+            const data = {
+                token: user.generateJwt(),
+                id: user._id,
+                name: user.name,
+                email: user.email
+            };
+            return jsendResponse.sendSuccess(data, res)
         } else {
             // If user is not found
             return jsendResponse.sendError('User not found', 404, res);
