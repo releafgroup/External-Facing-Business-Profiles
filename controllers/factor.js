@@ -88,30 +88,7 @@ module.exports = {
                 factorString += factor += " ";
                 scores[currentFactor] = 0;
             });
-            let size = 0;
-            Company.find().select(factorString).then((businessItems) => {
-                businessItems.forEach((businessItem) => {
-                    businessItem = businessItem.toObject();
-                    /**
-                     * If company has all factors
-                     * Adding 1 caters for company _id property
-                     */
-                    if (Object.keys(businessItem).length === (factors.length + 1)) {
-                        size++;
-                        factors.forEach((factor) => {
-                            const currentFactor = factor;
-                            if (businessItem.hasOwnProperty(currentFactor)) {
-                                scores[factor] += businessItem[currentFactor];
-                            }
-                        });
-                    }
-                });
-                for (let key in scores) {
-                    scores[key] /= size;
-                    scores[key] = Math.round(scores[key]);
-                }
-                jsendResponse.sendSuccess(scores, res);
-            });
+            jsendResponse.sendSuccess(scores, res);
         });
 
 
