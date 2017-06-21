@@ -40,36 +40,7 @@ describe('Business Owner', function () {
         
     });
 
-    it('approves business owners', (done) => {
-        User.find({email: 'ken@example.com'}, function(err, user){
-            request(URL)
-            .post('/businesses/' + user[0]._id + '/approval')
-            .set('x-access-token', config.ADMIN_SECRET_KEY)
-            .set('Content-Type', 'application/json')
-            .expect(200)
-            .end(function (err, res) {
-                res.body.status.should.equal('success');
-                done();
-            });
-        })
-        
-    });
-
-    it('approve should throw error if business owners is already approved', (done) => {
-        User.find({email: 'ken@example.com'}, function(err, user){
-            request(URL)
-            .post('/businesses/' + user[0]._id + '/approval')
-            .set('x-access-token', config.ADMIN_SECRET_KEY)
-            .set('Content-Type', 'application/json')
-            .expect(400)
-            .end(function (err, res) {
-                res.body.status.should.equal('error');
-                done();
-            });
-        }) 
-    });
-
-    it('should login approved business owners' , (done) => {
+    it('should login business owners' , (done) => {
         const body = {
             email: 'ken@example.com',
             password: 'password'
