@@ -8,8 +8,8 @@ const URL = config.tests.TEST_URL;
 describe('Business Owner', function () {
 
     const user1 = {
-        company_name: 'ken chan ltd',
-        email: 'ken@example.com',
+        company_name: 'kenny chan ltd',
+        email: 'kenny@example.com',
         password: 'password'
     };
     it('registers business owners', (done) => {
@@ -42,7 +42,7 @@ describe('Business Owner', function () {
 
     it('should login business owners' , (done) => {
         const body = {
-            email: 'ken@example.com',
+            email: 'kenny@example.com',
             password: 'password'
         }
         request(URL)
