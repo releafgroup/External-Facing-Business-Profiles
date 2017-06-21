@@ -11,54 +11,16 @@ const requestMoreValidation = require('../validations/send_request_more_email_va
 module.exports = {
     getAll: (req, res) => {
         let requestParams = req.query;
-        let companies = [];
-
         // Count Only
         if (req.query.count_only) {
             Company.count().then((count) => {
                 return jsendResponse.sendSuccess(count, res);
             });
         }
-
+        let limit = requestParams.limit || 6;
         let startIndex = Number(requestParams.start_index) || 0;
-        SubFactor.find().then((subFactors) => {
-            Company.find().then((companyInputs) => {
-                for (let i = 0; i < companyInputs.length; i++) {
-                    let companySubFactors = companyInputs[i].toObject();
-
-                    let rScore = 0;
-                    let stats = {};
-                    for (let j = 0; j < subFactors.length; j++) {
-                        let subFactor = subFactors[j];
-                        let companySubFactor = companySubFactors[subFactor.sub_factor];
-                        const weight = Number(requestParams[subFactor.factor]) || subFactor.weight;
-                        if (companySubFactor) {
-                            const scoreRating = subFactor['score_' + companySubFactor.score + '_rating'];
-                            const weightedScore = companySubFactors[subFactor.sub_factor].weighted_score ?
-                                companySubFactors[subFactor.sub_factor].weighted_score : 0;
-                            rScore += weight * weightedScore;
-                            companySubFactors[subFactor.sub_factor].score_rating = scoreRating;
-
-                            if (typeof stats[subFactor.factor] === 'undefined') {
-                                stats[subFactor.factor] = 0;
-                            }
-
-                            stats[subFactor.factor] += companySubFactors[subFactor.sub_factor].weighted_score;
-                        }
-                    }
-                    companySubFactors.r_score = Math.floor(rScore);
-                    companySubFactors.stats = stats;
-                    companies.push(companySubFactors);
-                }
-
-                companies.sort(function (a, b) {
-                    return parseFloat(b.r_score) - parseFloat(a.r_score);
-                });
-
-                let limit = requestParams.limit || ((companies.length > 6) ? 6 : companies.length);
-                companies = (companies.length > 1) ? companies.slice(startIndex, startIndex + limit) : companies;
-                return jsendResponse.sendSuccess(companies, res);
-            });
+        Company.find().limit(limit).skip(startIndex).then((companies) => {
+            return jsendResponse.sendSuccess(companies, res);
         });
     },
 
