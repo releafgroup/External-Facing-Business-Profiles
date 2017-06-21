@@ -30,7 +30,14 @@ const BusinessOwnerSchema = new Schema({
     income_statement_url: String,
     pitch_deck_url: String,
     hash: String,
-    salt: String
+    salt: String,
+    updated: {
+		type: Date
+	},
+	created: {
+		type: Date,
+		default: Date.now
+	},
 }, {collection: 'business_owner'});
 
 /**

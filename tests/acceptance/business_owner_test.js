@@ -8,7 +8,7 @@ const URL = config.tests.TEST_URL;
 describe('Business Owner', function () {
 
     const user1 = {
-        name: 'ken chan',
+        company_name: 'ken chan ltd',
         email: 'ken@example.com',
         password: 'password'
     };
