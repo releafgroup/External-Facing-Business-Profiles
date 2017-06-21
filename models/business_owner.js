@@ -11,17 +11,27 @@ const BusinessOwnerSchema = new Schema({
         unique: true,
         required: true
     },
-    name: {
+    company_name: {
         type: String,
         required: true
     },
-    isApproved: {
-        type: Boolean,
-        default: false
-    },
+    phone_number: Number,
+    location: String,
+    company_website: String,
+    products: String,
+    consumers: String,
+    employee_number: Number,
+    sector: String,
+    ownership_type: String,
+    funding_needed: String,
+    funding_till_date: String,
+    revenue_2015: String,
+    revenue_2016: String,
+    income_statement_url: String,
+    pitch_deck_url: String,
     hash: String,
     salt: String
-});
+}, {collection: 'business_owner'});
 
 /**
  * Create instance method for hashing a password
