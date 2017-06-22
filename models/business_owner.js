@@ -20,15 +20,22 @@ const BusinessOwnerSchema = new Schema({
     company_website: String,
     products: String,
     consumers: String,
-    employee_number: Number,
+    employee_number: String,
     sector: String,
     ownership_type: String,
-    funding_needed: Number,
-    funding_till_date: Number,
-    revenue_2015: Number,
-    revenue_2016: Number,
+    funding_needed: String,
+    funding_till_date: String,
+    revenue_2016: String,
     income_statement_url: String,
     pitch_deck_url: String,
+    profile_begin: {
+        type: Boolean,
+        default: false
+    },
+     profile_finish: {
+        type: Boolean,
+        default: false
+    },
     hash: String,
     salt: String,
     updated: {
