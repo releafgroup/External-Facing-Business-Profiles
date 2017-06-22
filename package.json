@@ -19,6 +19,7 @@
   "license": "ISC",
   "homepage": "https://github.com/releafgroup/ikeora-back-end",
   "dependencies": {
+    "aws-sdk": "^2.75.0",
     "bluebird": "^3.5.0",
     "body-parser": "^1.15.2",
     "chalk": "^1.1.3",

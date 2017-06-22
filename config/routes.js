@@ -14,6 +14,7 @@ const savedSearchController = require('../controllers/saved_search');
 const watchlistController = require('../controllers/watchlist');
 const investorController = require('../controllers/investor');
 const businessOwnerController = require('../controllers/authentication');
+const fileSigning = require('../controllers/file_sign');
 
 /**
  * Home routes
@@ -72,10 +73,17 @@ router.get('/currencies/:from/:value', currencyController.convertMoney);
 router.put('/investors/:investorId/preferences', investorController.savePreference);
 router.get('/investors/:investorId/preferences', investorController.getPreference);
 
-
+/**
+ * Business Owners Routes
+ */
 router.post('/businesses', businessOwnerController.register);
 router.post('/businesses/sessions', businessOwnerController.login);
 router.get('/businesses', requestAuth, businessOwnerController.findAll);
 router.get('/businesses/:id', businessOwnerController.findOne);
 router.put('/businesses/:id', businessOwnerController.update);
+
+/**
+ * S3 File Upload Route
+ */
+router.get('/sign_s3', fileSigning.sign);
 module.exports = router;
