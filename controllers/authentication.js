@@ -59,13 +59,22 @@ module.exports.findAll = (req, res) => {
     })
 };
 
-module.exports.update = function(req, res) {
-	// Init Variables
-	const id = req.params.id;
-	// var message = null;
+module.exports.findOne = (req, res) => {
+    const id = req.params.id;
 
-	// For security measurement we remove the roles from the req.body object
-	// delete req.body.roles;
+    User.findById({_id: id}, (err, user) => {
+        if (err) {
+            return jsendResponse.sendError('Something went wrong', 400, res)
+        }
+
+        if (user) {
+            return jsendResponse.sendSuccess(user, res);
+        } else return jsendResponse.sendError('User not found', 404, res);
+    })
+}
+
+module.exports.update = (req, res) => {
+	const id = req.params.id;
 
     User.findById({_id: id}, (err, user) => {
         if (err) {
@@ -77,7 +86,7 @@ module.exports.update = function(req, res) {
             user = _.extend(user, req.body);
             user.updated = Date.now();
 
-            user.save(function(err) {
+            user.save((err) => {
                 if (err) {
                     return jsendResponse.sendError('Something went wrong', 400, res);
                 } else {
@@ -89,3 +98,4 @@ module.exports.update = function(req, res) {
     })
 
 };
+
