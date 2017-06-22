@@ -76,4 +76,5 @@ router.get('/investors/:investorId/preferences', investorController.getPreferenc
 router.post('/businesses', businessOwnerController.register);
 router.post('/businesses/sessions', businessOwnerController.login);
 router.get('/businesses', requestAuth, businessOwnerController.findAll);
+router.put('/businesses/:id', businessOwnerController.update);
 module.exports = router;

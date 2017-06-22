@@ -3,12 +3,13 @@ const mongoose = require('mongoose');
 const User = require('../models/business_owner');
 const jsendResponse = require('../helpers/jsend_response');
 const nodeMailer = require('../libs/node_mailer');
+const _ = require('lodash');
 
 module.exports.register = (req, res) => {
 
     const user = new User();
 
-    user.name = req.body.name;
+    user.company_name = req.body.company_name;
     user.email = req.body.email;
 
     user.setPassword(req.body.password);
@@ -36,7 +37,7 @@ module.exports.login = (req, res) => {
             const data = {
                 token: user.generateJwt(),
                 id: user._id,
-                name: user.name,
+                name: user.company_name,
                 email: user.email
             };
             return jsendResponse.sendSuccess(data, res)
@@ -58,3 +59,33 @@ module.exports.findAll = (req, res) => {
     })
 };
 
+module.exports.update = function(req, res) {
+	// Init Variables
+	const id = req.params.id;
+	// var message = null;
+
+	// For security measurement we remove the roles from the req.body object
+	// delete req.body.roles;
+
+    User.findById({_id: id}, (err, user) => {
+        if (err) {
+            return jsendResponse.sendError('Something went wrong', 400, res)
+        }
+
+        if (user) {
+            // Merge existing user
+            user = _.extend(user, req.body);
+            user.updated = Date.now();
+
+            user.save(function(err) {
+                if (err) {
+                    return jsendResponse.sendError('Something went wrong', 400, res);
+                } else {
+                    return jsendResponse.sendSuccess(user, res)
+                }
+            });
+        } else return jsendResponse.sendError('User not found', 404, res);
+
+    })
+
+};
