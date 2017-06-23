@@ -2,7 +2,7 @@ const aws = require('aws-sdk'),
     jsendResponse = require('../helpers/jsend_response'),
     AWS_ACCESS_KEY = process.env.AWS_ACCESS_ID,
     AWS_SECRET_KEY = process.env.AWS_ACCESS_SECRET_KEY,
-    S3_BUCKET = "ikeora"; // TODO: create s3 bucket with name ikeora
+    S3_BUCKET = process.env.S3_BUCKET; // TODO: create s3 bucket with name ikeora
 
 
 exports.sign = (req, res) => {
@@ -22,10 +22,8 @@ exports.sign = (req, res) => {
         } else {
             const return_data = {
                 signed_request: data,
-                url: 'https://' + S3_BUCKET + '.s3.amazonaws.com/' + req.query.file_name
+                url: `https://${S3_BUCKET}.s3.amazonaws.com/${s3_params.Key}`
             };
-            res.write(JSON.stringify(return_data));
-            res.end();
             return jsendResponse.sendSuccess(JSON.stringify(return_data), res);
         }
     });
