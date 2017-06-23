@@ -85,5 +85,5 @@ router.put('/businesses/:id', businessOwnerController.update);
 /**
  * S3 File Upload Route
  */
-router.get('/sign_s3', fileSigning.sign);
+router.get('/files', fileSigning.sign);
 module.exports = router;
