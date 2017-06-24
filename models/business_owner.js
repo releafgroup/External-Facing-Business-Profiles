@@ -15,7 +15,7 @@ const BusinessOwnerSchema = new Schema({
         type: String,
         required: true
     },
-    phone_number: Number,
+    phone_number: String,
     location: String,
     company_website: String,
     products: String,
@@ -28,6 +28,10 @@ const BusinessOwnerSchema = new Schema({
     revenue_2016: String,
     income_statement_url: String,
     pitch_deck_url: String,
+    pitch_deck_review: {
+        type: Boolean,
+        default: false
+    },
     profile_begin: {
         type: Boolean,
         default: false
