@@ -15,6 +15,7 @@ const watchlistController = require('../controllers/watchlist');
 const investorController = require('../controllers/investor');
 const businessOwnerController = require('../controllers/authentication');
 const fileSigning = require('../controllers/file_sign');
+const financialProjection = require('../controllers/financial_projection');
 
 /**
  * Home routes
@@ -81,6 +82,14 @@ router.post('/businesses/sessions', businessOwnerController.login);
 router.get('/businesses', requestAuth, businessOwnerController.findAll);
 router.get('/businesses/:id', businessOwnerController.findOne);
 router.put('/businesses/:id', businessOwnerController.update);
+
+/**
+ * Business Owner's Financial projection
+ */
+router.post('/businesses/:id/financials', financialProjection.create);
+router.get('/businesses/:id/financials', financialProjection.get);
+router.put('/businesses/:id/financials', financialProjection.update);
+router.delete('/businesses/:id/financials', financialProjection.remove);
 
 /**
  * S3 File Upload Route
