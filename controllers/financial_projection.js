@@ -56,7 +56,12 @@ module.exports = {
 
             if (financialData) {
                 financialData = _.extend(financialData, req.body);
-                return jsendResponse.sendSuccess(financialData, res);
+                financialData.save((err) => {
+                    if(err) return jsendResponse.sendError('Something went wrong', 400, res)
+                    else {
+                        return jsendResponse.sendSuccess(financialData, res);
+                    }
+                });
             } else {
                 return jsendResponse.sendError('Financial data not found', 404, res);
             }

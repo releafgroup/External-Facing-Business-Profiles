@@ -1,6 +1,7 @@
 const passport = require('passport');
 const mongoose = require('mongoose');
 const User = require('../models/business_owner');
+const FinData = require('../models/financial_data');
 const jsendResponse = require('../helpers/jsend_response');
 const nodeMailer = require('../libs/node_mailer');
 const _ = require('lodash');
@@ -16,9 +17,18 @@ module.exports.register = (req, res) => {
 
     user.save(function (err) {
         if (err) return jsendResponse.sendError('Email already exist', 400, res);
-        var data = {}
-        data.token = user.generateJwt();
-        return jsendResponse.sendSuccess(data, res);
+        else{
+            var finData = new FinData();
+            finData.owner = user._id;
+            finData.save(function(err) {
+                if(err) return jsendResponse.sendError('Something went wrong', 400, res);
+                else {
+                    var data = {}
+                    data.token = user.generateJwt();
+                    return jsendResponse.sendSuccess(data, res);
+                }
+            });
+        }
     });
 };
 
