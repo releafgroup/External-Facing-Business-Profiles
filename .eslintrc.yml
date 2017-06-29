@@ -102,7 +102,7 @@ rules:
   no-labels: 2
   no-lone-blocks: 2
   no-lonely-if: 0
-  no-loop-func: 2
+  no-loop-func: 1
   no-magic-numbers: 0
   no-mixed-requires: 0
   no-multi-spaces: 0
