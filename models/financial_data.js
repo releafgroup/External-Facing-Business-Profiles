@@ -33,8 +33,8 @@ const FinancialDataSchema = new Schema({
     liability_value: String,
     liability_desc: String,
     equity_desc: String,
-    projection_begin: Boolean,
-    projection_complete: Boolean
+    projection_begin: {type: Boolean, default: false},
+    projection_complete: {type: Boolean, default: false}
 }, {collection: 'financial_data'});
 
 module.exports = mongoose.model('FinancialDataSchema', FinancialDataSchema);
