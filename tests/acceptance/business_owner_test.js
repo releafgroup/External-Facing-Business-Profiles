@@ -81,14 +81,4 @@ describe('Business Owner', function () {
                 done();
             });
     });
-
-    it('should not get user without admin access', (done) => {
-        request(URL)
-            .get('/businesses')
-            .expect(400)
-            .end(function (err, res) {    
-                res.body.status.should.equal('error');
-                done();
-            });
-    });
 });
