@@ -8,9 +8,15 @@ const cors = require('cors');
 const jsendRepsonse = require('./helpers/jsend_response');
 const app = express();
 const config = require('./config/config');
-const passport = require('passport')
+const passport = require('passport');
+const sslRedirect = require('heroku-ssl-redirect');
 
 const requestAuth = require('./helpers/request_auth');
+
+/**
+ * Heroku SSL redirect
+ */
+app.use(sslRedirect());
 
 /**
  * Access Control
