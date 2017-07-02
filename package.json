@@ -27,6 +27,7 @@
     "dotenv": "^2.0.0",
     "express": "^4.14.0",
     "forexify": "^1.0.4",
+    "heroku-ssl-redirect": "0.0.4",
     "joi": "^9.2.0",
     "jsonwebtoken": "^7.3.0",
     "loadash": "0.0.1",
