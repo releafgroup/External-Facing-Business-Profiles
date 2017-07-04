@@ -75,9 +75,20 @@ describe('Business Owner', function () {
     it('Get all business owners', (done) => {
         request(URL)
             .get('/businesses')
+            .set('x-access-token', config.ADMIN_SECRET_KEY)
             .expect(200)
             .end(function (err, res) {       
                 res.body.status.should.equal('success');
+                done();
+            });
+    });
+
+    it('should not get user without admin access', (done) => {
+        request(URL)
+            .get('/businesses')
+            .expect(400)
+            .end(function (err, res) {    
+                res.body.status.should.equal('error');
                 done();
             });
     });
