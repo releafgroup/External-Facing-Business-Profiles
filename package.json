@@ -40,7 +40,8 @@
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "sequelize": "^3.30.0",
-    "y-currency": "^1.0.3"
+    "y-currency": "^1.0.3",
+    "mongoose-type-email": "^1.0"
   },
   "devDependencies": {
     "debug": "~2.2.0",
