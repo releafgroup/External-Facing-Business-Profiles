@@ -1,0 +1,125 @@
+/*------------------------------------------------------------------------------------------------------------------------
+ 
+ @package: Business Facing External Page
+ @author: RELEAF/Chukwuebuka OKAFOR
+ @version: 1.0
+ 
+ --------------------------------------------------------------------------------------------------------------------- */
+
+/* =============================================================================
+  Base
+========================================================================== */
+body {
+  font-family: "Open sans", sans-serif;
+  color: #000000;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Dosis", sans-serif;
+}
+
+a {
+  color: inherit;
+}
+a:hover, a:focus, a:active {
+  color: inherit;
+}
+
+/* =============================================================================
+  Layout
+========================================================================== */
+/* Header and Body
+================================= */
+.path0_fill {
+  margin-bottom: 0;
+  color: #fff;
+  background: linear-gradient(to right, #81d76d , #80d66e, #67b788, #458cab, #2d6ec4);
+  width: absolute;
+  height: 780px;
+}
+.path1_fill {
+  width: 45px;
+  height: 45px;
+  padding-top: 150px;
+  padding-left: 80px;
+  border: 50%;
+  background-color: #ffffff;
+  background-color: var(--white-two);
+}
+.logo-brand {
+  border-bottom: none !important;
+  padding-top: 40px !important;
+  padding-left: 60px;
+}
+.path2_fill {
+	padding-top: 35px;
+	margin-right: 40px;
+}
+.path3_fill {
+	padding-top: 50px;
+	margin-left: 10px;
+}
+.path4_fill {
+	padding-top: 50px;
+	font-size: 18px;
+	text-align: justify;
+}
+.path5_fill {
+  margin-top: 65px;
+  padding-top: 40px;
+  border-radius: 2%;
+  width: 300px;
+  height: 10px;
+  background-color: #ffffff;
+}
+.path6_fill {
+  margin-top: -65px;
+  padding-top: 30px;
+  font-size: 18px;
+  color: #2d6ec4;
+}
+.path7_fill {
+  margin-top: 575px;
+  margin-left: 210px;
+  padding-left: 50px;
+  width: 1070px;
+  height: 366px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  background-color: #ffffff;
+  overflow: visible;
+}
+.head_text {
+	margin-top: 120px;
+	text-align: center;
+	color: #7f8c8d;
+
+}
+.body_text {
+	margin-top: 350px;
+	color: #7f8c8d;
+}
+p {
+	text-align: justify;
+}
+.path8_fill {
+  
+  margin-top: 80px;
+  width: absolute;
+  height: 55px;
+  background-color: rgba(129, 215, 110, 0.17);
+}
+.path9_fill {
+	color: #7f8c8d;
+	text-align: center;
+	font-size: 20px;
+	margin-top: 15px;
+}
+.path10_fill {
+	color: #7f8c8d;
+	margin-top: 70px;
+}
+
+
