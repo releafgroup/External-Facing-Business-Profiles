@@ -47,7 +47,7 @@ a:hover, a:focus, a:active {
   padding-left: 80px;
   border: 50%;
   background-color: #ffffff;
-  background-color: var(--white-two);
+  
 }
 .logo-brand {
   border-bottom: none !important;
