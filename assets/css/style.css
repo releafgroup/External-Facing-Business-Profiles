@@ -10,7 +10,7 @@
   Base
 ========================================================================== */
 body {
-  font-family: "Open sans", sans-serif;
+  font-family: "Poppins", sans-serif;
   color: #000000;
 }
 
@@ -18,7 +18,7 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: "Dosis", sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 a {
