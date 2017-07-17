@@ -16,6 +16,13 @@ const BusinessOwnerSchema = new Schema({
         required: true
     },
     phone_number: String,
+    user_name: String,
+    user_position: String,
+    linkedin: String,
+    description: String,
+    future_actions: [String],
+    founded_month: String,
+    founded_year: String,
     location: String,
     company_website: String,
     products: String,

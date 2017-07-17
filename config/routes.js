@@ -16,6 +16,7 @@ const investorController = require('../controllers/investor');
 const businessOwnerController = require('../controllers/authentication');
 const fileSigning = require('../controllers/file_sign');
 const financialProjection = require('../controllers/financial_projection');
+const referralController = require('../controllers/referrals');
 
 /**
  * Home routes
@@ -95,4 +96,9 @@ router.delete('/businesses/:id/financials', financialProjection.remove);
  * S3 File Upload Route
  */
 router.get('/files', fileSigning.sign);
+
+/**
+ * Market Tool Referrals Routes
+ */
+router.post('/businesses/:id/referrals', referralController.create);
 module.exports = router;

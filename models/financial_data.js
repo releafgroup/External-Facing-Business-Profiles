@@ -5,7 +5,7 @@ const mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 /**
- * Project Schema
+ * Financial Data Schema
  */
 const FinancialDataSchema = new Schema({
     owner: {
